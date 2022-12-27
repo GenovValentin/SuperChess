@@ -216,7 +216,8 @@ MonoBehaviour:
   - {fileID: -5202326866277740576}
   - {fileID: -5805290677561831642}
   - {fileID: -307790517891389924}
-  m_RendererFeatureMap: 39425ccb0e7436b3814751ef7462e0215aa81864ce54e4be14009d7c41aeef5671105d2c44d09f3ce04f0b3a479fcdb7264f0af2e2766faf1ca6d99b2782bafb
+  - {fileID: 5413730579352816993}
+  m_RendererFeatureMap: 39425ccb0e7436b3814751ef7462e0215aa81864ce54e4be14009d7c41aeef5671105d2c44d09f3ce04f0b3a479fcdb7264f0af2e2766faf1ca6d99b2782bafb618dfe5b476f214b
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
@@ -307,6 +308,45 @@ MonoBehaviour:
         m_Bits: 2048
       PassNames: []
     overrideMaterial: {fileID: 2100000, guid: aa5bea2d623037fcc989c3290d7a46ee, type: 2}
+    overrideMaterialPassIndex: 0
+    overrideDepthState: 0
+    depthCompareFunction: 4
+    enableWrite: 1
+    stencilSettings:
+      overrideStencilState: 0
+      stencilReference: 0
+      stencilCompareFunction: 8
+      passOperation: 0
+      failOperation: 0
+      zFailOperation: 0
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60
+--- !u!114 &5413730579352816993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: Highligt
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    passTag: Highligt
+    Event: 500
+    filterSettings:
+      RenderQueueType: 1
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 32768
+      PassNames: []
+    overrideMaterial: {fileID: 2100000, guid: b7fed4578a0b17536a5e30d15831fcb3, type: 2}
     overrideMaterialPassIndex: 0
     overrideDepthState: 0
     depthCompareFunction: 4
