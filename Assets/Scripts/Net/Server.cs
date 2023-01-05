@@ -23,9 +23,6 @@ public class Server : MonoBehaviour
 
     private static short MAX_CONNECTIONS_COUNT = 2;
 
-    private static NetworkConnection
-        EMPTY_CONNECTION = default(NetworkConnection);
-
     public NetworkDriver driver;
 
     private NativeList<NetworkConnection> connections;
@@ -142,7 +139,7 @@ public class Server : MonoBehaviour
     {
         // Accept new connections
         NetworkConnection connection;
-        while ((connection = driver.Accept()) != EMPTY_CONNECTION)
+        while ((connection = driver.Accept()) != NetUtility.EMPTY_CONNECTION)
         {
             connections.Add (connection);
         }
@@ -154,15 +151,24 @@ public class Server : MonoBehaviour
         return driver.PopEventForConnection(connection, out stream);
     }
 
+    private bool
+    HasEvent(
+        NetworkConnection connection,
+        out NetworkEvent.Type cmd,
+        out DataStreamReader stream
+    )
+    {
+        cmd = PopEvent(connection, out stream);
+        return cmd != NetworkEvent.Type.Empty;
+    }
+
     private void UpdateMessagePump()
     {
         DataStreamReader stream;
+        NetworkEvent.Type cmd;
         for (int i = 0; i < connections.Length; i++)
         {
-            NetworkEvent.Type cmd;
-            while ((cmd = PopEvent(connections[i], out stream)) !=
-                NetworkEvent.Type.Empty
-            )
+            while (HasEvent(connections[i], out cmd, out stream))
             {
                 if (cmd == NetworkEvent.Type.Data)
                 {
@@ -173,7 +179,7 @@ public class Server : MonoBehaviour
                 if (cmd == NetworkEvent.Type.Disconnect)
                 {
                     Debug.Log("Client disconnected from server");
-                    connections[i] = EMPTY_CONNECTION;
+                    connections[i] = NetUtility.EMPTY_CONNECTION;
                     connectionDropped?.Invoke();
                     Shutdown(); // This doesn't happen usually, it's because we're in a two person game
                 }

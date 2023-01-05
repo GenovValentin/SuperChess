@@ -73,6 +73,10 @@ public class Chessboard : MonoBehaviour
     private Material[] teamMaterials;
 
     // Logic
+    public const int TILE_COUNT_X = 8;
+
+    public const int TILE_COUNT_Y = 8;
+
     private ChessPiece[,] chessPieces;
 
     private ChessPiece currentlyDragging;
@@ -84,10 +88,6 @@ public class Chessboard : MonoBehaviour
     private List<ChessPiece> deadBlacks = new List<ChessPiece>();
 
     private List<Vector2Int[]> moveList = new List<Vector2Int[]>();
-
-    private const int TILE_COUNT_X = 8;
-
-    private const int TILE_COUNT_Y = 8;
 
     private GameObject[,] tiles;
 
@@ -196,9 +196,7 @@ public class Chessboard : MonoBehaviour
                         // Get a list of where I can go, highlight tiles as well
                         availableMoves =
                             currentlyDragging
-                                .GetAvailableMoves(ref chessPieces,
-                                TILE_COUNT_X,
-                                TILE_COUNT_Y);
+                                .GetAvailableMoves(ref chessPieces);
 
                         // Get a list of special moves as well
                         specialMove =
@@ -359,12 +357,12 @@ public class Chessboard : MonoBehaviour
         chessPieces[5, 0] = SpawnSinglePiece(ChessPieceType.Bishop, whiteTeam);
         chessPieces[6, 0] = SpawnSinglePiece(ChessPieceType.Knight, whiteTeam);
         chessPieces[7, 0] = SpawnSinglePiece(ChessPieceType.Rook, whiteTeam);
-        for (int i = 0; i < TILE_COUNT_X; i++)
-        {
-            chessPieces[i, 1] =
-                SpawnSinglePiece(ChessPieceType.Pawn, whiteTeam);
-        }
 
+        // for (int i = 0; i < TILE_COUNT_X; i++)
+        // {
+        //     chessPieces[i, 1] =
+        //         SpawnSinglePiece(ChessPieceType.Pawn, whiteTeam);
+        // }
         // Black team
         chessPieces[0, 7] = SpawnSinglePiece(ChessPieceType.Rook, blackTeam);
         chessPieces[1, 7] = SpawnSinglePiece(ChessPieceType.Knight, blackTeam);
@@ -374,11 +372,11 @@ public class Chessboard : MonoBehaviour
         chessPieces[5, 7] = SpawnSinglePiece(ChessPieceType.Bishop, blackTeam);
         chessPieces[6, 7] = SpawnSinglePiece(ChessPieceType.Knight, blackTeam);
         chessPieces[7, 7] = SpawnSinglePiece(ChessPieceType.Rook, blackTeam);
-        for (int i = 0; i < TILE_COUNT_X; i++)
-        {
-            chessPieces[i, 6] =
-                SpawnSinglePiece(ChessPieceType.Pawn, blackTeam);
-        }
+        // for (int i = 0; i < TILE_COUNT_X; i++)
+        // {
+        //     chessPieces[i, 6] =
+        //         SpawnSinglePiece(ChessPieceType.Pawn, blackTeam);
+        // }
     }
 
     private ChessPiece SpawnSinglePiece(ChessPieceType type, int team)
@@ -771,10 +769,7 @@ public class Chessboard : MonoBehaviour
             for (int a = 0; a < simAttackingPieces.Count; a++)
             {
                 var pieceMoves =
-                    simAttackingPieces[a]
-                        .GetAvailableMoves(ref simulation,
-                        TILE_COUNT_X,
-                        TILE_COUNT_Y);
+                    simAttackingPieces[a].GetAvailableMoves(ref simulation);
                 for (int b = 0; b < pieceMoves.Count; b++)
                 {
                     simMoves.Add(pieceMoves[b]);
@@ -835,10 +830,7 @@ public class Chessboard : MonoBehaviour
         for (int i = 0; i < attackingPieces.Count; i++)
         {
             var pieceMoves =
-                attackingPieces[i]
-                    .GetAvailableMoves(ref chessPieces,
-                    TILE_COUNT_X,
-                    TILE_COUNT_Y);
+                attackingPieces[i].GetAvailableMoves(ref chessPieces);
             for (int b = 0; b < pieceMoves.Count; b++)
             {
                 currentAvailableMoves.Add(pieceMoves[b]);
@@ -855,10 +847,7 @@ public class Chessboard : MonoBehaviour
             for (int i = 0; i < defendingPieces.Count; i++)
             {
                 List<Vector2Int> defendingMoves =
-                    defendingPieces[i]
-                        .GetAvailableMoves(ref chessPieces,
-                        TILE_COUNT_X,
-                        TILE_COUNT_Y);
+                    defendingPieces[i].GetAvailableMoves(ref chessPieces);
 
                 // Since we're sending ref availableMoves, we will be deleting moves that are putting us in check
                 SimulateMoveForSinglePiece(defendingPieces[i],
@@ -1116,11 +1105,7 @@ public class Chessboard : MonoBehaviour
         {
             ChessPiece target = chessPieces[mm.originalX, mm.originalY];
 
-            availableMoves =
-                target
-                    .GetAvailableMoves(ref chessPieces,
-                    TILE_COUNT_X,
-                    TILE_COUNT_Y);
+            availableMoves = target.GetAvailableMoves(ref chessPieces);
             specialMove =
                 target
                     .GetSpecialMoves(ref chessPieces,

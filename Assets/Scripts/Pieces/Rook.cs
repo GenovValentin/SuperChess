@@ -1,66 +1,120 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rook : ChessPiece{
-    public override List<Vector2Int> GetAvailableMoves(ref ChessPiece[,] board, int tileCountX, int tileCountY) {
-        List<Vector2Int> r = new List<Vector2Int>();
+public class Rook : ChessPiece
+{
+    public override List<Vector2Int> GetAvailableMoves(ref ChessPiece[,] board)
+    {
+        List<Vector2Int> availableMoves = new List<Vector2Int>();
 
-        // Down
-        for (int i = currentY - 1; i >= 0; i--) {
-            if (board[currentX, i] == null) {
-                r.Add(new Vector2Int(currentX, i));
-            }
-            if (board[currentX, i] != null) {
-                if (board[currentX, i].team != team) {
-                    r.Add(new Vector2Int(currentX, i));
-                }
+        AddTopMoves(ref board, currentX, currentY, team, availableMoves);
 
+        AddBottomMoves(ref board, currentX, currentY, team, availableMoves);
+
+        AddLeftMoves(ref board, currentX, currentY, team, availableMoves);
+
+        AddRightMoves(ref board, currentX, currentY, team, availableMoves);
+
+        return availableMoves;
+    }
+
+    private static bool
+    AddAvailableMove(
+        ref ChessPiece[,] board,
+        int x,
+        int y,
+        int team,
+        List<Vector2Int> availableMoves
+    )
+    {
+        ChessPiece piece = board[x, y];
+        bool isFieldEmpty = piece == null;
+
+        if (isFieldEmpty || piece.team != team)
+        {
+            availableMoves.Add(new Vector2Int(x, y));
+        }
+
+        return isFieldEmpty;
+    }
+
+    public static void AddTopMoves(
+        ref ChessPiece[,] board,
+        int currentX,
+        int currentY,
+        int team,
+        List<Vector2Int> availableMoves
+    )
+    {
+        for (int i = currentY + 1; i < Chessboard.TILE_COUNT_Y; i++)
+        {
+            bool shouldAddMoreMoves =
+                AddAvailableMove(ref board, currentX, i, team, availableMoves);
+
+            if (!shouldAddMoreMoves)
+            {
                 break;
             }
         }
+    }
 
-        // Up
-        for (int i = currentY + 1; i < tileCountY; i++) {
-            if (board[currentX, i] == null) {
-                r.Add(new Vector2Int(currentX, i));
-            }
-            if (board[currentX, i] != null) {
-                if (board[currentX, i].team != team) {
-                    r.Add(new Vector2Int(currentX, i));
-                }
+    public static void AddBottomMoves(
+        ref ChessPiece[,] board,
+        int currentX,
+        int currentY,
+        int team,
+        List<Vector2Int> availableMoves
+    )
+    {
+        for (int i = currentY - 1; i >= 0; i--)
+        {
+            bool shouldAddMoreMoves =
+                AddAvailableMove(ref board, currentX, i, team, availableMoves);
 
+            if (!shouldAddMoreMoves)
+            {
                 break;
             }
         }
+    }
 
-        // Left
-        for (int i = currentX - 1; i >= 0; i--) {
-            if (board[i, currentY] == null) {
-                r.Add(new Vector2Int(i, currentY));
-            }
-            if (board[i, currentY] != null) {
-                if (board[i, currentY].team != team) {
-                    r.Add(new Vector2Int(i, currentY));
-                }
+    public static void AddLeftMoves(
+        ref ChessPiece[,] board,
+        int currentX,
+        int currentY,
+        int team,
+        List<Vector2Int> availableMoves
+    )
+    {
+        for (int i = currentX - 1; i >= 0; i--)
+        {
+            bool shouldAddMoreMoves =
+                AddAvailableMove(ref board, i, currentY, team, availableMoves);
 
+            if (!shouldAddMoreMoves)
+            {
                 break;
             }
         }
+    }
 
-        // Right
-        for (int i = currentX + 1; i < tileCountY; i++) {
-            if (board[i, currentY] == null) {
-                r.Add(new Vector2Int(i, currentY));
-            }
-            if (board[i, currentY] != null) {
-                if (board[i, currentY].team != team) {
-                    r.Add(new Vector2Int(i, currentY));
-                }
+    public static void AddRightMoves(
+        ref ChessPiece[,] board,
+        int currentX,
+        int currentY,
+        int team,
+        List<Vector2Int> availableMoves
+    )
+    {
+        for (int i = currentX + 1; i < Chessboard.TILE_COUNT_Y; i++)
+        {
+            bool shouldAddMoreMoves =
+                AddAvailableMove(ref board, i, currentY, team, availableMoves);
 
+            if (!shouldAddMoreMoves)
+            {
                 break;
             }
         }
-
-        return r;
     }
 }
