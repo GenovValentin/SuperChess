@@ -43,6 +43,33 @@ public class ChessPiece : MonoBehaviour
         transform.rotation = Quaternion.Euler(GetRotationVector());
     }
 
+    protected bool IsFieldOnBoard(int x, int y)
+    {
+        return x >= 0 &&
+        y >= 0 &&
+        x < Chessboard.TILE_COUNT_X &&
+        y < Chessboard.TILE_COUNT_Y;
+    }
+
+    protected void AddAvailableMove(
+        ref ChessPiece[,] board,
+        int x,
+        int y,
+        List<Vector2Int> availableMoves
+    )
+    {
+        if (!IsFieldOnBoard(x, y))
+        {
+            return;
+        }
+
+        ChessPiece piece = board[x, y];
+        if (piece == null || piece.team != team)
+        {
+            availableMoves.Add(new Vector2Int(x, y));
+        }
+    }
+
     private Vector3 GetRotationVector()
     {
         bool isWhite = team == Team.White;
