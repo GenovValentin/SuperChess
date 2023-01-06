@@ -1,71 +1,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PawnStartLines
+{
+    White = 1,
+    Black = 6
+}
+
 public class Pawn : ChessPiece
 {
     public override List<Vector2Int> GetAvailableMoves(ref ChessPiece[,] board)
     {
-        List<Vector2Int> r = new List<Vector2Int>();
-        int tileCountX = Chessboard.TILE_COUNT_X;
-        int tileCountY = Chessboard.TILE_COUNT_Y;
+        List<Vector2Int> availableMoves = new List<Vector2Int>();
 
-        int direction = (team == 0) ? 1 : -1;
+        int direction = GetDirection();
 
-        // One in front
+        AddOneFieldMove(currentX,
+        currentY,
+        direction,
+        ref board,
+        availableMoves);
 
-        if (board[currentX, currentY + direction] == null)
-        {
-            r.Add(new Vector2Int(currentX, currentY + direction));
-        }
+        AddTwoFieldsMove(currentX,
+        currentY,
+        direction,
+        ref board,
+        availableMoves);
 
-        // Two in front
-        if (board[currentX, currentY + direction] == null)
-        {
-            // White team
-            if (
-                team == 0 &&
-                currentY == 1 &&
-                board[currentX, currentY + (direction * 2)] == null
-            )
-            {
-                r.Add(new Vector2Int(currentX, currentY + (direction * 2)));
-            }
+        AddTakingMove(true,
+        currentX,
+        currentY,
+        direction,
+        ref board,
+        availableMoves);
 
-            // Black team
-            if (
-                team == 1 &&
-                currentY == 6 &&
-                board[currentX, currentY + (direction * 2)] == null
-            )
-            {
-                r.Add(new Vector2Int(currentX, currentY + (direction * 2)));
-            }
-        }
+        AddTakingMove(false,
+        currentX,
+        currentY,
+        direction,
+        ref board,
+        availableMoves);
 
-        // Kill move
-        if (currentX != tileCountX - 1)
-        {
-            if (
-                board[currentX + 1, currentY + direction] != null &&
-                board[currentX + 1, currentY + direction].team != team
-            )
-            {
-                r.Add(new Vector2Int(currentX + 1, currentY + direction));
-            }
-        }
-
-        if (currentX != 0)
-        {
-            if (
-                board[currentX - 1, currentY + direction] != null &&
-                board[currentX - 1, currentY + direction].team != team
-            )
-            {
-                r.Add(new Vector2Int(currentX - 1, currentY + direction));
-            }
-        }
-
-        return r;
+        return availableMoves;
     }
 
     public override SpecialMove
@@ -75,50 +51,190 @@ public class Pawn : ChessPiece
         ref List<Vector2Int> availableMoves
     )
     {
-        int direction = (team == 0) ? 1 : -1;
-        if ((team == 0 && currentY == 6) || (team == 1 && currentY == 1))
+        int direction = (team == Team.White) ? 1 : -1;
+        if (
+            (team == Team.White && currentY == 6) ||
+            (team == Team.Black && currentY == 1)
+        )
         {
             return SpecialMove.Promotion;
         }
 
         // En Passant
-        if (moveList.Count > 0)
+        if (moveList.Count <= 0)
         {
-            Vector2Int[] lastMove = moveList[moveList.Count - 1];
-            if (board[lastMove[1].x, lastMove[1].y].type == ChessPieceType.Pawn)
-            {
-                // If the last piece moved was a pawn
-                if (Mathf.Abs(lastMove[0].y - lastMove[1].y) == 2)
-                {
-                    // If the last move was a +2 in either direction
-                    if (board[lastMove[1].x, lastMove[1].y].team != team)
-                    {
-                        // If the move was from the other team
-                        if (lastMove[1].y == currentY)
-                        {
-                            if (lastMove[1].x == currentX - 1)
-                            {
-                                // Landed left
-                                availableMoves
-                                    .Add(new Vector2Int(currentX - 1,
-                                        currentY + direction));
-                                return SpecialMove.EnPassant;
-                            }
+            return SpecialMove.None;
+        }
 
-                            if (lastMove[1].x == currentX + 1)
-                            {
-                                // Landed right
-                                availableMoves
-                                    .Add(new Vector2Int(currentX + 1,
-                                        currentY + direction));
-                                return SpecialMove.EnPassant;
-                            }
-                        }
-                    }
-                }
-            }
+        Vector2Int[] lastMove = moveList[moveList.Count - 1];
+        Vector2Int endField = lastMove[1];
+        int endFieldX = endField.x;
+        int endFieldY = endField.y;
+        int startFieldY = lastMove[0].y;
+
+        if (
+            !WasLastMovedPawn(endFieldX, endFieldY, ref board) ||
+            !WasLastMoveTwoFieldMove(startFieldY, endFieldY) ||
+            !WasLastMoveFromOpponent(endFieldX, endFieldY, ref board) ||
+            (endFieldY != currentY)
+        )
+        {
+            return SpecialMove.None;
+        }
+
+        bool addedTakingEnPassentMoveToTheRight =
+            AddTakingEnPassentMove(true,
+            currentX,
+            currentY,
+            direction,
+            endFieldX,
+            ref board,
+            availableMoves);
+
+        bool addedTakingEnPassentMoveToTheLeft =
+            AddTakingEnPassentMove(false,
+            currentX,
+            currentY,
+            direction,
+            endFieldX,
+            ref board,
+            availableMoves);
+
+        if (
+            addedTakingEnPassentMoveToTheLeft ||
+            addedTakingEnPassentMoveToTheRight
+        )
+        {
+            return SpecialMove.EnPassant;
         }
 
         return SpecialMove.None;
+    }
+
+    private bool WasLastMovedPawn(int x, int y, ref ChessPiece[,] board)
+    {
+        ChessPiece piece = board[x, y];
+        return piece.type == ChessPieceType.Pawn;
+    }
+
+    private bool WasLastMoveTwoFieldMove(int startFieldY, int endFieldY)
+    {
+        return (Mathf.Abs(startFieldY - endFieldY) == 2);
+    }
+
+    private bool
+    WasLastMoveFromOpponent(
+        int endFieldX,
+        int endFieldY,
+        ref ChessPiece[,] board
+    )
+    {
+        return (board[endFieldX, endFieldY].team != team);
+    }
+
+    private int GetDirection()
+    {
+        return (team == Team.White) ? 1 : -1;
+    }
+
+    private void AddAvailableMove(int x, int y, List<Vector2Int> availableMoves)
+    {
+        availableMoves.Add(new Vector2Int(x, y));
+    }
+
+    private void AddTwoFieldsMove(
+        int currentX,
+        int currentY,
+        int direction,
+        ref ChessPiece[,] board,
+        List<Vector2Int> availableMoves
+    )
+    {
+        bool isWhite = team == Team.White;
+        PawnStartLines startLine =
+            isWhite ? PawnStartLines.White : PawnStartLines.Black;
+        int firstFieldY = currentY + direction;
+        int secondFieldY = currentY + (direction * 2);
+
+        if (
+            !IsFieldEmpty(currentX, firstFieldY, ref board) ||
+            !IsFieldEmpty(currentX, secondFieldY, ref board) ||
+            currentY != (int) startLine
+        )
+        {
+            return;
+        }
+
+        AddAvailableMove (currentX, secondFieldY, availableMoves);
+    }
+
+    private void AddOneFieldMove(
+        int currentX,
+        int currentY,
+        int direction,
+        ref ChessPiece[,] board,
+        List<Vector2Int> availableMoves
+    )
+    {
+        int firstFieldY = currentY + direction;
+        if (!IsFieldEmpty(currentX, firstFieldY, ref board))
+        {
+            return;
+        }
+
+        AddAvailableMove (currentX, firstFieldY, availableMoves);
+    }
+
+    private void AddTakingMove(
+        bool toTheRight,
+        int currentX,
+        int currentY,
+        int direction,
+        ref ChessPiece[,] board,
+        List<Vector2Int> availableMoves
+    )
+    {
+        int directionToTake = toTheRight ? 1 : -1;
+        if (
+            (!toTheRight || currentX == Chessboard.TILE_COUNT_X - 1) &&
+            (toTheRight || currentX == 0)
+        )
+        {
+            return;
+        }
+
+        int newX = currentX + directionToTake;
+        int newY = currentY + direction;
+        ChessPiece piece = board[newX, newY];
+        if (IsFieldEmpty(newX, newY, ref board) || piece.team == team)
+        {
+            return;
+        }
+
+        AddAvailableMove (newX, newY, availableMoves);
+    }
+
+    private bool
+    AddTakingEnPassentMove(
+        bool toTheRight,
+        int currentX,
+        int currentY,
+        int direction,
+        int endFieldX,
+        ref ChessPiece[,] board,
+        List<Vector2Int> availableMoves
+    )
+    {
+        int directionToTake = toTheRight ? 1 : -1;
+        if (endFieldX != currentX + directionToTake)
+        {
+            return false;
+        }
+
+        AddAvailableMove(currentX + directionToTake,
+        currentY + direction,
+        availableMoves);
+
+        return true;
     }
 }

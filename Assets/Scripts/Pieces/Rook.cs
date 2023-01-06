@@ -23,12 +23,12 @@ public class Rook : ChessPiece
         ref ChessPiece[,] board,
         int x,
         int y,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {
         ChessPiece piece = board[x, y];
-        bool isFieldEmpty = piece == null;
+        bool isFieldEmpty = IsFieldEmpty(x, y, ref board);
 
         if (isFieldEmpty || piece.team != team)
         {
@@ -42,7 +42,7 @@ public class Rook : ChessPiece
         ref ChessPiece[,] board,
         int currentX,
         int currentY,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {
@@ -62,7 +62,7 @@ public class Rook : ChessPiece
         ref ChessPiece[,] board,
         int currentX,
         int currentY,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {
@@ -82,7 +82,7 @@ public class Rook : ChessPiece
         ref ChessPiece[,] board,
         int currentX,
         int currentY,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {
@@ -102,7 +102,7 @@ public class Rook : ChessPiece
         ref ChessPiece[,] board,
         int currentX,
         int currentY,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {

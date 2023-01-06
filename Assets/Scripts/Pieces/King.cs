@@ -127,23 +127,29 @@ public class King : ChessPiece
         SpecialMove r = SpecialMove.None;
 
         var kingMove =
-            moveList.Find(m => m[0].x == 4 && m[0].y == ((team == 0) ? 0 : 7));
+            moveList
+                .Find(m =>
+                    m[0].x == 4 && m[0].y == ((team == Team.White) ? 0 : 7));
         var leftRook =
-            moveList.Find(m => m[0].x == 0 && m[0].y == ((team == 0) ? 0 : 7));
+            moveList
+                .Find(m =>
+                    m[0].x == 0 && m[0].y == ((team == Team.White) ? 0 : 7));
         var rightRook =
-            moveList.Find(m => m[0].x == 7 && m[0].y == ((team == 0) ? 0 : 7));
+            moveList
+                .Find(m =>
+                    m[0].x == 7 && m[0].y == ((team == Team.White) ? 0 : 7));
 
         if (kingMove == null && currentX == 4)
         {
             // White team
-            if (team == 0)
+            if (team == Team.White)
             {
                 // Left rook
                 if (leftRook == null)
                 {
                     if (board[0, 0].type == ChessPieceType.Rook)
                     {
-                        if (board[0, 0].team == 0)
+                        if (board[0, 0].team == Team.White)
                         {
                             if (board[3, 0] == null)
                             {
@@ -166,7 +172,7 @@ public class King : ChessPiece
                 {
                     if (board[7, 0].type == ChessPieceType.Rook)
                     {
-                        if (board[7, 0].team == 0)
+                        if (board[7, 0].team == Team.White)
                         {
                             if (board[5, 0] == null)
                             {
@@ -187,7 +193,7 @@ public class King : ChessPiece
                 {
                     if (board[0, 7].type == ChessPieceType.Rook)
                     {
-                        if (board[0, 7].team == 1)
+                        if (board[0, 7].team == Team.Black)
                         {
                             if (board[3, 7] == null)
                             {
@@ -210,7 +216,7 @@ public class King : ChessPiece
                 {
                     if (board[7, 7].type == ChessPieceType.Rook)
                     {
-                        if (board[7, 7].team == 1)
+                        if (board[7, 7].team == Team.Black)
                         {
                             if (board[5, 7] == null)
                             {

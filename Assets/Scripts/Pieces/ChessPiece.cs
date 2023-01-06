@@ -12,9 +12,16 @@ public enum ChessPieceType
     King = 6
 }
 
+public enum Team
+{
+    White = 0,
+    Black = 1,
+    None = -1
+}
+
 public class ChessPiece : MonoBehaviour
 {
-    public int team;
+    public Team team;
 
     public int currentX;
 
@@ -38,7 +45,7 @@ public class ChessPiece : MonoBehaviour
 
     private Vector3 GetRotationVector()
     {
-        bool isWhite = team == 0;
+        bool isWhite = team == Team.White;
         return isWhite ? new Vector3(-90, 90, 0) : new Vector3(-90, -90, 0);
     }
 
@@ -89,5 +96,10 @@ public class ChessPiece : MonoBehaviour
         {
             transform.localScale = desiredScale;
         }
+    }
+
+    protected static bool IsFieldEmpty(int x, int y, ref ChessPiece[,] board)
+    {
+        return board[x, y] == null;
     }
 }

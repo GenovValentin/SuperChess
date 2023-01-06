@@ -102,7 +102,7 @@ public class Chessboard : MonoBehaviour
     // Multiplayer logic
     private int playerCount = -1;
 
-    private int currentTeam = -1;
+    private Team currentTeam = Team.None;
 
     private bool localGame = true;
 
@@ -179,14 +179,16 @@ public class Chessboard : MonoBehaviour
                     // Is it our turn?
                     if (
                         (
-                        chessPieces[hitPosition.x, hitPosition.y].team == 0 &&
+                        chessPieces[hitPosition.x, hitPosition.y].team ==
+                        Team.White &&
                         isWhiteTurn &&
-                        currentTeam == 0
+                        currentTeam == Team.White
                         ) ||
                         (
-                        chessPieces[hitPosition.x, hitPosition.y].team == 1 &&
+                        chessPieces[hitPosition.x, hitPosition.y].team ==
+                        Team.Black &&
                         !isWhiteTurn &&
-                        currentTeam == 1
+                        currentTeam == Team.Black
                         )
                     )
                     {
@@ -234,7 +236,7 @@ public class Chessboard : MonoBehaviour
                     mm.originalY = previousPosition.y;
                     mm.destinationX = hitPosition.x;
                     mm.destinationY = hitPosition.y;
-                    mm.teamId = currentTeam;
+                    mm.teamId = (int) currentTeam;
                     Client.Instance.SendToServer (mm);
                 }
                 else
@@ -344,9 +346,9 @@ public class Chessboard : MonoBehaviour
     {
         chessPieces = new ChessPiece[TILE_COUNT_X, TILE_COUNT_Y];
 
-        int
-            whiteTeam = 0,
-            blackTeam = 1;
+        Team
+            whiteTeam = Team.White,
+            blackTeam = Team.Black;
 
         // White team
         chessPieces[0, 0] = SpawnSinglePiece(ChessPieceType.Rook, whiteTeam);
@@ -358,11 +360,12 @@ public class Chessboard : MonoBehaviour
         chessPieces[6, 0] = SpawnSinglePiece(ChessPieceType.Knight, whiteTeam);
         chessPieces[7, 0] = SpawnSinglePiece(ChessPieceType.Rook, whiteTeam);
 
-        // for (int i = 0; i < TILE_COUNT_X; i++)
-        // {
-        //     chessPieces[i, 1] =
-        //         SpawnSinglePiece(ChessPieceType.Pawn, whiteTeam);
-        // }
+        for (int i = 0; i < TILE_COUNT_X; i++)
+        {
+            chessPieces[i, 1] =
+                SpawnSinglePiece(ChessPieceType.Pawn, whiteTeam);
+        }
+
         // Black team
         chessPieces[0, 7] = SpawnSinglePiece(ChessPieceType.Rook, blackTeam);
         chessPieces[1, 7] = SpawnSinglePiece(ChessPieceType.Knight, blackTeam);
@@ -372,24 +375,25 @@ public class Chessboard : MonoBehaviour
         chessPieces[5, 7] = SpawnSinglePiece(ChessPieceType.Bishop, blackTeam);
         chessPieces[6, 7] = SpawnSinglePiece(ChessPieceType.Knight, blackTeam);
         chessPieces[7, 7] = SpawnSinglePiece(ChessPieceType.Rook, blackTeam);
-        // for (int i = 0; i < TILE_COUNT_X; i++)
-        // {
-        //     chessPieces[i, 6] =
-        //         SpawnSinglePiece(ChessPieceType.Pawn, blackTeam);
-        // }
+        for (int i = 0; i < TILE_COUNT_X; i++)
+        {
+            chessPieces[i, 6] =
+                SpawnSinglePiece(ChessPieceType.Pawn, blackTeam);
+        }
     }
 
-    private ChessPiece SpawnSinglePiece(ChessPieceType type, int team)
+    private ChessPiece SpawnSinglePiece(ChessPieceType type, Team team)
     {
-        ChessPiece cp =
+        ChessPiece chessPiece =
             Instantiate(prefabs[(int) type - 1], transform)
                 .GetComponent<ChessPiece>();
 
-        cp.type = type;
-        cp.team = team;
-        cp.GetComponent<MeshRenderer>().material = teamMaterials[team];
+        chessPiece.type = type;
+        chessPiece.team = team;
+        chessPiece.GetComponent<MeshRenderer>().material =
+            teamMaterials[(int) team];
 
-        return cp;
+        return chessPiece;
     }
 
     // Positioning
@@ -442,17 +446,17 @@ public class Chessboard : MonoBehaviour
     }
 
     // Checkmate
-    private void CheckMate(int team)
+    private void CheckMate(Team team)
     {
         DisplayVictory (team);
     }
 
-    private void DisplayVictory(int winningTeam)
+    private void DisplayVictory(Team winningTeam)
     {
         victoryScreen.SetActive(true);
         victoryScreen
             .transform
-            .GetChild(winningTeam)
+            .GetChild((int) winningTeam)
             .gameObject
             .SetActive(true);
     }
@@ -474,7 +478,7 @@ public class Chessboard : MonoBehaviour
         else
         {
             NetRematch rm = new NetRematch();
-            rm.teamId = currentTeam;
+            rm.teamId = (int) currentTeam;
             rm.wantRematch = 1;
             Client.Instance.SendToServer (rm);
         }
@@ -526,7 +530,7 @@ public class Chessboard : MonoBehaviour
     public void OnMenuButton()
     {
         NetRematch rm = new NetRematch();
-        rm.teamId = currentTeam;
+        rm.teamId = (int) currentTeam;
         rm.wantRematch = 0;
         Client.Instance.SendToServer (rm);
 
@@ -538,7 +542,7 @@ public class Chessboard : MonoBehaviour
 
         // Reset some values
         playerCount = -1;
-        currentTeam = -1;
+        currentTeam = Team.None;
     }
 
     // Special moves
@@ -560,7 +564,7 @@ public class Chessboard : MonoBehaviour
                     myPawn.currentY == enemyPawn.currentY + 1
                 )
                 {
-                    if (enemyPawn.team == 0)
+                    if (enemyPawn.team == Team.White)
                     {
                         deadWhites.Add (enemyPawn);
                         enemyPawn.SetScale(Vector3.one * deathSize);
@@ -600,7 +604,7 @@ public class Chessboard : MonoBehaviour
             if (targetPawn.type == ChessPieceType.Pawn)
             {
                 // White team
-                if (targetPawn.team == 0 && lastMove[1].y == 7)
+                if (targetPawn.team == Team.White && lastMove[1].y == 7)
                 {
                     ChessPiece newQueen =
                         SpawnSinglePiece(ChessPieceType.Queen, 0);
@@ -615,10 +619,10 @@ public class Chessboard : MonoBehaviour
                 }
 
                 // Black team
-                if (targetPawn.team == 1 && lastMove[1].y == 0)
+                if (targetPawn.team == Team.Black && lastMove[1].y == 0)
                 {
                     ChessPiece newQueen =
-                        SpawnSinglePiece(ChessPieceType.Queen, 1);
+                        SpawnSinglePiece(ChessPieceType.Queen, Team.Black);
                     newQueen.transform.position =
                         chessPieces[lastMove[1].x, lastMove[1].y]
                             .transform
@@ -797,8 +801,12 @@ public class Chessboard : MonoBehaviour
     private bool CheckForCheckmate()
     {
         var lastMove = moveList[moveList.Count - 1];
-        int targetTeam =
-            ((chessPieces[lastMove[1].x, lastMove[1].y].team == 0) ? 1 : 0);
+        Team targetTeam =
+            (
+            (chessPieces[lastMove[1].x, lastMove[1].y].team == (int) Team.White)
+                ? Team.Black
+                : Team.White
+            );
 
         List<ChessPiece> attackingPieces = new List<ChessPiece>();
         List<ChessPiece> defendingPieces = new List<ChessPiece>();
@@ -894,11 +902,11 @@ public class Chessboard : MonoBehaviour
             }
 
             // If it is the enemy team
-            if (ocp.team == 0)
+            if (ocp.team == Team.White)
             {
                 if (ocp.type == ChessPieceType.King)
                 {
-                    CheckMate(1);
+                    CheckMate(Team.Black);
                 }
 
                 deadWhites.Add (ocp);
@@ -937,7 +945,8 @@ public class Chessboard : MonoBehaviour
         SetIsWhiteTurn(!isWhiteTurn);
         if (localGame)
         {
-            currentTeam = ((currentTeam == 0) ? 1 : 0);
+            currentTeam =
+                ((currentTeam == Team.White) ? Team.Black : Team.White);
         }
         moveList
             .Add(new Vector2Int[] { previousPosition, new Vector2Int(x, y) });
@@ -1074,11 +1083,11 @@ public class Chessboard : MonoBehaviour
         NetWelcome nw = msg as NetWelcome;
 
         // Assign the team
-        currentTeam = nw.AssignedTeam;
+        currentTeam = (Team) nw.AssignedTeam;
 
         Debug.Log($"My assigned team is {nw.AssignedTeam}");
 
-        if (localGame && currentTeam == 0)
+        if (localGame && currentTeam == Team.White)
         {
             Server.Instance.Broadcast(new NetStartGame());
         }
@@ -1088,7 +1097,7 @@ public class Chessboard : MonoBehaviour
     {
         GameUI
             .Instance
-            .ChangeCamera((currentTeam == 0)
+            .ChangeCamera((currentTeam == Team.White)
                 ? CameraAngle.whiteTeam
                 : CameraAngle.blackTeam);
         ResetVictoryScreen();
@@ -1101,7 +1110,7 @@ public class Chessboard : MonoBehaviour
         Debug.Log($"MM : {mm.teamId} : {mm.originalX} {mm.originalY}");
         Debug.Log($"-> {mm.destinationX} {mm.destinationY}");
 
-        if (mm.teamId != currentTeam)
+        if (mm.teamId != (int) currentTeam)
         {
             ChessPiece target = chessPieces[mm.originalX, mm.originalY];
 
@@ -1160,7 +1169,7 @@ public class Chessboard : MonoBehaviour
         playerRematch[rm.teamId] = oppWantsRematch;
 
         // Activate the piece of UI
-        if (rm.teamId != currentTeam)
+        if (rm.teamId != (int) currentTeam)
         {
             ActivateRematchIndicatorChildren (oppWantsRematch);
         }
@@ -1183,7 +1192,7 @@ public class Chessboard : MonoBehaviour
     private void OnSetLocalGame(bool v)
     {
         playerCount = -1;
-        currentTeam = -1;
+        currentTeam = Team.None;
         localGame = v;
     }
 

@@ -27,7 +27,7 @@ public class Bishop : ChessPiece
         ref ChessPiece[,] board,
         int x,
         int y,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {
@@ -46,7 +46,7 @@ public class Bishop : ChessPiece
         ref ChessPiece[,] board,
         int currentX,
         int currentY,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {
@@ -72,7 +72,7 @@ public class Bishop : ChessPiece
         ref ChessPiece[,] board,
         int currentX,
         int currentY,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {
@@ -98,7 +98,7 @@ public class Bishop : ChessPiece
         ref ChessPiece[,] board,
         int currentX,
         int currentY,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {
@@ -124,7 +124,7 @@ public class Bishop : ChessPiece
         ref ChessPiece[,] board,
         int currentX,
         int currentY,
-        int team,
+        Team team,
         List<Vector2Int> availableMoves
     )
     {
