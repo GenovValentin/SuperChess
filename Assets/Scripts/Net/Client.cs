@@ -67,7 +67,7 @@ public class Client : MonoBehaviour
 
         Debug.Log("Dispose isActive " + isActive);
         UnRegisterToEvent();
-        connection = NetUtility.EMPTY_CONNECTION;
+        connection = default(NetworkConnection);
         driver.Dispose();
         SetActive(false);
     }
@@ -113,8 +113,12 @@ public class Client : MonoBehaviour
         DataStreamReader stream;
         NetworkEvent.Type cmd;
 
-        while (HasEvent(out cmd, out stream))
+        // while (HasEvent(out cmd, out stream))
+        while ((cmd = connection.PopEvent(driver, out stream)) !=
+            NetworkEvent.Type.Empty
+        )
         {
+            Debug.Log("Popped on client " + cmd);
             switch (cmd)
             {
                 case NetworkEvent.Type.Connect:
@@ -122,11 +126,11 @@ public class Client : MonoBehaviour
                     Debug.Log("We are connected!");
                     break;
                 case NetworkEvent.Type.Data:
-                    NetUtility.OnData(stream, NetUtility.EMPTY_CONNECTION);
+                    NetUtility.OnData(stream, default(NetworkConnection));
                     break;
                 case NetworkEvent.Type.Disconnect:
                     Debug.Log("Client got disconnected from server");
-                    connection = NetUtility.EMPTY_CONNECTION;
+                    connection = default(NetworkConnection);
                     connectionDropped?.Invoke();
                     Shutdown();
                     break;

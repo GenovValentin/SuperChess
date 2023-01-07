@@ -53,6 +53,7 @@ public static class NetUtility
 
         if (server == null)
         {
+            Debug.Log("no server");
             msg.ReceivedOnClient();
             return;
         }

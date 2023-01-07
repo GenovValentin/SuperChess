@@ -130,6 +130,7 @@ public class Server : MonoBehaviour
                 continue;
             }
 
+            Debug.Log("Removing connection " + i);
             connections.RemoveAtSwapBack (i);
             --i;
         }
@@ -139,37 +140,42 @@ public class Server : MonoBehaviour
     {
         // Accept new connections
         NetworkConnection connection;
-        while ((connection = driver.Accept()) != NetUtility.EMPTY_CONNECTION)
+        while ((connection = driver.Accept()) != default(NetworkConnection))
         {
             connections.Add (connection);
         }
     }
 
-    private NetworkEvent.Type
-    PopEvent(NetworkConnection connection, out DataStreamReader stream)
-    {
-        return driver.PopEventForConnection(connection, out stream);
-    }
-
-    private bool
-    HasEvent(
-        NetworkConnection connection,
-        out NetworkEvent.Type cmd,
-        out DataStreamReader stream
-    )
-    {
-        cmd = PopEvent(connection, out stream);
-        return cmd != NetworkEvent.Type.Empty;
-    }
-
+    // private NetworkEvent.Type
+    // PopEvent(NetworkConnection connection, out DataStreamReader stream)
+    // {
+    //     return driver.PopEventForConnection(connection, out stream);
+    // }
+    // private bool
+    // HasEvent(
+    //     NetworkConnection connection,
+    //     out NetworkEvent.Type cmd,
+    //     out DataStreamReader stream
+    // )
+    // {
+    //     cmd = PopEvent(connection, out stream);
+    //     return cmd != NetworkEvent.Type.Empty;
+    // }
     private void UpdateMessagePump()
     {
         DataStreamReader stream;
-        NetworkEvent.Type cmd;
         for (int i = 0; i < connections.Length; i++)
         {
-            while (HasEvent(connections[i], out cmd, out stream))
+            NetworkEvent.Type cmd;
+
+            // while (HasEvent(connections[i], out cmd, out stream)
+            while ((
+                cmd = driver.PopEventForConnection(connections[i], out stream)
+                ) !=
+                NetworkEvent.Type.Empty
+            )
             {
+                Debug.Log("Popped on server " + cmd);
                 if (cmd == NetworkEvent.Type.Data)
                 {
                     NetUtility.OnData(stream, connections[i], this);
@@ -179,7 +185,7 @@ public class Server : MonoBehaviour
                 if (cmd == NetworkEvent.Type.Disconnect)
                 {
                     Debug.Log("Client disconnected from server");
-                    connections[i] = NetUtility.EMPTY_CONNECTION;
+                    connections[i] = default(NetworkConnection);
                     connectionDropped?.Invoke();
                     Shutdown(); // This doesn't happen usually, it's because we're in a two person game
                 }
@@ -200,6 +206,7 @@ public class Server : MonoBehaviour
     {
         for (int i = 0; i < connections.Length; i++)
         {
+            Debug.Log("Broadcasting message ");
             if (!connections[i].IsCreated)
             {
                 continue;

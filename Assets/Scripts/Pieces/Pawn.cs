@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PawnStartLines
+public enum PawnStartLine
 {
     White = 1,
     Black = 6
@@ -111,6 +111,11 @@ public class Pawn : ChessPiece
         return SpecialMove.None;
     }
 
+    public static PawnStartLine GetPawnStartLine(bool isWhite)
+    {
+        return isWhite ? PawnStartLine.White : PawnStartLine.Black;
+    }
+
     private bool WasLastMovedPawn(int x, int y, ref ChessPiece[,] board)
     {
         ChessPiece piece = board[x, y];
@@ -151,8 +156,7 @@ public class Pawn : ChessPiece
     )
     {
         bool isWhite = team == Team.White;
-        PawnStartLines startLine =
-            isWhite ? PawnStartLines.White : PawnStartLines.Black;
+        PawnStartLine startLine = GetPawnStartLine(isWhite);
         int firstFieldY = currentY + direction;
         int secondFieldY = currentY + (direction * 2);
 
