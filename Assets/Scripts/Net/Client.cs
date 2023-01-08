@@ -32,16 +32,18 @@ public class Client : MonoBehaviour
     public void Init(string ip, ushort port)
     {
         Debug.Log("Init active " + isActive);
-        if (isActive && connection != null)
-        {
-            Debug.Log("Init " + connection.GetState(driver));
-        }
-        if (!isActive)
-        {
-            Debug.Log("Init");
-            driver = NetworkDriver.Create();
-        }
 
+        // if (isActive && connection != null)
+        // {
+        //     Debug.Log("Init " + connection.GetState(driver));
+        // }
+        // if (!isActive)
+        // {
+        //
+        //     driver = NetworkDriver.Create();
+        // }
+        Debug.Log("Init");
+        driver = NetworkDriver.Create();
         NetworkEndPoint endpoint = NetworkEndPoint.Parse(ip, port);
         connection = driver.Connect(endpoint);
         Debug.Log("Attempting to connect to Server on " + endpoint.Address);
@@ -79,14 +81,21 @@ public class Client : MonoBehaviour
 
     public void Update()
     {
-        if (!isActive)
+        try
         {
-            return;
-        }
+            if (!isActive)
+            {
+                return;
+            }
 
-        driver.ScheduleUpdate().Complete();
-        CheckAlive();
-        UpdateMessagePump();
+            driver.ScheduleUpdate().Complete();
+            CheckAlive();
+            UpdateMessagePump();
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error on update in client" + e);
+        }
     }
 
     private void CheckAlive()
@@ -113,37 +122,55 @@ public class Client : MonoBehaviour
         DataStreamReader stream;
         NetworkEvent.Type cmd;
 
-        // while (HasEvent(out cmd, out stream))
-        while ((cmd = connection.PopEvent(driver, out stream)) !=
-            NetworkEvent.Type.Empty
-        )
+        try
         {
-            Debug.Log("Popped on client " + cmd);
-            switch (cmd)
+            while (HasEvent(out cmd, out stream))
+            // while ((cmd = connection.PopEvent(driver, out stream)) !=
+            // while ((
+            //     cmd = driver.PopEventForConnection(connection, out stream)
+            //     ) !=
+            //     NetworkEvent.Type.Empty
+            // )
             {
-                case NetworkEvent.Type.Connect:
-                    SendToServer(new NetWelcome());
-                    Debug.Log("We are connected!");
-                    break;
-                case NetworkEvent.Type.Data:
-                    NetUtility.OnData(stream, default(NetworkConnection));
-                    break;
-                case NetworkEvent.Type.Disconnect:
-                    Debug.Log("Client got disconnected from server");
-                    connection = default(NetworkConnection);
-                    connectionDropped?.Invoke();
-                    Shutdown();
-                    break;
+                // Debug.Log("Popped on client " + cmd);
+                switch (cmd)
+                {
+                    case NetworkEvent.Type.Connect:
+                        SendToServer(new NetWelcome());
+                        Debug.Log("We are connected!");
+                        break;
+                    case NetworkEvent.Type.Data:
+                        // NetUtility.OnData(stream, default(NetworkConnection));
+                        NetUtility.OnData (stream, connection);
+                        break;
+                    case NetworkEvent.Type.Disconnect:
+                        Debug.Log("Client got disconnected from server");
+                        connection = default(NetworkConnection);
+                        connectionDropped?.Invoke();
+                        Shutdown();
+                        break;
+                }
             }
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Exception on sending to server" + e);
         }
     }
 
     public void SendToServer(NetMessage msg)
     {
-        DataStreamWriter writer;
-        driver.BeginSend(connection, out writer);
-        msg.Serialize(ref writer);
-        driver.EndSend (writer);
+        try
+        {
+            DataStreamWriter writer;
+            driver.BeginSend(connection, out writer);
+            msg.Serialize(ref writer);
+            driver.EndSend (writer);
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Exception on sending to server" + e);
+        }
     }
 
     // Event parsing

@@ -38,25 +38,32 @@ public class Server : MonoBehaviour
     // Methods
     public void Init(ushort port)
     {
-        Debug.Log("Server init " + isActive);
-        if (isActive)
+        try
         {
-            return;
-        }
+            Debug.Log("Server init " + isActive);
+            if (isActive)
+            {
+                return;
+            }
 
-        driver = NetworkDriver.Create();
-        NetworkEndPoint endpoint = InitMainEndPoint(port);
-        if (IsEndpointBound(endpoint))
+            driver = NetworkDriver.Create();
+            NetworkEndPoint endpoint = InitMainEndPoint(port);
+            if (IsEndpointBound(endpoint))
+            {
+                Debug.Log("Unable to bind on port " + endpoint.Port);
+                return;
+            }
+
+            driver.Listen();
+            Debug.Log("Currently listening on port " + endpoint.Port);
+
+            connections = InitConnections();
+            isActive = true;
+        }
+        catch (Exception e)
         {
-            Debug.Log("Unable to bind on port " + endpoint.Port);
-            return;
+            Debug.Log("Error on init of server" + e);
         }
-
-        driver.Listen();
-        Debug.Log("Currently listening on port " + endpoint.Port);
-
-        connections = InitConnections();
-        isActive = true;
     }
 
     public void Shutdown()
@@ -79,16 +86,23 @@ public class Server : MonoBehaviour
 
     public void Update()
     {
-        if (!isActive)
+        try
         {
-            return;
-        }
+            if (!isActive)
+            {
+                return;
+            }
 
-        KeepAlive();
-        driver.ScheduleUpdate().Complete();
-        CleanupConnections();
-        AcceptNewConnections();
-        UpdateMessagePump();
+            KeepAlive();
+            driver.ScheduleUpdate().Complete();
+            CleanupConnections();
+            AcceptNewConnections();
+            UpdateMessagePump();
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error on server update" + e);
+        }
     }
 
     private bool IsEndpointBound(NetworkEndPoint endpoint)
@@ -123,105 +137,140 @@ public class Server : MonoBehaviour
 
     private void CleanupConnections()
     {
-        for (int i = 0; i < connections.Length; i++)
+        try
         {
-            if (connections[i].IsCreated)
+            for (int i = 0; i < connections.Length; i++)
             {
-                continue;
-            }
+                if (connections[i].IsCreated)
+                {
+                    continue;
+                }
 
-            Debug.Log("Removing connection " + i);
-            connections.RemoveAtSwapBack (i);
-            --i;
+                Debug.Log("Removing connection " + i);
+                connections.RemoveAtSwapBack (i);
+                --i;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error cleaning up connections on server" + e);
         }
     }
 
     private void AcceptNewConnections()
     {
-        // Accept new connections
-        NetworkConnection connection;
-        while ((connection = driver.Accept()) != default(NetworkConnection))
+        try
         {
-            connections.Add (connection);
+            // Accept new connections
+            NetworkConnection connection;
+            while ((connection = driver.Accept()) != default(NetworkConnection))
+            {
+                connections.Add (connection);
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error accepting connections" + e);
         }
     }
 
-    // private NetworkEvent.Type
-    // PopEvent(NetworkConnection connection, out DataStreamReader stream)
-    // {
-    //     return driver.PopEventForConnection(connection, out stream);
-    // }
-    // private bool
-    // HasEvent(
-    //     NetworkConnection connection,
-    //     out NetworkEvent.Type cmd,
-    //     out DataStreamReader stream
-    // )
-    // {
-    //     cmd = PopEvent(connection, out stream);
-    //     return cmd != NetworkEvent.Type.Empty;
-    // }
+    private NetworkEvent.Type
+    PopEvent(NetworkConnection connection, out DataStreamReader stream)
+    {
+        return driver.PopEventForConnection(connection, out stream);
+    }
+
+    private bool
+    HasEvent(
+        NetworkConnection connection,
+        out NetworkEvent.Type cmd,
+        out DataStreamReader stream
+    )
+    {
+        cmd = PopEvent(connection, out stream);
+        return cmd != NetworkEvent.Type.Empty;
+    }
+
     private void UpdateMessagePump()
     {
         DataStreamReader stream;
         for (int i = 0; i < connections.Length; i++)
         {
             NetworkEvent.Type cmd;
-
-            // while (HasEvent(connections[i], out cmd, out stream)
-            while ((
-                cmd = driver.PopEventForConnection(connections[i], out stream)
-                ) !=
-                NetworkEvent.Type.Empty
-            )
+            try
             {
-                Debug.Log("Popped on server " + cmd);
-                if (cmd == NetworkEvent.Type.Data)
+                while (HasEvent(connections[i], out cmd, out stream))
+                // while ((
+                //     cmd =
+                //         driver.PopEventForConnection(connections[i], out stream)
+                //     ) !=
+                //     NetworkEvent.Type.Empty
+                // )
                 {
-                    NetUtility.OnData(stream, connections[i], this);
-                    return;
-                }
+                    // Debug.Log("Popped on server " + cmd);
+                    if (cmd == NetworkEvent.Type.Data)
+                    {
+                        NetUtility.OnData(stream, connections[i], this);
+                        return;
+                    }
 
-                if (cmd == NetworkEvent.Type.Disconnect)
-                {
-                    Debug.Log("Client disconnected from server");
-                    connections[i] = default(NetworkConnection);
-                    connectionDropped?.Invoke();
-                    Shutdown(); // This doesn't happen usually, it's because we're in a two person game
+                    if (cmd == NetworkEvent.Type.Disconnect)
+                    {
+                        Debug.Log("Client disconnected from server");
+                        connections[i] = default(NetworkConnection);
+                        connectionDropped?.Invoke();
+                        Shutdown(); // This doesn't happen usually, it's because we're in a two person game
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                Debug.Log("Error on sending to client for " + i + e);
+            }
+            // Debug.Log("no messages in server pump for connection " + i);
         }
     }
 
     // Server specific
     public void SendToClient(NetworkConnection connection, NetMessage msg)
     {
-        DataStreamWriter writer;
-        driver.BeginSend(connection, out writer);
-        msg.Serialize(ref writer);
-        driver.EndSend (writer);
+        try
+        {
+            DataStreamWriter writer;
+            driver.BeginSend(connection, out writer);
+            msg.Serialize(ref writer);
+            driver.EndSend (writer);
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error sending to client" + e);
+        }
     }
 
     public void Broadcast(NetMessage msg)
     {
         for (int i = 0; i < connections.Length; i++)
         {
-            Debug.Log("Broadcasting message ");
-            if (!connections[i].IsCreated)
+            try
             {
-                continue;
+                // Debug.Log("Broadcasting message ");
+                if (connections[i].IsCreated)
+                {
+                    if (msg.Code != OpCode.KEEP_ALIVE)
+                    {
+                        Debug
+                            .Log("Broadcasting to client" +
+                            msg.Code +
+                            " to : " +
+                            i);
+                    }
+                    SendToClient(connections[i], msg);
+                }
             }
-
-            if (msg.Code != OpCode.KEEP_ALIVE)
+            catch (Exception e)
             {
-                Debug
-                    .Log("Sending " +
-                    msg.Code +
-                    " to : " +
-                    connections[i].InternalId);
+                Debug.Log("Error broadcasting on server" + e);
             }
-
-            SendToClient(connections[i], msg);
         }
     }
 }

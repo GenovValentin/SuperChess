@@ -205,6 +205,8 @@ public class Chessboard : MonoBehaviour
             hitPosition.y);
 
             SendMoveToServer (previousPiece, hitPosition);
+
+            // SendMoveToServer (previousPiece, hitPosition);
             return;
         }
 
@@ -552,7 +554,6 @@ public class Chessboard : MonoBehaviour
 
         SendRematchToServer(Team.White);
         SendRematchToServer(Team.Black);
-        SendRematchToServer(Team.Black);
     }
 
     public void GameReset()
@@ -563,11 +564,7 @@ public class Chessboard : MonoBehaviour
         SpawnAllPieces();
         PositionAllPieces();
         SetIsWhiteTurn(true);
-        // ResetVictoryScreen();
-        // if (localGame)
-        // {
-        //     currentTeam = 0;
-        // }
+        ResetVictoryScreen();
     }
 
     private void DestroyPieces()
@@ -1261,17 +1258,24 @@ public class Chessboard : MonoBehaviour
             playerRematch[1]);
 
         // If both want to rematch
-        if (playerRematch[0] && playerRematch[1])
+        if (playerRematch[0] && playerRematch[1] || localGame)
         {
             Debug.Log("Rematch received");
-            // GameReset();
+            GameReset();
         }
     }
 
     private void ShutdownRelay()
     {
-        Client.Instance.Shutdown();
-        Server.Instance.Shutdown();
+        try
+        {
+            Client.Instance.Shutdown();
+            Server.Instance.Shutdown();
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error shutdown relay" + e);
+        }
         // UnRegisterEvents();
     }
 
