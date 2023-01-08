@@ -161,6 +161,8 @@ public class Pawn : ChessPiece
         int secondFieldY = currentY + (direction * 2);
 
         if (
+            !IsFieldOnBoard(currentX, firstFieldY) ||
+            !IsFieldOnBoard(currentX, secondFieldY) ||
             !IsFieldEmpty(currentX, firstFieldY, ref board) ||
             !IsFieldEmpty(currentX, secondFieldY, ref board) ||
             currentY != (int) startLine
@@ -181,7 +183,10 @@ public class Pawn : ChessPiece
     )
     {
         int firstFieldY = currentY + direction;
-        if (!IsFieldEmpty(currentX, firstFieldY, ref board))
+        if (
+            !IsFieldOnBoard(currentX, firstFieldY) ||
+            !IsFieldEmpty(currentX, firstFieldY, ref board)
+        )
         {
             return;
         }
@@ -209,6 +214,11 @@ public class Pawn : ChessPiece
 
         int newX = currentX + directionToTake;
         int newY = currentY + direction;
+        if (!IsFieldOnBoard(newX, newY))
+        {
+            return;
+        }
+
         ChessPiece piece = board[newX, newY];
         if (IsFieldEmpty(newX, newY, ref board) || piece.team == team)
         {

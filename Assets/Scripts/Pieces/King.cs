@@ -19,6 +19,12 @@ public enum EndFileKing
     KingSide = 6
 }
 
+public enum EndFileRook
+{
+    QueenSide = 3,
+    KingSide = 5
+}
+
 public class King : ChessPiece
 {
     public const int StartFileKing = 4;
@@ -140,14 +146,19 @@ public class King : ChessPiece
         return moveWithRook != null;
     }
 
-    private StartRank GetStartRankKing(Team teamToCheck)
+    public static StartRank GetStartRankKing(Team teamToCheck)
     {
         return teamToCheck == Team.White ? StartRank.White : StartRank.Black;
     }
 
-    private StartFileRook GetStartFileRook(bool isQueenSide)
+    public static StartFileRook GetStartFileRook(bool isQueenSide)
     {
         return isQueenSide ? StartFileRook.QueenSide : StartFileRook.KingSide;
+    }
+
+    public static EndFileRook GetEndFileRook(bool isQueenSide)
+    {
+        return isQueenSide ? EndFileRook.QueenSide : EndFileRook.KingSide;
     }
 
     private bool
@@ -216,7 +227,7 @@ public class King : ChessPiece
                 (int) GetStartRankKing(currentTeam)));
     }
 
-    private EndFileKing GetEndFileKing(bool isQueenSide)
+    public static EndFileKing GetEndFileKing(bool isQueenSide)
     {
         return isQueenSide ? EndFileKing.QueenSide : EndFileKing.KingSide;
     }

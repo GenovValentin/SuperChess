@@ -140,7 +140,6 @@ public class Client : MonoBehaviour
                         Debug.Log("We are connected!");
                         break;
                     case NetworkEvent.Type.Data:
-                        // NetUtility.OnData(stream, default(NetworkConnection));
                         NetUtility.OnData (stream, connection);
                         break;
                     case NetworkEvent.Type.Disconnect:
