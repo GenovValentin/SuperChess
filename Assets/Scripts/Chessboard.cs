@@ -1087,16 +1087,21 @@ public class Chessboard : MonoBehaviour
         // Is there a piece on the target position?
         if (piece != null)
         {
-            if (
-                originalPiece.team == piece.team ||
-                piece.type != ChessPieceType.King
-            )
+            if (originalPiece.team == piece.team)
             {
                 return;
             }
 
-            CheckMate(GetOppositeTeam(piece.team));
-            return;
+            if (piece.type == ChessPieceType.King)
+            {
+                CheckMate(GetOppositeTeam(piece.team));
+                return;
+            }
+
+            List<ChessPiece> deads = GetDeads(piece.team);
+            deads.Add (piece);
+            piece.SetScale(Vector3.one * deathSize);
+            piece.SetPosition(GetDeadPiecePosition(piece.team));
         }
 
         chessPieces[x, y] = originalPiece;

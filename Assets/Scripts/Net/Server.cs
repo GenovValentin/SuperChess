@@ -200,14 +200,7 @@ public class Server : MonoBehaviour
             try
             {
                 while (HasEvent(connections[i], out cmd, out stream))
-                // while ((
-                //     cmd =
-                //         driver.PopEventForConnection(connections[i], out stream)
-                //     ) !=
-                //     NetworkEvent.Type.Empty
-                // )
                 {
-                    // Debug.Log("Popped on server " + cmd);
                     if (cmd == NetworkEvent.Type.Data)
                     {
                         NetUtility.OnData(stream, connections[i], this);
@@ -227,7 +220,6 @@ public class Server : MonoBehaviour
             {
                 Debug.Log("Error on sending to client for " + i + e);
             }
-            // Debug.Log("no messages in server pump for connection " + i);
         }
     }
 
