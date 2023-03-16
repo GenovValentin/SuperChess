@@ -52,6 +52,8 @@ public class King : ChessPiece
         ref List<Vector2Int> availableMoves
     )
     {
+        Debug.Log("Get special moves");
+
         bool wasKingMoved = WasKingMoved(ref moveList);
         bool wasQueenSideRookMoved = WasRookMoved(ref moveList, true);
         bool wasKingSideRookMoved = WasRookMoved(ref moveList, false);
@@ -61,6 +63,7 @@ public class King : ChessPiece
             return SpecialMove.None;
         }
 
+        bool isCastling = false;
         if (
             IsCorrectRookOnStartSquare(wasQueenSideRookMoved,
             true,
@@ -70,7 +73,7 @@ public class King : ChessPiece
         )
         {
             AddCastlingMove(true, Team.White, availableMoves);
-            return SpecialMove.Castling;
+            isCastling = true;
         }
 
         if (
@@ -82,7 +85,7 @@ public class King : ChessPiece
         )
         {
             AddCastlingMove(false, Team.White, availableMoves);
-            return SpecialMove.Castling;
+            isCastling = true;
         }
 
         if (
@@ -94,7 +97,7 @@ public class King : ChessPiece
         )
         {
             AddCastlingMove(true, Team.Black, availableMoves);
-            return SpecialMove.Castling;
+            isCastling = true;
         }
 
         if (
@@ -106,6 +109,11 @@ public class King : ChessPiece
         )
         {
             AddCastlingMove(false, Team.Black, availableMoves);
+            isCastling = true;
+        }
+
+        if (isCastling)
+        {
             return SpecialMove.Castling;
         }
 
@@ -222,6 +230,7 @@ public class King : ChessPiece
         List<Vector2Int> availableMoves
     )
     {
+        Debug.Log("Adding castling move " + isQueenSide);
         availableMoves
             .Add(new Vector2Int((int) GetEndFileKing(isQueenSide),
                 (int) GetStartRankKing(currentTeam)));

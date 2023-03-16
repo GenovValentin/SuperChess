@@ -220,7 +220,6 @@ public class Chessboard : MonoBehaviour
 
             SendMoveToServer (previousPiece, hitPosition);
 
-            // SendMoveToServer (previousPiece, hitPosition);
             return;
         }
 
@@ -846,46 +845,109 @@ public class Chessboard : MonoBehaviour
         // Going through all the moves, simulate them and check if we're in check
         for (int i = 0; i < moves.Count; i++)
         {
-            int simX = moves[i].x;
-            int simY = moves[i].y;
+            Vector2Int move = moves[i];
 
-            Vector2Int kingPositionThisSim = CloneChessPiece(targetKing);
+            SimulateMove(chessPiece, move, targetKing, ref movesToRemove, null);
 
-            // Did we simulate the king's move
-            if (chessPiece.type == ChessPieceType.King)
+            List<Vector2Int> additionalMovesForCastling =
+                GetAdditionalMovesForCastling(move, targetKing);
+
+            foreach (var additionalMove in additionalMovesForCastling)
             {
-                kingPositionThisSim = CreatePosition(simX, simY);
+                SimulateMove(chessPiece,
+                move,
+                targetKing,
+                ref movesToRemove,
+                additionalMove);
             }
-
-            // Copy the [,] and not a reference
-            ChessPiece[,] simulation =
-                new ChessPiece[TILE_COUNT_X, TILE_COUNT_Y];
-            List<ChessPiece> simAttackingPieces =
-                CreateSimAttackingPieces(simulation, chessPiece.team);
-
-            // Simulate that move
-            simulation[actualX, actualY] = null;
-            chessPiece.currentX = simX;
-            chessPiece.currentY = simY;
-            simulation[simX, simY] = chessPiece;
-
-            RemoveSimDeadPiece (simAttackingPieces, simX, simY);
-
-            List<Vector2Int> simMoves =
-                GetSimAttackingMoves(simAttackingPieces, simulation);
-
-            // Is the king in trouble and if so, remove the move
-            if (ContainsValidMove(ref simMoves, kingPositionThisSim))
-            {
-                movesToRemove.Add(moves[i]);
-            }
-
-            // Restore the actual cp data
-            chessPiece.currentX = actualX;
-            chessPiece.currentY = actualY;
         }
 
         RemoveMoves (moves, movesToRemove);
+    }
+
+    private List<Vector2Int>
+    GetAdditionalMovesForCastling(Vector2Int move, ChessPiece targetKing)
+    {
+        List<Vector2Int> additionalMoves = new List<Vector2Int>();
+        if (specialMove != SpecialMove.Castling)
+        {
+            return additionalMoves;
+        }
+
+        if (move.x == targetKing.currentX - 2)
+        {
+            additionalMoves
+                .Add(new Vector2Int(targetKing.currentX - 1,
+                    targetKing.currentY));
+            additionalMoves
+                .Add(new Vector2Int(targetKing.currentX, targetKing.currentY));
+        }
+
+        if (move.x == targetKing.currentX + 2)
+        {
+            additionalMoves
+                .Add(new Vector2Int(targetKing.currentX + 1,
+                    targetKing.currentY));
+            additionalMoves
+                .Add(new Vector2Int(targetKing.currentX, targetKing.currentY));
+        }
+
+        return additionalMoves;
+    }
+
+    private void SimulateMove(
+        ChessPiece chessPiece,
+        Vector2Int move,
+        ChessPiece targetKing,
+        ref List<Vector2Int> movesToRemove,
+        Nullable<Vector2Int> additionalMove
+    )
+    {
+        int actualX = chessPiece.currentX;
+        int actualY = chessPiece.currentY;
+
+        int simX = move.x;
+        int simY = move.y;
+        if (additionalMove.HasValue)
+        {
+            simX = additionalMove.Value.x;
+            simY = additionalMove.Value.y;
+        }
+
+        Vector2Int kingPositionThisSim = CloneChessPiece(targetKing);
+
+        // Did we simulate the king's move
+        if (chessPiece.type == ChessPieceType.King)
+        {
+            kingPositionThisSim = CreatePosition(simX, simY);
+        }
+
+        // Copy the [,] and not a reference
+        ChessPiece[,] simulation = new ChessPiece[TILE_COUNT_X, TILE_COUNT_Y];
+        List<ChessPiece> simAttackingPieces =
+            CreateSimAttackingPieces(simulation, chessPiece.team);
+
+        // Simulate that move
+        simulation[actualX, actualY] = null;
+        chessPiece.currentX = simX;
+        chessPiece.currentY = simY;
+        simulation[simX, simY] = chessPiece;
+
+        RemoveSimDeadPiece (simAttackingPieces, simX, simY);
+
+        List<Vector2Int> simMoves =
+            GetSimAttackingMoves(simAttackingPieces, simulation);
+
+        // Is the king in trouble and if so, remove the move
+        if (ContainsValidMove(ref simMoves, kingPositionThisSim))
+        {
+            movesToRemove.Add (move);
+            Debug.Log("Move to be removed " + move.x + " " + move.y);
+        }
+
+        // Restore the actual cp data
+        chessPiece.currentX = actualX;
+        chessPiece.currentY = actualY;
     }
 
     private void RemoveMoves(
