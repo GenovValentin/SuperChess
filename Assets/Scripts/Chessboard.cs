@@ -88,6 +88,8 @@ public class Chessboard : MonoBehaviour
 
     private bool localGame = true;
 
+    private bool isReachable = true;
+
     private bool[] playerRematch = new bool[2];
 
     GameObject oppWantsRematchObj;
@@ -200,11 +202,21 @@ public class Chessboard : MonoBehaviour
 
     private bool IsMouseOverTile(Ray ray, out RaycastHit info)
     {
+        if (isReachable)
+        {
+            return Physics
+                .Raycast(ray,
+                out info,
+                100,
+                LayerMask.GetMask("Tile", "Hover", "Highlight"));
+        }
         return Physics
-            .Raycast(ray,
-            out info,
-            100,
-            LayerMask.GetMask("Tile", "Hover", "Highlight"));
+            .Raycast(ray, out info, 100, LayerMask.GetMask("invalid"));
+    }
+
+    private bool IsMouseOverModal(Ray ray, out RaycastHit info)
+    {
+        return Physics.Raycast(ray, out info, 100, LayerMask.GetMask("Modal"));
     }
 
     private void HandleMouseButtonUp(Vector2Int hitPosition)
@@ -393,6 +405,11 @@ public class Chessboard : MonoBehaviour
         return LayerMask.NameToLayer(layerName);
     }
 
+    private void SetLayerVictoryScreen(string layerName)
+    {
+        victoryScreen.layer = GetLayer(layerName);
+    }
+
     private void GenerateAllTiles(
         float tileSize,
         int tileCountX,
@@ -573,6 +590,8 @@ public class Chessboard : MonoBehaviour
             .GetChild((int) winningTeam)
             .gameObject
             .SetActive(true);
+        SetLayerVictoryScreen("Modal");
+        isReachable = false;
     }
 
     public void OnRematchButton()
@@ -589,6 +608,10 @@ public class Chessboard : MonoBehaviour
 
     public void GameReset()
     {
+        if (!localGame)
+        {
+            ChangeTeam();
+        }
         ResetFields();
         DestroyPieces();
 
@@ -1341,13 +1364,29 @@ public class Chessboard : MonoBehaviour
 
     private void OnStartGameClient(NetMessage msg)
     {
-        Debug.Log("ChangeCamera " + currentTeam);
         GameUI
             .Instance
             .ChangeCamera((currentTeam == Team.White)
                 ? CameraAngle.whiteTeam
                 : CameraAngle.blackTeam);
         ResetVictoryScreen();
+    }
+
+    private void ChangeTeam()
+    {
+        GameUI
+            .Instance
+            .ChangeCamera((currentTeam == Team.White)
+                ? CameraAngle.blackTeam
+                : CameraAngle.whiteTeam);
+        if (currentTeam == Team.White)
+        {
+            currentTeam = Team.Black;
+        }
+        else
+        {
+            currentTeam = Team.White;
+        }
     }
 
     private void OnMakeMoveClient(NetMessage msg)
@@ -1387,6 +1426,8 @@ public class Chessboard : MonoBehaviour
         victoryScreen.SetActive(false);
         victoryScreen.transform.GetChild(0).gameObject.SetActive(false);
         victoryScreen.transform.GetChild(1).gameObject.SetActive(false);
+        SetLayerVictoryScreen("Default");
+        isReachable = true;
 
         ResetRematchIndicator();
     }

@@ -331,7 +331,7 @@ GameObject:
   - component: {fileID: 47959763}
   - component: {fileID: 47959765}
   - component: {fileID: 47959764}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -635,7 +635,7 @@ GameObject:
   - component: {fileID: 90945064}
   - component: {fileID: 90945066}
   - component: {fileID: 90945065}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: BlackVictory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -770,7 +770,7 @@ GameObject:
   - component: {fileID: 98806764}
   - component: {fileID: 98806763}
   - component: {fileID: 98806762}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Rematch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -818,9 +818,9 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_NormalColor: {r: 0, g: 1, b: 0, a: 1}
+    m_HighlightedColor: {r: 0.08235294, g: 0.83137256, b: 0.08235294, a: 1}
+    m_PressedColor: {r: 0.099368125, g: 0.7264151, b: 0.099368125, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -3235,7 +3235,7 @@ GameObject:
   - component: {fileID: 317012297}
   - component: {fileID: 317012299}
   - component: {fileID: 317012298}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3465,7 +3465,7 @@ GameObject:
   - component: {fileID: 358417211}
   - component: {fileID: 358417210}
   - component: {fileID: 358417209}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3514,8 +3514,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0.8962264, g: 0.063412234, b: 0.063412234, a: 1}
+    m_PressedColor: {r: 0.7735849, g: 0.08392668, b: 0.08392668, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -4053,7 +4053,9 @@ GameObject:
   - component: {fileID: 476491474}
   - component: {fileID: 476491473}
   - component: {fileID: 476491475}
-  m_Layer: 6
+  - component: {fileID: 476491477}
+  - component: {fileID: 476491476}
+  m_Layer: 0
   m_Name: VictoryScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4145,6 +4147,44 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
   m_ReverseArrangement: 0
+--- !u!114 &476491476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476491471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 0
+  m_BlockingObjects: 3
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!223 &476491477
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476491471}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!1 &500334866
 GameObject:
   m_ObjectHideFlags: 0
@@ -7267,7 +7307,7 @@ GameObject:
   - component: {fileID: 820334458}
   - component: {fileID: 820334460}
   - component: {fileID: 820334459}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9133,7 +9173,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1104354384}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: RematchIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9342,7 +9382,7 @@ GameObject:
   - component: {fileID: 1113003322}
   - component: {fileID: 1113003324}
   - component: {fileID: 1113003323}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: WhiteVictory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13920,7 +13960,7 @@ GameObject:
   - component: {fileID: 1591766117}
   - component: {fileID: 1591766119}
   - component: {fileID: 1591766118}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Accepted
   m_TagString: Untagged
   m_Icon: {fileID: 0}
