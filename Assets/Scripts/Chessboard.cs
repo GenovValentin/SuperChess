@@ -271,6 +271,7 @@ public class Chessboard : MonoBehaviour
     private void HandleMouseButtonDown(Vector2Int hitPosition)
     {
         ChessPiece piece = GetChessPiece(hitPosition);
+        Debug.Log("OnDown " + isWhiteTurn);
         if (
             piece == null ||
             (
@@ -279,6 +280,7 @@ public class Chessboard : MonoBehaviour
             )
         )
         {
+            Debug.Log("Nobody's Turn ");
             return;
         }
 
@@ -318,6 +320,13 @@ public class Chessboard : MonoBehaviour
     {
         bool isMyTurn = team == Team.White ? isWhiteTurn : !isWhiteTurn;
 
+        Debug
+            .Log("IsMyTurn " +
+            isMyTurn +
+            " " +
+            GetChessPiece(hitPosition).team +
+            " currentTeam " +
+            currentTeam);
         return GetChessPiece(hitPosition).team == team &&
         isMyTurn &&
         currentTeam == team;
@@ -583,10 +592,19 @@ public class Chessboard : MonoBehaviour
         ResetFields();
         DestroyPieces();
 
+        SetLocalGameCurrentTeam(Team.White);
         SpawnAllPieces();
         PositionAllPieces();
         SetIsWhiteTurn(true);
         ResetVictoryScreen();
+    }
+
+    private void SetLocalGameCurrentTeam(Team team)
+    {
+        if (localGame)
+        {
+            currentTeam = team;
+        }
     }
 
     private void DestroyPieces()
@@ -1323,6 +1341,7 @@ public class Chessboard : MonoBehaviour
 
     private void OnStartGameClient(NetMessage msg)
     {
+        Debug.Log("ChangeCamera " + currentTeam);
         GameUI
             .Instance
             .ChangeCamera((currentTeam == Team.White)
