@@ -1374,19 +1374,12 @@ public class Chessboard : MonoBehaviour
 
     private void ChangeTeam()
     {
+        currentTeam = GetOppositeTeam(currentTeam);
         GameUI
             .Instance
             .ChangeCamera((currentTeam == Team.White)
                 ? CameraAngle.blackTeam
                 : CameraAngle.whiteTeam);
-        if (currentTeam == Team.White)
-        {
-            currentTeam = Team.Black;
-        }
-        else
-        {
-            currentTeam = Team.White;
-        }
     }
 
     private void OnMakeMoveClient(NetMessage msg)
