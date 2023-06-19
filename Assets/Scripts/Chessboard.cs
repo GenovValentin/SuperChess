@@ -42,10 +42,19 @@ public class Chessboard : MonoBehaviour
     private GameObject victoryScreen;
 
     [SerializeField]
+    private GameObject inGame;
+
+    [SerializeField]
     private Transform rematchIndicator;
 
     [SerializeField]
     private Button rematchButton;
+
+    [SerializeField]
+    private Button resignButton;
+
+    [SerializeField]
+    private Button drawButton;
 
     [Header("Prefabs & Materials")]
     [SerializeField]
@@ -594,6 +603,11 @@ public class Chessboard : MonoBehaviour
         isReachable = false;
     }
 
+    public void DisplayInGame()
+    {
+        inGame.SetActive(true);
+    }
+
     public void OnRematchButton()
     {
         if (!localGame)
@@ -671,6 +685,7 @@ public class Chessboard : MonoBehaviour
 
         GameReset();
         ResetVictoryScreen();
+        ResetInGame();
         GameUI.Instance.OnLeaveGameMenu();
 
         Invoke("ShutdownRelay", 1.0f);
@@ -678,6 +693,17 @@ public class Chessboard : MonoBehaviour
         // Reset some values
         playerCount = -1;
         currentTeam = Team.None;
+    }
+
+    public void OnResignButton()
+    {
+        currentTeam = (GetOppositeTeam(currentTeam));
+        CheckMate (currentTeam);
+        ResetInGame();
+    }
+
+    public void OnDrawButton()
+    {
     }
 
     // Special moves
@@ -1370,6 +1396,7 @@ public class Chessboard : MonoBehaviour
                 ? CameraAngle.whiteTeam
                 : CameraAngle.blackTeam);
         ResetVictoryScreen();
+        DisplayInGame();
     }
 
     private void ChangeTeam()
@@ -1423,6 +1450,11 @@ public class Chessboard : MonoBehaviour
         isReachable = true;
 
         ResetRematchIndicator();
+    }
+
+    public void ResetInGame()
+    {
+        inGame.SetActive(false);
     }
 
     private void ActivateRematchIndicatorChildren(bool oppWantsRematch)

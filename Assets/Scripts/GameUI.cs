@@ -105,7 +105,6 @@ public class GameUI : MonoBehaviour
 
 #region
 
-
     private void RegisterEvents()
     {
         NetUtility.C_START_GAME += OnStartGameClient;
