@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Networking.Transport;
@@ -62,9 +61,6 @@ public class Chessboard : MonoBehaviour
 
     [SerializeField]
     private Button blackButton;
-
-    [SerializeField]
-    private Button exitButton;
 
     [Header("Prefabs & Materials")]
     [SerializeField]
@@ -653,12 +649,6 @@ public class Chessboard : MonoBehaviour
         GameUI.Instance.ChangeCamera(CameraAngle.blackTeam);
     }
 
-    public void OnExitBtton()
-    {
-        ShutdownRelay();
-        Application.Quit();
-    }
-
     public void GameReset()
     {
         Debug.Log("GameReset " + currentTeam);
@@ -730,12 +720,11 @@ public class Chessboard : MonoBehaviour
         ResetInGame();
         GameUI.Instance.OnLeaveGameMenu();
 
-        Invoke("ShutdownRelay", 1.0f);
-
+        // Invoke("ShutdownRelay", 1.0f);
         // MethodInfo method = typeof (Chessboard).GetMethod("ShutdownRelay");
         // method.Invoke(null, null);
-        // Thread.Sleep(100);
-        // ShutdownRelay();
+        ShutdownRelay();
+
         // Reset some values
         playerCount = -1;
         currentTeam = Team.None;
@@ -1554,8 +1543,6 @@ public class Chessboard : MonoBehaviour
 
     private void OnRematchClient(NetMessage msg)
     {
-        Debug.Log("OnRematchClient");
-
         // Receive the connection message
         NetRematch rm = msg as NetRematch;
         bool oppWantsRematch = rm.wantRematch == 1;
@@ -1609,7 +1596,7 @@ public class Chessboard : MonoBehaviour
         CheckMate (winning);
     }
 
-    public void ShutdownRelay()
+    public static void ShutdownRelay()
     {
         Debug.Log("Shutdown");
         try

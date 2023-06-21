@@ -63,9 +63,6 @@ public class Chessboard : MonoBehaviour
     [SerializeField]
     private Button blackButton;
 
-    [SerializeField]
-    private Button exitButton;
-
     [Header("Prefabs & Materials")]
     [SerializeField]
     private GameObject[] prefabs;
@@ -651,12 +648,6 @@ public class Chessboard : MonoBehaviour
     public void OnBlackButton()
     {
         GameUI.Instance.ChangeCamera(CameraAngle.blackTeam);
-    }
-
-    public void OnExitBtton()
-    {
-        ShutdownRelay();
-        Application.Quit();
     }
 
     public void GameReset()

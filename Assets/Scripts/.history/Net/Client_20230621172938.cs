@@ -37,10 +37,10 @@ public class Client : MonoBehaviour
         // {
         //     Debug.Log("Init " + connection.GetState(driver));
         // }
-        // if (!isActive)
-        // {
-        //     driver = NetworkDriver.Create();
-        // }
+        if (!isActive)
+        {
+            driver = NetworkDriver.Create();
+        }
         Debug.Log("Init");
         driver = NetworkDriver.Create();
         NetworkEndPoint endpoint = NetworkEndPoint.Parse(ip, port);

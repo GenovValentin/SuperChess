@@ -23,7 +23,6 @@ public class GameUI : MonoBehaviour
 
     public Client client;
 
-    // private Chessboard chessboardInstance;
     [SerializeField]
     private Animator menuAnimatior;
 
@@ -104,14 +103,12 @@ public class GameUI : MonoBehaviour
         menuAnimatior.SetTrigger("StartMenu");
     }
 
-    // public void OnExitBtton()
-    // {
-    //     // Chessboard myBoard = new Chessboard();
-    //     // myBoard.ShutdownRelay();
-    //     chessboardInstance = GetComponent<Chessboard>();
-    //     chessboardInstance.ShutdownRelay();
-    //     Application.Quit();
-    // }
+    public void OnExitBtton()
+    {
+        Application.Quit();
+        Invoke("Shutdown", 1.0f);
+    }
+
 
 #region
 

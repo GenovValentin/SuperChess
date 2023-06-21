@@ -653,12 +653,6 @@ public class Chessboard : MonoBehaviour
         GameUI.Instance.ChangeCamera(CameraAngle.blackTeam);
     }
 
-    public void OnExitBtton()
-    {
-        ShutdownRelay();
-        Application.Quit();
-    }
-
     public void GameReset()
     {
         Debug.Log("GameReset " + currentTeam);
