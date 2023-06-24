@@ -1781,7 +1781,6 @@ public class Chessboard : MonoBehaviour
         }
         HideDeclined();
         HideOfferDraw();
-        ResetDrawIndicator();
         CheckMate (winning);
     }
 

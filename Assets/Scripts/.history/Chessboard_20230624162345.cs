@@ -166,10 +166,7 @@ public class Chessboard : MonoBehaviour
         SetDrawObject();
         RegisterEvents();
         ResetInGame();
-        ResetVictoryScreen();
         ResetDrawIndicator();
-        declinedTMP.SetActive(false);
-        offeredDraw.SetActive(false);
     }
 
     private void SetRematchObjects()
@@ -223,6 +220,10 @@ public class Chessboard : MonoBehaviour
         if (Input.GetKey(KeyCode.B))
         {
             OnBlackButton();
+        }
+
+        if (IsMyTurn())
+        {
         }
     }
 
@@ -432,8 +433,7 @@ public class Chessboard : MonoBehaviour
 
     private bool IsMyTurn()
     {
-        Debug.Log("MyTeam " + myTeam + " " + isWhiteTurn);
-        return myTeam == Team.White ? isWhiteTurn : !isWhiteTurn;
+        return currentTeam == Team.White ? isWhiteTurn : !isWhiteTurn;
     }
 
     private void HandleHovering(Vector2Int hitPosition)
@@ -703,7 +703,6 @@ public class Chessboard : MonoBehaviour
         {
             Debug.Log("RematchButton");
             SendRematchToServer (currentTeam);
-            rematchButton.interactable = false;
             return;
         }
 
@@ -750,10 +749,8 @@ public class Chessboard : MonoBehaviour
         if (!localGame)
         {
             Debug.Log("!localGame " + currentTeam);
-            drawButton.interactable = !IsMyTurn();
             ChangeTeam();
         }
-
         ResetFields();
         DestroyPieces();
 
@@ -763,7 +760,6 @@ public class Chessboard : MonoBehaviour
         SetIsWhiteTurn(true);
         ResetVictoryScreen();
         ResetPlayerDraw();
-        ActivateButtons(true, true);
         Debug.Log("EndGameReset " + currentTeam);
     }
 
@@ -825,14 +821,12 @@ public class Chessboard : MonoBehaviour
         ResetInGame();
         GameUI.Instance.OnLeaveGameMenu();
 
-        Debug.Log("ShuttingDown");
-        Invoke("ShutdownRelay", 0.5f);
+        Invoke("ShutdownRelay", 1.0f);
 
         // Reset some values
         playerCount = -1;
         currentTeam = Team.None;
         myTeam = Team.None;
-        drawButton.interactable = true;
     }
 
     public void OnResignButton()
@@ -854,7 +848,6 @@ public class Chessboard : MonoBehaviour
         {
             SendDrawToServer (currentTeam);
             drawButton.interactable = false;
-            HideDeclined();
             ShowOfferDraw();
             Invoke("HideOfferDraw", 3.0f);
             return;
@@ -1424,11 +1417,6 @@ public class Chessboard : MonoBehaviour
             CheckMate(originalPiece.team);
         }
 
-        if (!localGame)
-        {
-            drawButton.interactable = !IsMyTurn();
-        }
-
         return;
     }
 
@@ -1597,10 +1585,6 @@ public class Chessboard : MonoBehaviour
     {
         ChangeCameraAngles (currentTeam);
         ResetVictoryScreen();
-        if (!localGame)
-        {
-            drawButton.interactable = !IsMyTurn();
-        }
         Invoke("DisplayInGame", 2);
     }
 
@@ -1716,12 +1700,9 @@ public class Chessboard : MonoBehaviour
         isReachable = false;
     }
 
-    private void ActivateButtons(
-        bool buttonsActive,
-        bool drawButtonActive = false
-    )
+    private void ActivateButtons(bool buttonsActive)
     {
-        drawButton.interactable = drawButtonActive;
+        drawButton.interactable = buttonsActive;
         resignButton.interactable = buttonsActive;
         whiteButton.interactable = buttonsActive;
         blackButton.interactable = buttonsActive;
@@ -1761,11 +1742,6 @@ public class Chessboard : MonoBehaviour
             Debug.Log("Rematch received");
             GameReset();
             DisplayInGame();
-            if (!localGame)
-            {
-                myTeam = GetOppositeTeam(myTeam);
-                drawButton.interactable = !IsMyTurn();
-            }
         }
     }
 
@@ -1779,9 +1755,6 @@ public class Chessboard : MonoBehaviour
         {
             winning = GetOppositeTeam(winning);
         }
-        HideDeclined();
-        HideOfferDraw();
-        ResetDrawIndicator();
         CheckMate (winning);
     }
 
@@ -1819,9 +1792,7 @@ public class Chessboard : MonoBehaviour
             Invoke("HideDeclined", 3.0f);
         }
         HideOfferDraw();
-
-        drawButton.interactable = !IsMyTurn();
-
+        drawButton.interactable = true;
         ResetPlayerDraw();
     }
 
@@ -1854,7 +1825,6 @@ public class Chessboard : MonoBehaviour
     {
         playerCount = -1;
         currentTeam = Team.None;
-        myTeam = Team.None;
         localGame = v;
     }
 

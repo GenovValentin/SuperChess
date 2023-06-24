@@ -754,6 +754,11 @@ public class Chessboard : MonoBehaviour
             ChangeTeam();
         }
 
+        if (localGame)
+        {
+            drawButton.interactable = true;
+        }
+
         ResetFields();
         DestroyPieces();
 
@@ -763,7 +768,7 @@ public class Chessboard : MonoBehaviour
         SetIsWhiteTurn(true);
         ResetVictoryScreen();
         ResetPlayerDraw();
-        ActivateButtons(true, true);
+        ActivateButtons(true);
         Debug.Log("EndGameReset " + currentTeam);
     }
 
@@ -854,7 +859,6 @@ public class Chessboard : MonoBehaviour
         {
             SendDrawToServer (currentTeam);
             drawButton.interactable = false;
-            HideDeclined();
             ShowOfferDraw();
             Invoke("HideOfferDraw", 3.0f);
             return;
@@ -1716,12 +1720,9 @@ public class Chessboard : MonoBehaviour
         isReachable = false;
     }
 
-    private void ActivateButtons(
-        bool buttonsActive,
-        bool drawButtonActive = false
-    )
+    private void ActivateButtons(bool buttonsActive)
     {
-        drawButton.interactable = drawButtonActive;
+        drawButton.interactable = false;
         resignButton.interactable = buttonsActive;
         whiteButton.interactable = buttonsActive;
         blackButton.interactable = buttonsActive;
@@ -1781,7 +1782,6 @@ public class Chessboard : MonoBehaviour
         }
         HideDeclined();
         HideOfferDraw();
-        ResetDrawIndicator();
         CheckMate (winning);
     }
 

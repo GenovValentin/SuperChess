@@ -754,6 +754,15 @@ public class Chessboard : MonoBehaviour
             ChangeTeam();
         }
 
+        if (localGame)
+        {
+            drawButton.interactable = true;
+        }
+
+        // else
+        // {
+        //     drawButton.interactable = true;
+        // }
         ResetFields();
         DestroyPieces();
 
@@ -763,7 +772,6 @@ public class Chessboard : MonoBehaviour
         SetIsWhiteTurn(true);
         ResetVictoryScreen();
         ResetPlayerDraw();
-        ActivateButtons(true, true);
         Debug.Log("EndGameReset " + currentTeam);
     }
 
@@ -825,14 +833,12 @@ public class Chessboard : MonoBehaviour
         ResetInGame();
         GameUI.Instance.OnLeaveGameMenu();
 
-        Debug.Log("ShuttingDown");
-        Invoke("ShutdownRelay", 0.5f);
+        Invoke("ShutdownRelay", 1.0f);
 
         // Reset some values
         playerCount = -1;
         currentTeam = Team.None;
         myTeam = Team.None;
-        drawButton.interactable = true;
     }
 
     public void OnResignButton()
@@ -854,7 +860,6 @@ public class Chessboard : MonoBehaviour
         {
             SendDrawToServer (currentTeam);
             drawButton.interactable = false;
-            HideDeclined();
             ShowOfferDraw();
             Invoke("HideOfferDraw", 3.0f);
             return;
@@ -1716,12 +1721,9 @@ public class Chessboard : MonoBehaviour
         isReachable = false;
     }
 
-    private void ActivateButtons(
-        bool buttonsActive,
-        bool drawButtonActive = false
-    )
+    private void ActivateButtons(bool buttonsActive)
     {
-        drawButton.interactable = drawButtonActive;
+        drawButton.interactable = false;
         resignButton.interactable = buttonsActive;
         whiteButton.interactable = buttonsActive;
         blackButton.interactable = buttonsActive;
@@ -1761,11 +1763,8 @@ public class Chessboard : MonoBehaviour
             Debug.Log("Rematch received");
             GameReset();
             DisplayInGame();
-            if (!localGame)
-            {
-                myTeam = GetOppositeTeam(myTeam);
-                drawButton.interactable = !IsMyTurn();
-            }
+            myTeam = GetOppositeTeam(myTeam);
+            drawButton.interactable = !IsMyTurn();
         }
     }
 
@@ -1779,9 +1778,6 @@ public class Chessboard : MonoBehaviour
         {
             winning = GetOppositeTeam(winning);
         }
-        HideDeclined();
-        HideOfferDraw();
-        ResetDrawIndicator();
         CheckMate (winning);
     }
 

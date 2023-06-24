@@ -854,7 +854,6 @@ public class Chessboard : MonoBehaviour
         {
             SendDrawToServer (currentTeam);
             drawButton.interactable = false;
-            HideDeclined();
             ShowOfferDraw();
             Invoke("HideOfferDraw", 3.0f);
             return;
@@ -1781,7 +1780,6 @@ public class Chessboard : MonoBehaviour
         }
         HideDeclined();
         HideOfferDraw();
-        ResetDrawIndicator();
         CheckMate (winning);
     }
 
