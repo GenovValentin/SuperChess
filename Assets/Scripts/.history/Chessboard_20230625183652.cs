@@ -113,8 +113,6 @@ public class Chessboard : MonoBehaviour
 
     public bool isWhiteTurn;
 
-    public bool setInGameButtons = false;
-
     private SpecialMove specialMove;
 
     // Multiplayer logic
@@ -217,17 +215,14 @@ public class Chessboard : MonoBehaviour
             LiftPiece (ray);
         }
 
-        if (setInGameButtons == true)
+        if (Input.GetKey(KeyCode.W))
         {
-            if (Input.GetKey(KeyCode.W))
-            {
-                OnWhiteButton();
-            }
+            OnWhiteButton();
+        }
 
-            if (Input.GetKey(KeyCode.B))
-            {
-                OnBlackButton();
-            }
+        if (Input.GetKey(KeyCode.B))
+        {
+            OnBlackButton();
         }
     }
 
@@ -715,7 +710,6 @@ public class Chessboard : MonoBehaviour
         SendRematchToServer(Team.White);
         SendRematchToServer(Team.Black);
         GameUI.Instance.ChangeCamera(CameraAngle.whiteTeam);
-        AreInGameButtonsActive(true);
     }
 
     public void OnWhiteButton()
@@ -756,7 +750,7 @@ public class Chessboard : MonoBehaviour
         if (!localGame)
         {
             Debug.Log("!localGame " + currentTeam);
-            IsDrawButtonActive(!IsMyTurn());
+            drawButton.interactable = !IsMyTurn();
             ChangeTeam();
         }
 
@@ -838,7 +832,7 @@ public class Chessboard : MonoBehaviour
         playerCount = -1;
         currentTeam = Team.None;
         myTeam = Team.None;
-        IsDrawButtonActive(true);
+        drawButton.interactable = true;
     }
 
     public void OnResignButton()
@@ -852,7 +846,6 @@ public class Chessboard : MonoBehaviour
 
         CheckMate(GetOppositeTeam(currentTeam));
         ResetInGame();
-        AreInGameButtonsActive(false);
     }
 
     public void OnDrawButton()
@@ -860,7 +853,7 @@ public class Chessboard : MonoBehaviour
         if (!localGame)
         {
             SendDrawToServer (currentTeam);
-            IsDrawButtonActive(false);
+            drawButton.interactable = false;
             HideDeclined();
             ShowOfferDraw();
             Invoke("HideOfferDraw", 3.0f);
@@ -869,7 +862,6 @@ public class Chessboard : MonoBehaviour
 
         SendDrawToServer(Team.White);
         SendDrawToServer(Team.Black);
-        AreInGameButtonsActive(false);
     }
 
     private void ShowOfferDraw()
@@ -1434,20 +1426,14 @@ public class Chessboard : MonoBehaviour
 
         if (!localGame)
         {
-            IsDrawButtonActive(!IsMyTurn());
+            drawButton.interactable = !IsMyTurn();
         }
 
         return;
     }
 
-    private bool IsDrawButtonActive(bool active)
-    {
-        return drawButton.interactable = active;
-    }
-
-    private void AreInGameButtonsActive(bool areButtonsActive)
-    {
-        setInGameButtons = areButtonsActive;
+    private bool IsDrawButtonActive(bool active) {
+        drawButton.interactable = !IsMyTurn();
     }
 
     private void SetIsWhiteTurn(bool newIsWhiteTurn)
@@ -1617,10 +1603,9 @@ public class Chessboard : MonoBehaviour
         ResetVictoryScreen();
         if (!localGame)
         {
-            IsDrawButtonActive(!IsMyTurn());
+            drawButton.interactable = !IsMyTurn();
         }
         Invoke("DisplayInGame", 2);
-        AreInGameButtonsActive(true);
     }
 
     private void ChangeTeam()
@@ -1740,7 +1725,7 @@ public class Chessboard : MonoBehaviour
         bool drawButtonActive = false
     )
     {
-        IsDrawButtonActive (drawButtonActive);
+        drawButton.interactable = drawButtonActive;
         resignButton.interactable = buttonsActive;
         whiteButton.interactable = buttonsActive;
         blackButton.interactable = buttonsActive;
@@ -1783,9 +1768,8 @@ public class Chessboard : MonoBehaviour
             if (!localGame)
             {
                 myTeam = GetOppositeTeam(myTeam);
-                IsDrawButtonActive(!IsMyTurn());
+                drawButton.interactable = !IsMyTurn();
             }
-            AreInGameButtonsActive(true);
         }
     }
 
@@ -1803,7 +1787,6 @@ public class Chessboard : MonoBehaviour
         HideOfferDraw();
         ResetDrawIndicator();
         CheckMate (winning);
-        AreInGameButtonsActive(false);
     }
 
     private void OnDrawClient(NetMessage msg)
@@ -1828,7 +1811,6 @@ public class Chessboard : MonoBehaviour
             ResetDrawIndicator();
             DisplayVictory(Team.Draw);
         }
-        AreInGameButtonsActive(false);
     }
 
     private void OnDeclineClient(NetMessage msg)
@@ -1842,7 +1824,7 @@ public class Chessboard : MonoBehaviour
         }
         HideOfferDraw();
 
-        IsDrawButtonActive(!IsMyTurn());
+        drawButton.interactable = !IsMyTurn();
 
         ResetPlayerDraw();
     }
