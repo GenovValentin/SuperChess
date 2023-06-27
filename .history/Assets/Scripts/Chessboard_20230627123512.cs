@@ -1373,6 +1373,10 @@ public class Chessboard : MonoBehaviour
         List<ChessPiece> attackingPieces =
             GetAttackingPieces(chessPieces, attackingTeam);
         Debug.Log("AttackingPieces " + attackingPieces.Count);
+        if (attackingPieces.Count > 0)
+        {
+            Debug.Log("Team attackingPieces " + attackingPieces[0].team);
+        }
 
         List<ChessPiece> defendingPieces =
             GetAttackingPieces(chessPieces, defendingTeam);
@@ -1381,9 +1385,19 @@ public class Chessboard : MonoBehaviour
         List<Vector2Int> currentAvailableMoves =
             GetCurrentAvailableMoves(attackingPieces);
 
-        return !ContainsValidMove(ref currentAvailableMoves,
-        CloneChessPiece(targetKing)) &&
-        IsCheckMate(defendingPieces, targetKing);
+        if (GetCurrentAvailableMoves(attackingPieces) != null)
+        {
+            return false;
+        }
+        else
+        {
+            Debug.Log("StaleMate");
+            return true;
+        }
+
+        // return ContainsValidMove(ref currentAvailableMoves,
+        // CloneChessPiece(targetKing)) &&
+        // IsCheckMate(defendingPieces, targetKing);
     }
 
     private bool

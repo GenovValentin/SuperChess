@@ -1365,7 +1365,6 @@ public class Chessboard : MonoBehaviour
 
     private bool CheckForStaleMate()
     {
-        Debug.Log("CheckForStaleMate");
         Vector2Int lastMove = GetLastMove();
         Team attackingTeam = chessPieces[lastMove.x, lastMove.y].team;
         Team defendingTeam = GetOppositeTeam(attackingTeam);
@@ -1373,6 +1372,10 @@ public class Chessboard : MonoBehaviour
         List<ChessPiece> attackingPieces =
             GetAttackingPieces(chessPieces, attackingTeam);
         Debug.Log("AttackingPieces " + attackingPieces.Count);
+        if (attackingPieces.Count > 0)
+        {
+            Debug.Log("Team attackingPieces " + attackingPieces[0].team);
+        }
 
         List<ChessPiece> defendingPieces =
             GetAttackingPieces(chessPieces, defendingTeam);
@@ -1381,9 +1384,9 @@ public class Chessboard : MonoBehaviour
         List<Vector2Int> currentAvailableMoves =
             GetCurrentAvailableMoves(attackingPieces);
 
-        return !ContainsValidMove(ref currentAvailableMoves,
+        return ContainsValidMove(ref currentAvailableMoves,
         CloneChessPiece(targetKing)) &&
-        IsCheckMate(defendingPieces, targetKing);
+        !IsCheckMate(defendingPieces, targetKing);
     }
 
     private bool
@@ -1486,11 +1489,6 @@ public class Chessboard : MonoBehaviour
         if (CheckForCheckmate())
         {
             CheckMate(originalPiece.team);
-        }
-
-        if (CheckForStaleMate())
-        {
-            DisplayVictory(Team.Draw);
         }
 
         if (!localGame)

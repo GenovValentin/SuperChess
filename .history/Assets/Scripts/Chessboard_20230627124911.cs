@@ -1381,6 +1381,20 @@ public class Chessboard : MonoBehaviour
         List<Vector2Int> currentAvailableMoves =
             GetCurrentAvailableMoves(attackingPieces);
 
+        // if (
+        //     ContainsValidMove(ref currentAvailableMoves,
+        //     CloneChessPiece(targetKing)) !=
+        //     true
+        // )
+        // {
+        //     Debug.Log("NotStaleMate");
+        //     return false;
+        // }
+        // else
+        // {
+        //     Debug.Log("StaleMate");
+        //     return true;
+        // }
         return !ContainsValidMove(ref currentAvailableMoves,
         CloneChessPiece(targetKing)) &&
         IsCheckMate(defendingPieces, targetKing);

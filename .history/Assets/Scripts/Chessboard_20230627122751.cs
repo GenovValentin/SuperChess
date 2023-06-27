@@ -1365,25 +1365,29 @@ public class Chessboard : MonoBehaviour
 
     private bool CheckForStaleMate()
     {
-        Debug.Log("CheckForStaleMate");
-        Vector2Int lastMove = GetLastMove();
-        Team attackingTeam = chessPieces[lastMove.x, lastMove.y].team;
-        Team defendingTeam = GetOppositeTeam(attackingTeam);
+        return GetCurrentAvailableMoves(attackingPieces);
+        // Vector2Int lastMove = GetLastMove();
+        // Team attackingTeam = chessPieces[lastMove.x, lastMove.y].team;
+        // Team defendingTeam = GetOppositeTeam(attackingTeam);
 
-        List<ChessPiece> attackingPieces =
-            GetAttackingPieces(chessPieces, attackingTeam);
-        Debug.Log("AttackingPieces " + attackingPieces.Count);
+        // List<ChessPiece> attackingPieces =
+        //     GetAttackingPieces(chessPieces, attackingTeam);
+        // Debug.Log("AttackingPieces " + attackingPieces.Count);
+        // if (attackingPieces.Count > 0)
+        // {
+        //     Debug.Log("Team attackingPieces " + attackingPieces[0].team);
+        // }
 
-        List<ChessPiece> defendingPieces =
-            GetAttackingPieces(chessPieces, defendingTeam);
-        ChessPiece targetKing = GetTargetKing(chessPieces, defendingTeam);
+        // List<ChessPiece> defendingPieces =
+        //     GetAttackingPieces(chessPieces, defendingTeam);
+        // ChessPiece targetKing = GetTargetKing(chessPieces, defendingTeam);
 
-        List<Vector2Int> currentAvailableMoves =
-            GetCurrentAvailableMoves(attackingPieces);
+        // List<Vector2Int> currentAvailableMoves =
+        //     GetCurrentAvailableMoves(attackingPieces);
 
-        return !ContainsValidMove(ref currentAvailableMoves,
-        CloneChessPiece(targetKing)) &&
-        IsCheckMate(defendingPieces, targetKing);
+        // return ContainsValidMove(ref currentAvailableMoves,
+        // CloneChessPiece(targetKing)) &&
+        // IsCheckMate(defendingPieces, targetKing);
     }
 
     private bool
