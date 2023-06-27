@@ -179,19 +179,9 @@ public class Chessboard : MonoBehaviour
         ResetInGame();
         ResetVictoryScreen();
         ResetDrawIndicator();
-        ResetTMPs();
-        SetSounds();
-    }
-
-    private void ResetTMPs()
-    {
         declinedTMP.SetActive(false);
         offeredDraw.SetActive(false);
         offeredRematch.SetActive(false);
-    }
-
-    private void SetSounds()
-    {
         GameObject boardSound = GameObject.Find("BoardSound");
         Board = boardSound.GetComponent<AudioSource>();
         GameObject piecesSound = GameObject.Find("PiecesSound");
@@ -448,6 +438,13 @@ public class Chessboard : MonoBehaviour
     {
         bool isMyTurn = team == Team.White ? isWhiteTurn : !isWhiteTurn;
 
+        // Debug
+        //     .Log("IsMyTurn " +
+        //     isMyTurn +
+        //     " " +
+        //     GetChessPiece(hitPosition).team +
+        //     " currentTeam " +
+        //     currentTeam);
         return GetChessPiece(hitPosition).team == team &&
         isMyTurn &&
         currentTeam == team;
@@ -1340,7 +1337,7 @@ public class Chessboard : MonoBehaviour
         return targetKing;
     }
 
-    private bool CheckForCheckOrStaleMate(bool checkForCheckmate)
+    private bool CheckForCheckmate()
     {
         Vector2Int lastMove = GetLastMove();
         Team attackingTeam = chessPieces[lastMove.x, lastMove.y].team;
@@ -1356,72 +1353,34 @@ public class Chessboard : MonoBehaviour
         List<Vector2Int> currentAvailableMoves =
             GetCurrentAvailableMoves(attackingPieces);
 
-        bool hasValidMove =
-            ContainsValidMove(ref currentAvailableMoves,
-            CloneChessPiece(targetKing));
+        return ContainsValidMove(ref currentAvailableMoves,
+        CloneChessPiece(targetKing)) &&
+        IsCheckMate(defendingPieces, targetKing);
+    }
 
-        if (checkForCheckmate)
-        {
-            return hasValidMove && IsCheckMate(defendingPieces, targetKing);
-        }
-        else
-        {
-            return !hasValidMove && IsCheckMate(defendingPieces, targetKing);
-        }
+    private bool CheckForStaleMate()
+    {
+        Vector2Int lastMove = GetLastMove();
+        Team attackingTeam = chessPieces[lastMove.x, lastMove.y].team;
+        Team defendingTeam = GetOppositeTeam(attackingTeam);
+
+        List<ChessPiece> attackingPieces =
+            GetAttackingPieces(chessPieces, attackingTeam);
+
+        List<ChessPiece> defendingPieces =
+            GetAttackingPieces(chessPieces, defendingTeam);
+        ChessPiece targetKing = GetTargetKing(chessPieces, defendingTeam);
+
+        List<Vector2Int> currentAvailableMoves =
+            GetCurrentAvailableMoves(attackingPieces);
+
+        return !ContainsValidMove(ref currentAvailableMoves,
+        CloneChessPiece(targetKing)) &&
+        IsCheckMate(defendingPieces, targetKing);
     }
 
     private bool CheckForInsufficientMaterial()
     {
-        int kingCount = 0;
-        int knightCount = 0;
-        int bishopCount = 0;
-        int otherPieceCount = 0;
-
-        for (int x = 0; x < TILE_COUNT_X; x++)
-        {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
-            {
-                if (chessPieces[x, y] != null)
-                {
-                    ChessPiece chessPiece = GetChessPiece(new Vector2Int(x, y));
-                    if (chessPiece.type == ChessPieceType.King)
-                    {
-                        kingCount++;
-                    }
-                    else if (chessPiece.type == ChessPieceType.Knight)
-                    {
-                        knightCount++;
-                    }
-                    else if (chessPiece.type == ChessPieceType.Bishop)
-                    {
-                        knightCount++;
-                    }
-                    else
-                    {
-                        otherPieceCount++;
-                    }
-                }
-            }
-        }
-
-        return (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 1 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 1 &&
-        otherPieceCount == 0
-        );
     }
 
     private bool
@@ -1521,11 +1480,12 @@ public class Chessboard : MonoBehaviour
         }
         RemoveHighlightTiles();
 
-        if (CheckForCheckOrStaleMate(true))
+        if (CheckForCheckmate())
         {
             CheckMate(originalPiece.team);
         }
-        if (CheckForCheckOrStaleMate(false) || CheckForInsufficientMaterial())
+
+        if (CheckForStaleMate())
         {
             ResetInGame();
             DisplayVictory(Team.Draw);

@@ -108,7 +108,6 @@ public class King : ChessPiece
             AreKingSideCastlingFieldsEmpty(StartRank.Black, ref board)
         )
         {
-            Debug.Log("AddCastling");
             AddCastlingMove(false, Team.Black, availableMoves);
             isCastling = true;
         }
@@ -221,7 +220,6 @@ public class King : ChessPiece
 
         return !wasRookMoved &&
         team == rookTeam &&
-        startingPiece != null &&
         startingPiece.type == ChessPieceType.Rook &&
         startingPiece.team == rookTeam;
     }

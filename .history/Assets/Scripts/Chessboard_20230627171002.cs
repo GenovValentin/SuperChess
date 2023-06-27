@@ -1375,7 +1375,6 @@ public class Chessboard : MonoBehaviour
         int kingCount = 0;
         int knightCount = 0;
         int bishopCount = 0;
-        int otherPieceCount = 0;
 
         for (int x = 0; x < TILE_COUNT_X; x++)
         {
@@ -1404,24 +1403,8 @@ public class Chessboard : MonoBehaviour
             }
         }
 
-        return (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 1 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 1 &&
-        otherPieceCount == 0
-        );
+        return (kingCount == 2 && knightCount == 1) ||
+        (kingCount == 2 && bishopCount == 1);
     }
 
     private bool

@@ -1404,24 +1404,8 @@ public class Chessboard : MonoBehaviour
             }
         }
 
-        return (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 1 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 1 &&
-        otherPieceCount == 0
-        );
+        return (kingCount == 2 && knightCount == 1 && otherPieceCount == 0) ||
+        (kingCount == 2 && bishopCount == 1 && otherPieceCount == 0);
     }
 
     private bool

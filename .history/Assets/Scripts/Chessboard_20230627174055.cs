@@ -1421,7 +1421,7 @@ public class Chessboard : MonoBehaviour
         knightCount == 0 &&
         bishopCount == 1 &&
         otherPieceCount == 0
-        );
+        );s
     }
 
     private bool

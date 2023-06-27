@@ -221,7 +221,6 @@ public class King : ChessPiece
 
         return !wasRookMoved &&
         team == rookTeam &&
-        startingPiece != null &&
         startingPiece.type == ChessPieceType.Rook &&
         startingPiece.team == rookTeam;
     }

@@ -179,8 +179,11 @@ public class Chessboard : MonoBehaviour
         ResetInGame();
         ResetVictoryScreen();
         ResetDrawIndicator();
-        ResetTMPs();
-        SetSounds();
+
+        GameObject boardSound = GameObject.Find("BoardSound");
+        Board = boardSound.GetComponent<AudioSource>();
+        GameObject piecesSound = GameObject.Find("PiecesSound");
+        Pieces = piecesSound.GetComponent<AudioSource>();
     }
 
     private void ResetTMPs()
@@ -188,14 +191,6 @@ public class Chessboard : MonoBehaviour
         declinedTMP.SetActive(false);
         offeredDraw.SetActive(false);
         offeredRematch.SetActive(false);
-    }
-
-    private void SetSounds()
-    {
-        GameObject boardSound = GameObject.Find("BoardSound");
-        Board = boardSound.GetComponent<AudioSource>();
-        GameObject piecesSound = GameObject.Find("PiecesSound");
-        Pieces = piecesSound.GetComponent<AudioSource>();
     }
 
     private void SetRematchObjects()
@@ -448,6 +443,13 @@ public class Chessboard : MonoBehaviour
     {
         bool isMyTurn = team == Team.White ? isWhiteTurn : !isWhiteTurn;
 
+        // Debug
+        //     .Log("IsMyTurn " +
+        //     isMyTurn +
+        //     " " +
+        //     GetChessPiece(hitPosition).team +
+        //     " currentTeam " +
+        //     currentTeam);
         return GetChessPiece(hitPosition).team == team &&
         isMyTurn &&
         currentTeam == team;
@@ -1372,56 +1374,7 @@ public class Chessboard : MonoBehaviour
 
     private bool CheckForInsufficientMaterial()
     {
-        int kingCount = 0;
-        int knightCount = 0;
-        int bishopCount = 0;
-        int otherPieceCount = 0;
-
-        for (int x = 0; x < TILE_COUNT_X; x++)
-        {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
-            {
-                if (chessPieces[x, y] != null)
-                {
-                    ChessPiece chessPiece = GetChessPiece(new Vector2Int(x, y));
-                    if (chessPiece.type == ChessPieceType.King)
-                    {
-                        kingCount++;
-                    }
-                    else if (chessPiece.type == ChessPieceType.Knight)
-                    {
-                        knightCount++;
-                    }
-                    else if (chessPiece.type == ChessPieceType.Bishop)
-                    {
-                        knightCount++;
-                    }
-                    else
-                    {
-                        otherPieceCount++;
-                    }
-                }
-            }
-        }
-
-        return (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 1 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 1 &&
-        otherPieceCount == 0
-        );
+        return true;
     }
 
     private bool
@@ -1525,12 +1478,11 @@ public class Chessboard : MonoBehaviour
         {
             CheckMate(originalPiece.team);
         }
-        if (CheckForCheckOrStaleMate(false) || CheckForInsufficientMaterial())
+        if (CheckForCheckOrStaleMate(false))
         {
             ResetInGame();
             DisplayVictory(Team.Draw);
         }
-
         if (!localGame)
         {
             IsDrawButtonActive(!IsMyTurn());

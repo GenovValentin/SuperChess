@@ -1372,56 +1372,23 @@ public class Chessboard : MonoBehaviour
 
     private bool CheckForInsufficientMaterial()
     {
-        int kingCount = 0;
-        int knightCount = 0;
-        int bishopCount = 0;
-        int otherPieceCount = 0;
-
+        List<ChessPiece> allPieces = new List<ChessPiece>();
         for (int x = 0; x < TILE_COUNT_X; x++)
         {
             for (int y = 0; y < TILE_COUNT_Y; y++)
             {
                 if (chessPieces[x, y] != null)
                 {
-                    ChessPiece chessPiece = GetChessPiece(new Vector2Int(x, y));
-                    if (chessPiece.type == ChessPieceType.King)
-                    {
-                        kingCount++;
-                    }
-                    else if (chessPiece.type == ChessPieceType.Knight)
-                    {
-                        knightCount++;
-                    }
-                    else if (chessPiece.type == ChessPieceType.Bishop)
-                    {
-                        knightCount++;
-                    }
-                    else
-                    {
-                        otherPieceCount++;
-                    }
+                    allPieces.Add(GetChessPiece(new Vector2Int(x, y)));
                 }
             }
         }
-
-        return (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 1 &&
-        bishopCount == 0 &&
-        otherPieceCount == 0
-        ) ||
-        (
-        kingCount == 2 &&
-        knightCount == 0 &&
-        bishopCount == 1 &&
-        otherPieceCount == 0
-        );
+        ChessPiece chessPiece = new ChessPiece();
+        chessPiece.type = ChessPieceType.Knight;
+        if (allPieces.Contains(chessPiece))
+        {
+        }
+        return true;
     }
 
     private bool
@@ -1525,12 +1492,16 @@ public class Chessboard : MonoBehaviour
         {
             CheckMate(originalPiece.team);
         }
-        if (CheckForCheckOrStaleMate(false) || CheckForInsufficientMaterial())
+        if (CheckForCheckOrStaleMate(false))
         {
             ResetInGame();
             DisplayVictory(Team.Draw);
         }
-
+        if (CheckForInsufficientMaterial())
+        {
+            ResetInGame();
+            DisplayVictory(Team.Draw);
+        }
         if (!localGame)
         {
             IsDrawButtonActive(!IsMyTurn());
