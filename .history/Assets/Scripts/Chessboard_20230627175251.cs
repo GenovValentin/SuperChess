@@ -11,8 +11,7 @@ public enum SpecialMove
     None = 0,
     EnPassant = 1,
     Castling = 2,
-    Promotion = 3,
-    Capture = 4
+    Promotion = 3
 }
 
 public class Chessboard : MonoBehaviour
@@ -125,11 +124,7 @@ public class Chessboard : MonoBehaviour
 
     public AudioSource Pieces;
 
-    public AudioSource Castle;
-
-    public AudioSource Capture;
-
-    public AudioSource Promote;
+    public AudioSource 
 
     private bool wasMenuButtonPressed = false;
 
@@ -203,12 +198,6 @@ public class Chessboard : MonoBehaviour
         Board = boardSound.GetComponent<AudioSource>();
         GameObject piecesSound = GameObject.Find("PiecesSound");
         Pieces = piecesSound.GetComponent<AudioSource>();
-        GameObject castleSound = GameObject.Find("CastleSound");
-        Castle = castleSound.GetComponent<AudioSource>();
-        GameObject captureSound = GameObject.Find("CaptureSound");
-        Capture = captureSound.GetComponent<AudioSource>();
-        GameObject promoteSound = GameObject.Find("PromoteSound");
-        Promote = promoteSound.GetComponent<AudioSource>();
     }
 
     private void SetRematchObjects()
@@ -328,6 +317,7 @@ public class Chessboard : MonoBehaviour
 
         if (ContainsValidMove(ref availableMoves, ClonePosition(hitPosition)))
         {
+            Pieces.Play();
             MoveTo(previousPiece.x,
             previousPiece.y,
             hitPosition.x,
@@ -1513,31 +1503,6 @@ public class Chessboard : MonoBehaviour
             deads.Add (piece);
             piece.SetScale(Vector3.one * deathSize);
             piece.SetPosition(GetDeadPiecePosition(piece.team));
-            if (specialMove == SpecialMove.None)
-            {
-                specialMove = SpecialMove.Capture;
-            }
-        }
-
-        if (specialMove == SpecialMove.None)
-        {
-            Pieces.Play();
-        }
-        else if (specialMove == SpecialMove.Castling)
-        {
-            Castle.Play();
-        }
-        else if (specialMove == SpecialMove.EnPassant)
-        {
-            Capture.Play();
-        }
-        else if (specialMove == SpecialMove.Promotion)
-        {
-            Promote.Play();
-        }
-        else if (specialMove == SpecialMove.Capture)
-        {
-            Capture.Play();
         }
 
         chessPieces[x, y] = originalPiece;

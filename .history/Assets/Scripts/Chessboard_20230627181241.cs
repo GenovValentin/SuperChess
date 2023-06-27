@@ -1513,10 +1513,7 @@ public class Chessboard : MonoBehaviour
             deads.Add (piece);
             piece.SetScale(Vector3.one * deathSize);
             piece.SetPosition(GetDeadPiecePosition(piece.team));
-            if (specialMove == SpecialMove.None)
-            {
-                specialMove = SpecialMove.Capture;
-            }
+            specialMove = SpecialMove.Capture;
         }
 
         if (specialMove == SpecialMove.None)
@@ -1535,11 +1532,6 @@ public class Chessboard : MonoBehaviour
         {
             Promote.Play();
         }
-        else if (specialMove == SpecialMove.Capture)
-        {
-            Capture.Play();
-        }
-
         chessPieces[x, y] = originalPiece;
         chessPieces[previousPosition.x, previousPosition.y] = null;
 

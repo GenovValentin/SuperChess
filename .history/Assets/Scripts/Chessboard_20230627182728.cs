@@ -1495,6 +1495,8 @@ public class Chessboard : MonoBehaviour
         ChessPiece originalPiece = chessPieces[originalX, originalY];
         Vector2Int previousPosition = CreatePosition(originalX, originalY);
 
+        ProcessSpecialMove();
+
         // Is there a piece on the target position?
         if (piece != null)
         {
@@ -1513,10 +1515,7 @@ public class Chessboard : MonoBehaviour
             deads.Add (piece);
             piece.SetScale(Vector3.one * deathSize);
             piece.SetPosition(GetDeadPiecePosition(piece.team));
-            if (specialMove == SpecialMove.None)
-            {
-                specialMove = SpecialMove.Capture;
-            }
+            specialMove = SpecialMove.Capture;
         }
 
         if (specialMove == SpecialMove.None)
@@ -1551,7 +1550,6 @@ public class Chessboard : MonoBehaviour
         }
         moveList
             .Add(new Vector2Int[] { previousPosition, CreatePosition(x, y) });
-        ProcessSpecialMove();
         if (currentlyDragging)
         {
             currentlyDragging = null;

@@ -11,8 +11,7 @@ public enum SpecialMove
     None = 0,
     EnPassant = 1,
     Castling = 2,
-    Promotion = 3,
-    Capture = 4
+    Promotion = 3
 }
 
 public class Chessboard : MonoBehaviour
@@ -328,6 +327,10 @@ public class Chessboard : MonoBehaviour
 
         if (ContainsValidMove(ref availableMoves, ClonePosition(hitPosition)))
         {
+            if (specialMove = SpecialMove.None)
+            {
+                Pieces.Play();
+            }
             MoveTo(previousPiece.x,
             previousPiece.y,
             hitPosition.x,
@@ -1513,31 +1516,6 @@ public class Chessboard : MonoBehaviour
             deads.Add (piece);
             piece.SetScale(Vector3.one * deathSize);
             piece.SetPosition(GetDeadPiecePosition(piece.team));
-            if (specialMove == SpecialMove.None)
-            {
-                specialMove = SpecialMove.Capture;
-            }
-        }
-
-        if (specialMove == SpecialMove.None)
-        {
-            Pieces.Play();
-        }
-        else if (specialMove == SpecialMove.Castling)
-        {
-            Castle.Play();
-        }
-        else if (specialMove == SpecialMove.EnPassant)
-        {
-            Capture.Play();
-        }
-        else if (specialMove == SpecialMove.Promotion)
-        {
-            Promote.Play();
-        }
-        else if (specialMove == SpecialMove.Capture)
-        {
-            Capture.Play();
         }
 
         chessPieces[x, y] = originalPiece;
