@@ -1490,7 +1490,7 @@ public class Chessboard : MonoBehaviour
 
         if (CheckForStaleMate())
         {
-            ResetInGame();
+            AreInGameButtonsActive(false);
             DisplayVictory(Team.Draw);
         }
 
