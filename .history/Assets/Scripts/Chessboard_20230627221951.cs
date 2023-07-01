@@ -6,8 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.Networking.Transport;
 
-using Random = UnityEngine.Random;
-
 public enum SpecialMove
 {
     None = 0,
@@ -133,14 +131,6 @@ public class Chessboard : MonoBehaviour
 
     public AudioSource Promote;
 
-    public AudioSource Swoosh1;
-
-    public AudioSource Swoosh2;
-
-    public AudioSource Swoosh3;
-
-    private bool isWhitePOV = true;
-
     private bool wasMenuButtonPressed = false;
 
     // Multiplayer logic
@@ -219,29 +209,6 @@ public class Chessboard : MonoBehaviour
         Capture = captureSound.GetComponent<AudioSource>();
         GameObject promoteSound = GameObject.Find("PromoteSound");
         Promote = promoteSound.GetComponent<AudioSource>();
-        GameObject swooshSound1 = GameObject.Find("SwooshSound1");
-        Swoosh1 = swooshSound1.GetComponent<AudioSource>();
-        GameObject swooshSound2 = GameObject.Find("SwooshSound2");
-        Swoosh1 = swooshSound2.GetComponent<AudioSource>();
-        GameObject swooshSound3 = GameObject.Find("SwooshSound3");
-        Swoosh1 = swooshSound3.GetComponent<AudioSource>();
-    }
-
-    private void PlaySwooshSound()
-    {
-        int swooshSoundToBePlayed = Random.Range(1, 4);
-        switch (swooshSoundToBePlayed)
-        {
-            case 1:
-                Swoosh1.Play();
-                break;
-            case 2:
-                Swoosh2.Play();
-                break;
-            case 3:
-                Swoosh3.Play();
-                break;
-        }
     }
 
     private void SetRematchObjects()
@@ -785,21 +752,11 @@ public class Chessboard : MonoBehaviour
     public void OnWhiteButton()
     {
         GameUI.Instance.ChangeCamera(CameraAngle.whiteTeam);
-        if (!isWhitePOV)
-        {
-            PlaySwooshSound();
-        }
-        isWhitePOV = true;
     }
 
     public void OnBlackButton()
     {
         GameUI.Instance.ChangeCamera(CameraAngle.blackTeam);
-        if (isWhitePOV)
-        {
-            PlaySwooshSound();
-        }
-        isWhitePOV = false;
     }
 
     public void OnAcceptButton()

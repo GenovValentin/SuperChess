@@ -139,7 +139,7 @@ public class Chessboard : MonoBehaviour
 
     public AudioSource Swoosh3;
 
-    private bool isWhitePOV = true;
+    private bool isWhitePOV;
 
     private bool wasMenuButtonPressed = false;
 

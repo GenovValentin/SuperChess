@@ -6,8 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.Networking.Transport;
 
-using Random = UnityEngine.Random;
-
 public enum SpecialMove
 {
     None = 0,
@@ -139,7 +137,7 @@ public class Chessboard : MonoBehaviour
 
     public AudioSource Swoosh3;
 
-    private bool isWhitePOV = true;
+    private int swooshSoundToBePlayed;
 
     private bool wasMenuButtonPressed = false;
 
@@ -227,21 +225,9 @@ public class Chessboard : MonoBehaviour
         Swoosh1 = swooshSound3.GetComponent<AudioSource>();
     }
 
-    private void PlaySwooshSound()
+    private int SwooshSoundToBePlayed()
     {
-        int swooshSoundToBePlayed = Random.Range(1, 4);
-        switch (swooshSoundToBePlayed)
-        {
-            case 1:
-                Swoosh1.Play();
-                break;
-            case 2:
-                Swoosh2.Play();
-                break;
-            case 3:
-                Swoosh3.Play();
-                break;
-        }
+        return swooshSoundToBePlayed = Random.Range(1, 4);
     }
 
     private void SetRematchObjects()
@@ -785,21 +771,11 @@ public class Chessboard : MonoBehaviour
     public void OnWhiteButton()
     {
         GameUI.Instance.ChangeCamera(CameraAngle.whiteTeam);
-        if (!isWhitePOV)
-        {
-            PlaySwooshSound();
-        }
-        isWhitePOV = true;
     }
 
     public void OnBlackButton()
     {
         GameUI.Instance.ChangeCamera(CameraAngle.blackTeam);
-        if (isWhitePOV)
-        {
-            PlaySwooshSound();
-        }
-        isWhitePOV = false;
     }
 
     public void OnAcceptButton()

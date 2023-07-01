@@ -139,7 +139,7 @@ public class Chessboard : MonoBehaviour
 
     public AudioSource Swoosh3;
 
-    private bool isWhitePOV = true;
+    private bool isWhitePOV;
 
     private bool wasMenuButtonPressed = false;
 
@@ -785,21 +785,14 @@ public class Chessboard : MonoBehaviour
     public void OnWhiteButton()
     {
         GameUI.Instance.ChangeCamera(CameraAngle.whiteTeam);
-        if (!isWhitePOV)
-        {
-            PlaySwooshSound();
-        }
-        isWhitePOV = true;
+        isWhitePOV = false;
+        PlaySwooshSound();
     }
 
     public void OnBlackButton()
     {
         GameUI.Instance.ChangeCamera(CameraAngle.blackTeam);
-        if (isWhitePOV)
-        {
-            PlaySwooshSound();
-        }
-        isWhitePOV = false;
+        PlaySwooshSound();
     }
 
     public void OnAcceptButton()

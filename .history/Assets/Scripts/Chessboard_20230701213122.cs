@@ -139,8 +139,6 @@ public class Chessboard : MonoBehaviour
 
     public AudioSource Swoosh3;
 
-    private bool isWhitePOV = true;
-
     private bool wasMenuButtonPressed = false;
 
     // Multiplayer logic
@@ -227,20 +225,22 @@ public class Chessboard : MonoBehaviour
         Swoosh1 = swooshSound3.GetComponent<AudioSource>();
     }
 
-    private void PlaySwooshSound()
+    private void PlaySwooshSound(int swooshSoundToBePlayed = Random.Range(1, 4))
     {
-        int swooshSoundToBePlayed = Random.Range(1, 4);
-        switch (swooshSoundToBePlayed)
+        switch (swooshSoundToBePlayed) 
+            
         {
-            case 1:
-                Swoosh1.Play();
-                break;
-            case 2:
-                Swoosh2.Play();
-                break;
+           case 1:
+            Swoosh1.Play();
+            break
+            case 2: 
+       
+            Swoosh2.Play();
+            break
             case 3:
-                Swoosh3.Play();
-                break;
+        
+            Swoosh3.Play();
+            break
         }
     }
 
@@ -785,21 +785,13 @@ public class Chessboard : MonoBehaviour
     public void OnWhiteButton()
     {
         GameUI.Instance.ChangeCamera(CameraAngle.whiteTeam);
-        if (!isWhitePOV)
-        {
-            PlaySwooshSound();
-        }
-        isWhitePOV = true;
+        PlaySwooshSound();
     }
 
     public void OnBlackButton()
     {
         GameUI.Instance.ChangeCamera(CameraAngle.blackTeam);
-        if (isWhitePOV)
-        {
-            PlaySwooshSound();
-        }
-        isWhitePOV = false;
+        PlaySwooshSound();
     }
 
     public void OnAcceptButton()
