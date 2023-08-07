@@ -146,8 +146,6 @@ public class Chessboard : MonoBehaviour
 
     public bool setInGameButtons = false;
 
-    public bool areTilesHighlighted = false;
-
     private SpecialMove specialMove;
 
     public AudioSource Board;
@@ -169,6 +167,8 @@ public class Chessboard : MonoBehaviour
     private bool isWhitePOV = true;
 
     private bool wasMenuButtonPressed = false;
+
+    private bool isPromoted = false;
 
     private Vector2Int currentHitPosition;
 
@@ -403,21 +403,15 @@ public class Chessboard : MonoBehaviour
         promotionPiecesObject =
             promotionPieces.transform.GetChild(0).gameObject;
 
-        SetPromotionPiecesObject(ref promotionQueen,
-        ref promotionQueenImage,
-        0);
-        SetPromotionPiecesObject(ref promotionRook, ref promotionRookImage, 1);
-        SetPromotionPiecesObject(ref promotionBishop,
-        ref promotionBishopImage,
-        2);
-        SetPromotionPiecesObject(ref promotionKnight,
-        ref promotionKnightImage,
-        3);
+        SetPromotionPiecesObject(promotionQueen, promotionQueenImage, 0);
+        SetPromotionPiecesObject(promotionRook, promotionRookImage, 1);
+        SetPromotionPiecesObject(promotionBishop, promotionBishopImage, 2);
+        SetPromotionPiecesObject(promotionKnight, promotionKnightImage, 3);
     }
 
     private void SetPromotionPiecesObject(
-        ref GameObject promotionPiece,
-        ref GameObject promotionPieceImage,
+        GameObject promotionPiece,
+        GameObject promotionPieceImage,
         int x = 0
     )
     {
@@ -429,73 +423,88 @@ public class Chessboard : MonoBehaviour
     private void SetPromotionPiecesColor(Team team)
     {
         Button promotionQueenButton = promotionQueen.GetComponent<Button>();
-        Button promotionRookButton = promotionRook.GetComponent<Button>();
-        Button promotionBishopButton = promotionBishop.GetComponent<Button>();
-        Button promotionKnightButton = promotionKnight.GetComponent<Button>();
         ColorBlock colorBlock = promotionQueenButton.colors;
 
-        SetPromotionPiecesWantedColors (team, colorBlock);
-
-        SetPromotionPiecesColors(ref promotionQueenButton,
-        ref promotionQueen,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionRookButton,
-        ref promotionRook,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionBishopButton,
-        ref promotionBishop,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionKnightButton,
-        ref promotionKnight,
-        colorBlock);
-    }
-
-    private void SetPromotionPiecesColors(
-        ref Button promotionButton,
-        ref GameObject promotionPiece,
-        ColorBlock colorBlock
-    )
-    {
-        promotionButton.colors = colorBlock;
-        promotionPiece.GetComponent<Image>().color = currentColor;
-    }
-
-    private void SetPromotionPiecesWantedColors(
-        Team team,
-        ColorBlock colorBlock
-    )
-    {
         if (team == Team.White)
         {
-            SetPromotionPiecesCurrentColors (
-                whiteColor,
-                whiteHighlightedColor,
-                whitePressedColor
-            );
+            currentColor = whiteColor;
+            currentHighlightedColor = whiteHighlightedColor;
+            currentPressedColor = whitePressedColor;
         }
         else if (team == Team.Black)
         {
-            SetPromotionPiecesCurrentColors (
-                blackColor,
-                blackHighlightedColor,
-                blackPressedColor
-            );
+            currentColor = blackColor;
+            currentHighlightedColor = blackHighlightedColor;
+            currentPressedColor = blackPressedColor;
         }
+
         colorBlock.highlightedColor = currentHighlightedColor;
         colorBlock.pressedColor = currentPressedColor;
+
+        promotionQueenButton.colors = colorBlock;
+        promotionQueen.GetComponent<Image>().color = currentColor;
+
+        Button promotionRookButton = promotionRook.GetComponent<Button>();
+        promotionRookButton.colors = colorBlock;
+        promotionRook.GetComponent<Image>().color = currentColor;
+
+        Button promotionBishopButton = promotionBishop.GetComponent<Button>();
+        promotionBishopButton.colors = colorBlock;
+        promotionBishop.GetComponent<Image>().color = currentColor;
+
+        Button promotionKnightButton = promotionKnight.GetComponent<Button>();
+        promotionKnightButton.colors = colorBlock;
+        promotionKnight.GetComponent<Image>().color = currentColor;
     }
 
-    private void SetPromotionPiecesCurrentColors(
-        Color wantedColor,
-        Color wantedHighlightedColor,
-        Color wantedPressedColor
-    )
-    {
-        currentColor = wantedColor;
-        currentHighlightedColor = wantedHighlightedColor;
-        currentPressedColor = wantedPressedColor;
-    }
-
+    // private void SetPromotionPiecesColor(Team team)
+    // {
+    //     Button promotionQueenButton = promotionQueen.GetComponent<Button>();
+    //     ColorBlock colorBlock = promotionQueenButton.colors;
+    //     SetWantedColors (team);
+    //     colorBlock.highlightedColor = currentHighlightedColor;
+    //     colorBlock.pressedColor = currentPressedColor;
+    //     promotionQueenButton.colors = colorBlock;
+    //     promotionQueen.GetComponent<Image>().color = currentColor;
+    //     Button promotionRookButton = promotionRook.GetComponent<Button>();
+    //     promotionRookButton.colors = colorBlock;
+    //     promotionRook.GetComponent<Image>().color = currentColor;
+    //     Button promotionBishopButton = promotionBishop.GetComponent<Button>();
+    //     promotionBishopButton.colors = colorBlock;
+    //     promotionBishop.GetComponent<Image>().color = currentColor;
+    //     Button promotionKnightButton = promotionKnight.GetComponent<Button>();
+    //     promotionKnightButton.colors = colorBlock;
+    //     promotionKnight.GetComponent<Image>().color = currentColor;
+    // }
+    // private void SetWantedColors(Team team)
+    // {
+    //     if (team == Team.White)
+    //     {
+    //         SetCurrentColors (
+    //             whiteColor,
+    //             whiteHighlightedColor,
+    //             whitePressedColor
+    //         );
+    //     }
+    //     else if (team == Team.Black)
+    //     {
+    //         SetCurrentColors (
+    //             blackColor,
+    //             blackHighlightedColor,
+    //             blackPressedColor
+    //         );
+    //     }
+    // }
+    // private void SetCurrentColors(
+    //     Color wantedColor,
+    //     Color wantedHighlightedColor,
+    //     Color wantedPressedColor
+    // )
+    // {
+    //     currentColor = wantedColor;
+    //     currentHighlightedColor = wantedHighlightedColor;
+    //     currentPressedColor = wantedPressedColor;
+    // }
     private void SetPromotionPiecesImage(Team team)
     {
         team = GetOppositeTeam(team);
@@ -679,7 +688,6 @@ public class Chessboard : MonoBehaviour
         currentlyDragging
             .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
         currentlyDragging = null;
-
         RemoveHighlightTiles();
     }
 

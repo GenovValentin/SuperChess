@@ -146,8 +146,6 @@ public class Chessboard : MonoBehaviour
 
     public bool setInGameButtons = false;
 
-    public bool areTilesHighlighted = false;
-
     private SpecialMove specialMove;
 
     public AudioSource Board;
@@ -169,6 +167,8 @@ public class Chessboard : MonoBehaviour
     private bool isWhitePOV = true;
 
     private bool wasMenuButtonPressed = false;
+
+    private bool isPromoted = false;
 
     private Vector2Int currentHitPosition;
 
@@ -436,28 +436,21 @@ public class Chessboard : MonoBehaviour
 
         SetPromotionPiecesWantedColors (team, colorBlock);
 
-        SetPromotionPiecesColors(ref promotionQueenButton,
-        ref promotionQueen,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionRookButton,
-        ref promotionRook,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionBishopButton,
-        ref promotionBishop,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionKnightButton,
-        ref promotionKnight,
-        colorBlock);
+        promotionQueenButton.colors = colorBlock;
+        promotionQueen.GetComponent<Image>().color = currentColor;
+
+        promotionRookButton.colors = colorBlock;
+        promotionRook.GetComponent<Image>().color = currentColor;
+
+        promotionBishopButton.colors = colorBlock;
+        promotionBishop.GetComponent<Image>().color = currentColor;
+
+        promotionKnightButton.colors = colorBlock;
+        promotionKnight.GetComponent<Image>().color = currentColor;
     }
 
-    private void SetPromotionPiecesColors(
-        ref Button promotionButton,
-        ref GameObject promotionPiece,
-        ColorBlock colorBlock
-    )
+    private void SetPromotionPiecesColors()
     {
-        promotionButton.colors = colorBlock;
-        promotionPiece.GetComponent<Image>().color = currentColor;
     }
 
     private void SetPromotionPiecesWantedColors(
@@ -679,7 +672,6 @@ public class Chessboard : MonoBehaviour
         currentlyDragging
             .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
         currentlyDragging = null;
-
         RemoveHighlightTiles();
     }
 

@@ -146,8 +146,6 @@ public class Chessboard : MonoBehaviour
 
     public bool setInGameButtons = false;
 
-    public bool areTilesHighlighted = false;
-
     private SpecialMove specialMove;
 
     public AudioSource Board;
@@ -169,6 +167,8 @@ public class Chessboard : MonoBehaviour
     private bool isWhitePOV = true;
 
     private bool wasMenuButtonPressed = false;
+
+    private bool isPromoted = false;
 
     private Vector2Int currentHitPosition;
 
@@ -679,7 +679,6 @@ public class Chessboard : MonoBehaviour
         currentlyDragging
             .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
         currentlyDragging = null;
-
         RemoveHighlightTiles();
     }
 

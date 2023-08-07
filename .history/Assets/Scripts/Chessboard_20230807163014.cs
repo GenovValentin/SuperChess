@@ -146,8 +146,6 @@ public class Chessboard : MonoBehaviour
 
     public bool setInGameButtons = false;
 
-    public bool areTilesHighlighted = false;
-
     private SpecialMove specialMove;
 
     public AudioSource Board;
@@ -169,6 +167,8 @@ public class Chessboard : MonoBehaviour
     private bool isWhitePOV = true;
 
     private bool wasMenuButtonPressed = false;
+
+    private bool isPromoted = false;
 
     private Vector2Int currentHitPosition;
 
@@ -436,24 +436,17 @@ public class Chessboard : MonoBehaviour
 
         SetPromotionPiecesWantedColors (team, colorBlock);
 
-        SetPromotionPiecesColors(ref promotionQueenButton,
-        ref promotionQueen,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionRookButton,
-        ref promotionRook,
-        colorBlock);
+        SetPromotionPiecesColors(ref promotionQueenButton, ref promotionQueen);
+        SetPromotionPiecesColors(ref promotionRookButton, ref promotionRook);
         SetPromotionPiecesColors(ref promotionBishopButton,
-        ref promotionBishop,
-        colorBlock);
+        ref promotionBishop);
         SetPromotionPiecesColors(ref promotionKnightButton,
-        ref promotionKnight,
-        colorBlock);
+        ref promotionKnight);
     }
 
     private void SetPromotionPiecesColors(
         ref Button promotionButton,
-        ref GameObject promotionPiece,
-        ColorBlock colorBlock
+        ref GameObject promotionPiece
     )
     {
         promotionButton.colors = colorBlock;
@@ -679,7 +672,6 @@ public class Chessboard : MonoBehaviour
         currentlyDragging
             .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
         currentlyDragging = null;
-
         RemoveHighlightTiles();
     }
 

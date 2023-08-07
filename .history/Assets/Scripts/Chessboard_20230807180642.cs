@@ -170,6 +170,8 @@ public class Chessboard : MonoBehaviour
 
     private bool wasMenuButtonPressed = false;
 
+    private bool isPromoted = false;
+
     private Vector2Int currentHitPosition;
 
     private Vector2Int prevPosition;
@@ -679,8 +681,11 @@ public class Chessboard : MonoBehaviour
         currentlyDragging
             .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
         currentlyDragging = null;
-
-        RemoveHighlightTiles();
+        if (areTilesHighlighted)
+        {
+            RemoveHighlightTiles();
+        }
+        areTilesHighlighted = !areTilesHighlighted;
     }
 
     private Vector2Int CloneChessPiece(ChessPiece position)
