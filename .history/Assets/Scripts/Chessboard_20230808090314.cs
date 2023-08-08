@@ -128,7 +128,7 @@ public class Chessboard : MonoBehaviour
 
     private ChessPiece currentlyDragging;
 
-    private ChessPiece selectedPiece;
+    private ChessPiece selectedPiece = null;
 
     private List<Vector2Int> availableMoves = new List<Vector2Int>();
 
@@ -586,7 +586,7 @@ public class Chessboard : MonoBehaviour
             HandleMouseButtonUpOutsideTile();
         }
 
-        if (currentlyDragging && selectedPiece == null)
+        if (currentlyDragging)
         {
             LiftPiece (ray);
         }
@@ -638,7 +638,6 @@ public class Chessboard : MonoBehaviour
             currentlyDragging.currentY));
         currentlyDragging = null;
         RemoveHighlightTiles();
-        ClearAvailableMoves();
     }
 
     private bool IsMouseOverTile(Ray ray, out RaycastHit info)
@@ -660,48 +659,50 @@ public class Chessboard : MonoBehaviour
         return Physics.Raycast(ray, out info, 100, LayerMask.GetMask("Modal"));
     }
 
+    // private void HandleMouseButtonUp(Vector2Int hitPosition)
+    // {
+    //     Vector2Int previousPiece = CloneChessPiece(currentlyDragging);
+    //     if (ContainsValidMove(ref availableMoves, ClonePosition(hitPosition)))
+    //     {
+    //         currentHitPosition = hitPosition;
+    //         MoveTo(previousPiece.x,
+    //         previousPiece.y,
+    //         hitPosition.x,
+    //         hitPosition.y);
+    //         if (specialMove != SpecialMove.Promotion)
+    //         {
+    //             SendMoveToServer (previousPiece, hitPosition);
+    //         }
+    //         return;
+    //     }
+    //     currentlyDragging
+    //         .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
+    //     currentlyDragging = null;
+    //     RemoveHighlightTiles();
+    // }
     private void HandleMouseButtonUp(Vector2Int hitPosition)
     {
-        if (selectedPiece == null)
+        if (
+            selectedPiece != null &&
+            ContainsValidMove(ref availableMoves, ClonePosition(hitPosition))
+        )
         {
-            selectedPiece = currentlyDragging;
-        }
-        Vector2Int previousPiece = CloneChessPiece(currentlyDragging);
+            Vector2Int previousPiecePosition = CloneChessPiece(selectedPiece);
 
-        if (ContainsValidMove(ref availableMoves, ClonePosition(hitPosition)))
-        {
-            currentHitPosition = hitPosition;
-
-            MoveTo(previousPiece.x,
-            previousPiece.y,
+            MoveTo(previousPiecePosition.x,
+            previousPiecePosition.y,
             hitPosition.x,
             hitPosition.y);
 
             if (specialMove != SpecialMove.Promotion)
             {
-                SendMoveToServer (previousPiece, hitPosition);
+                SendMoveToServer (previousPiecePosition, hitPosition);
             }
 
+            // Reset selected piece and highlights
             selectedPiece = null;
-            return;
+            RemoveHighlightTiles();
         }
-
-        if (hitPosition.x == previousPiece.x && hitPosition.y == previousPiece.y
-        )
-        {
-            currentlyDragging
-                .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
-
-            return;
-        }
-        currentlyDragging
-            .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
-
-        currentlyDragging = null;
-        selectedPiece = null;
-
-        RemoveHighlightTiles();
-        ClearAvailableMoves();
     }
 
     private Vector2Int CloneChessPiece(ChessPiece position)
@@ -813,36 +814,46 @@ public class Chessboard : MonoBehaviour
         Client.Instance.SendToServer (getOpponentName);
     }
 
+    // private void HandleMouseButtonDown(Vector2Int hitPosition)
+    // {
+    //     ChessPiece piece = GetChessPiece(hitPosition);
+    //     if (
+    //         piece == null ||
+    //         (
+    //         !IsTeamsTurn(Team.White, hitPosition) &&
+    //         !IsTeamsTurn(Team.Black, hitPosition)
+    //         )
+    //     )
+    //     {
+    //         return;
+    //     }
+    //     currentlyDragging = GetChessPiece(hitPosition);
+    //     availableMoves = currentlyDragging.GetAvailableMoves(ref chessPieces);
+    //     specialMove =
+    //         currentlyDragging
+    //             .GetSpecialMoves(ref chessPieces,
+    //             ref moveList,
+    //             ref availableMoves);
+    //     PreventCheck();
+    //     HighlightTiles();
+    // }
     private void HandleMouseButtonDown(Vector2Int hitPosition)
     {
-        if (selectedPiece != null)
-        {
-            RemoveHighlightTiles();
-        }
         ChessPiece piece = GetChessPiece(hitPosition);
 
-        if (
-            piece == null ||
-            (
-            !IsTeamsTurn(Team.White, hitPosition) &&
-            !IsTeamsTurn(Team.Black, hitPosition)
-            )
-        )
+        if (piece == null)
         {
             return;
         }
 
-        currentlyDragging = GetChessPiece(hitPosition);
+        selectedPiece = piece;
 
-        availableMoves = currentlyDragging.GetAvailableMoves(ref chessPieces);
-
+        availableMoves = selectedPiece.GetAvailableMoves(ref chessPieces);
         specialMove =
-            currentlyDragging
+            selectedPiece
                 .GetSpecialMoves(ref chessPieces,
                 ref moveList,
                 ref availableMoves);
-
-        PreventCheck();
 
         HighlightTiles();
     }
@@ -1109,10 +1120,7 @@ public class Chessboard : MonoBehaviour
         {
             SetTileLayer(availableMoves[i]);
         }
-    }
 
-    private void ClearAvailableMoves()
-    {
         availableMoves.Clear();
     }
 
@@ -2134,7 +2142,6 @@ public class Chessboard : MonoBehaviour
             currentlyDragging = null;
         }
         RemoveHighlightTiles();
-        ClearAvailableMoves();
 
         CheckForGameEnd (originalPiece);
 

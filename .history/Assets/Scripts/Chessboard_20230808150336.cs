@@ -638,7 +638,6 @@ public class Chessboard : MonoBehaviour
             currentlyDragging.currentY));
         currentlyDragging = null;
         RemoveHighlightTiles();
-        ClearAvailableMoves();
     }
 
     private bool IsMouseOverTile(Ray ray, out RaycastHit info)
@@ -692,6 +691,7 @@ public class Chessboard : MonoBehaviour
             currentlyDragging
                 .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
 
+            // currentlyDragging = null;
             return;
         }
         currentlyDragging
@@ -701,7 +701,6 @@ public class Chessboard : MonoBehaviour
         selectedPiece = null;
 
         RemoveHighlightTiles();
-        ClearAvailableMoves();
     }
 
     private Vector2Int CloneChessPiece(ChessPiece position)
@@ -2134,7 +2133,6 @@ public class Chessboard : MonoBehaviour
             currentlyDragging = null;
         }
         RemoveHighlightTiles();
-        ClearAvailableMoves();
 
         CheckForGameEnd (originalPiece);
 

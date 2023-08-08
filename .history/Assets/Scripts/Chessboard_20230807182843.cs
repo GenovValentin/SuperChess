@@ -128,8 +128,6 @@ public class Chessboard : MonoBehaviour
 
     private ChessPiece currentlyDragging;
 
-    private ChessPiece selectedPiece;
-
     private List<Vector2Int> availableMoves = new List<Vector2Int>();
 
     private List<ChessPiece> deadWhites = new List<ChessPiece>();
@@ -171,8 +169,6 @@ public class Chessboard : MonoBehaviour
     private bool isWhitePOV = true;
 
     private bool wasMenuButtonPressed = false;
-
-    private bool isPromoted = false;
 
     private Vector2Int currentHitPosition;
 
@@ -586,7 +582,7 @@ public class Chessboard : MonoBehaviour
             HandleMouseButtonUpOutsideTile();
         }
 
-        if (currentlyDragging && selectedPiece == null)
+        if (currentlyDragging)
         {
             LiftPiece (ray);
         }
@@ -638,7 +634,6 @@ public class Chessboard : MonoBehaviour
             currentlyDragging.currentY));
         currentlyDragging = null;
         RemoveHighlightTiles();
-        ClearAvailableMoves();
     }
 
     private bool IsMouseOverTile(Ray ray, out RaycastHit info)
@@ -662,10 +657,6 @@ public class Chessboard : MonoBehaviour
 
     private void HandleMouseButtonUp(Vector2Int hitPosition)
     {
-        if (selectedPiece == null)
-        {
-            selectedPiece = currentlyDragging;
-        }
         Vector2Int previousPiece = CloneChessPiece(currentlyDragging);
 
         if (ContainsValidMove(ref availableMoves, ClonePosition(hitPosition)))
@@ -682,26 +673,14 @@ public class Chessboard : MonoBehaviour
                 SendMoveToServer (previousPiece, hitPosition);
             }
 
-            selectedPiece = null;
             return;
         }
 
-        if (hitPosition.x == previousPiece.x && hitPosition.y == previousPiece.y
-        )
-        {
-            currentlyDragging
-                .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
-
-            return;
-        }
         currentlyDragging
             .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
-
         currentlyDragging = null;
-        selectedPiece = null;
 
         RemoveHighlightTiles();
-        ClearAvailableMoves();
     }
 
     private Vector2Int CloneChessPiece(ChessPiece position)
@@ -815,10 +794,6 @@ public class Chessboard : MonoBehaviour
 
     private void HandleMouseButtonDown(Vector2Int hitPosition)
     {
-        if (selectedPiece != null)
-        {
-            RemoveHighlightTiles();
-        }
         ChessPiece piece = GetChessPiece(hitPosition);
 
         if (
@@ -834,8 +809,10 @@ public class Chessboard : MonoBehaviour
 
         currentlyDragging = GetChessPiece(hitPosition);
 
+        // Get a list of where I can go, highlight tiles as well
         availableMoves = currentlyDragging.GetAvailableMoves(ref chessPieces);
 
+        // Get a list of special moves as well
         specialMove =
             currentlyDragging
                 .GetSpecialMoves(ref chessPieces,
@@ -1109,10 +1086,7 @@ public class Chessboard : MonoBehaviour
         {
             SetTileLayer(availableMoves[i]);
         }
-    }
 
-    private void ClearAvailableMoves()
-    {
         availableMoves.Clear();
     }
 
@@ -2134,7 +2108,6 @@ public class Chessboard : MonoBehaviour
             currentlyDragging = null;
         }
         RemoveHighlightTiles();
-        ClearAvailableMoves();
 
         CheckForGameEnd (originalPiece);
 

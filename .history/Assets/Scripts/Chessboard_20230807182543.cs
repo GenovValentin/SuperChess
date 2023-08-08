@@ -128,8 +128,6 @@ public class Chessboard : MonoBehaviour
 
     private ChessPiece currentlyDragging;
 
-    private ChessPiece selectedPiece;
-
     private List<Vector2Int> availableMoves = new List<Vector2Int>();
 
     private List<ChessPiece> deadWhites = new List<ChessPiece>();
@@ -137,6 +135,10 @@ public class Chessboard : MonoBehaviour
     private List<ChessPiece> deadBlacks = new List<ChessPiece>();
 
     private List<Vector2Int[]> moveList = new List<Vector2Int[]>();
+
+    private List<Vector2Int> selectedPieceAvailableMoves;
+
+    private ChessPiece selectedPiece;
 
     private GameObject[,] tiles;
 
@@ -171,8 +173,6 @@ public class Chessboard : MonoBehaviour
     private bool isWhitePOV = true;
 
     private bool wasMenuButtonPressed = false;
-
-    private bool isPromoted = false;
 
     private Vector2Int currentHitPosition;
 
@@ -586,7 +586,7 @@ public class Chessboard : MonoBehaviour
             HandleMouseButtonUpOutsideTile();
         }
 
-        if (currentlyDragging && selectedPiece == null)
+        if (currentlyDragging)
         {
             LiftPiece (ray);
         }
@@ -638,7 +638,6 @@ public class Chessboard : MonoBehaviour
             currentlyDragging.currentY));
         currentlyDragging = null;
         RemoveHighlightTiles();
-        ClearAvailableMoves();
     }
 
     private bool IsMouseOverTile(Ray ray, out RaycastHit info)
@@ -662,46 +661,51 @@ public class Chessboard : MonoBehaviour
 
     private void HandleMouseButtonUp(Vector2Int hitPosition)
     {
-        if (selectedPiece == null)
+        if (currentlyDragging != null)
         {
-            selectedPiece = currentlyDragging;
-        }
-        Vector2Int previousPiece = CloneChessPiece(currentlyDragging);
-
-        if (ContainsValidMove(ref availableMoves, ClonePosition(hitPosition)))
-        {
-            currentHitPosition = hitPosition;
-
-            MoveTo(previousPiece.x,
-            previousPiece.y,
-            hitPosition.x,
-            hitPosition.y);
-
-            if (specialMove != SpecialMove.Promotion)
+            Vector2Int previousPiece = CloneChessPiece(currentlyDragging);
+            if (
+                ContainsValidMove(ref availableMoves,
+                ClonePosition(hitPosition))
+            )
             {
-                SendMoveToServer (previousPiece, hitPosition);
+                currentHitPosition = hitPosition;
+
+                MoveTo(previousPiece.x,
+                previousPiece.y,
+                hitPosition.x,
+                hitPosition.y);
+
+                if (specialMove != SpecialMove.Promotion)
+                {
+                    SendMoveToServer (previousPiece, hitPosition);
+                }
+
+                return;
             }
 
-            selectedPiece = null;
-            return;
-        }
-
-        if (hitPosition.x == previousPiece.x && hitPosition.y == previousPiece.y
-        )
-        {
             currentlyDragging
                 .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
+            currentlyDragging = null;
 
-            return;
+            RemoveHighlightTiles();
         }
-        currentlyDragging
-            .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
+        else if (selectedPiece != null)
+        {
+            if (ContainsValidMove(ref selectedPieceAvailableMoves, hitPosition))
+            {
+                MoveTo(selectedPiece.CurrentPosition.x,
+                selectedPiece.CurrentPosition.y,
+                hitPosition.x,
+                hitPosition.y);
+                if (specialMove != SpecialMove.Promotion)
+                {
+                    SendMoveToServer (previousPiece, hitPosition);
+                }
+            }
 
-        currentlyDragging = null;
-        selectedPiece = null;
-
-        RemoveHighlightTiles();
-        ClearAvailableMoves();
+            ClearSelection();
+        }
     }
 
     private Vector2Int CloneChessPiece(ChessPiece position)
@@ -815,36 +819,46 @@ public class Chessboard : MonoBehaviour
 
     private void HandleMouseButtonDown(Vector2Int hitPosition)
     {
-        if (selectedPiece != null)
-        {
-            RemoveHighlightTiles();
-        }
         ChessPiece piece = GetChessPiece(hitPosition);
 
-        if (
-            piece == null ||
-            (
-            !IsTeamsTurn(Team.White, hitPosition) &&
-            !IsTeamsTurn(Team.Black, hitPosition)
-            )
-        )
+        if (piece == null || !IsTeamsTurn(piece.Team, hitPosition))
         {
             return;
         }
 
-        currentlyDragging = GetChessPiece(hitPosition);
+        if (selectedPiece == piece)
+        {
+            ClearSelection();
+        }
+        else
+        {
+            selectedPiece = piece;
+            selectedPieceAvailableMoves =
+                selectedPiece.GetAvailableMoves(ref chessPieces);
+            HighlightTiles (selectedPieceAvailableMoves);
+        }
 
-        availableMoves = currentlyDragging.GetAvailableMoves(ref chessPieces);
-
-        specialMove =
-            currentlyDragging
-                .GetSpecialMoves(ref chessPieces,
-                ref moveList,
-                ref availableMoves);
+        if (currentlyDragging != null)
+        {
+            currentlyDragging = GetChessPiece(hitPosition);
+            availableMoves =
+                currentlyDragging.GetAvailableMoves(ref chessPieces);
+            specialMove =
+                currentlyDragging
+                    .GetSpecialMoves(ref chessPieces,
+                    ref moveList,
+                    ref availableMoves);
+            HighlightTiles();
+        }
 
         PreventCheck();
+    }
 
-        HighlightTiles();
+    private void ClearSelection()
+    {
+        selectedPiece = null;
+        selectedPieceAvailableMoves = null;
+        RemoveHighlightTiles();
     }
 
     private bool IsMouseButtonDown()
@@ -1109,10 +1123,7 @@ public class Chessboard : MonoBehaviour
         {
             SetTileLayer(availableMoves[i]);
         }
-    }
 
-    private void ClearAvailableMoves()
-    {
         availableMoves.Clear();
     }
 
@@ -2134,7 +2145,6 @@ public class Chessboard : MonoBehaviour
             currentlyDragging = null;
         }
         RemoveHighlightTiles();
-        ClearAvailableMoves();
 
         CheckForGameEnd (originalPiece);
 

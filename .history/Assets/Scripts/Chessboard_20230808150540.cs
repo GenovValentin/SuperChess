@@ -692,6 +692,7 @@ public class Chessboard : MonoBehaviour
             currentlyDragging
                 .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
 
+            // currentlyDragging = null;
             return;
         }
         currentlyDragging
