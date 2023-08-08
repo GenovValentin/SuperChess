@@ -152,6 +152,8 @@ public class Chessboard : MonoBehaviour
 
     public bool isPieceSelected;
 
+    public bool isSelectedPieceMoving = true;
+
     private SpecialMove specialMove;
 
     public AudioSource Board;
@@ -664,6 +666,7 @@ public class Chessboard : MonoBehaviour
 
     private void HandleMouseButtonUp(Vector2Int hitPosition)
     {
+        isSelectedPieceMoving = true;
         if (selectedPiece == null)
         {
             selectedPiece = currentlyDragging;
@@ -694,7 +697,7 @@ public class Chessboard : MonoBehaviour
             currentlyDragging
                 .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
             isPieceSelected = true;
-
+            isSelectedPieceMoving = false;
             return;
         }
 
@@ -821,9 +824,13 @@ public class Chessboard : MonoBehaviour
     {
         if (selectedPiece != null)
         {
+            isSelectedPieceMoving = true;
             RemoveHighlightTiles();
         }
-
+        if (currentlyDragging)
+        {
+            isPieceSelected = false;
+        }
         ChessPiece piece = GetChessPiece(hitPosition);
 
         if (
@@ -836,7 +843,6 @@ public class Chessboard : MonoBehaviour
         {
             return;
         }
-        isPieceSelected = false;
 
         currentlyDragging = GetChessPiece(hitPosition);
 

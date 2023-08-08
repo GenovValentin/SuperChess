@@ -694,18 +694,19 @@ public class Chessboard : MonoBehaviour
             currentlyDragging
                 .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
             isPieceSelected = true;
-
             return;
         }
+        if (isPieceSelected == false)
+        {
+            currentlyDragging
+                .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
 
-        currentlyDragging
-            .SetPosition(GetTileCenter(previousPiece.x, previousPiece.y));
+            currentlyDragging = null;
+            selectedPiece = null;
 
-        currentlyDragging = null;
-        selectedPiece = null;
-
-        RemoveHighlightTiles();
-        ClearAvailableMoves();
+            RemoveHighlightTiles();
+            ClearAvailableMoves();
+        }
     }
 
     private Vector2Int CloneChessPiece(ChessPiece position)
@@ -823,7 +824,7 @@ public class Chessboard : MonoBehaviour
         {
             RemoveHighlightTiles();
         }
-
+        isPieceSelected = false;
         ChessPiece piece = GetChessPiece(hitPosition);
 
         if (
@@ -836,7 +837,6 @@ public class Chessboard : MonoBehaviour
         {
             return;
         }
-        isPieceSelected = false;
 
         currentlyDragging = GetChessPiece(hitPosition);
 
