@@ -1366,12 +1366,8 @@ public class Chessboard : MonoBehaviour
     {
         wasMenuButtonPressed = true;
         Debug.Log("SendRematchToServer " + currentTeam);
-        if (!localGame)
-        {
-            SendRematchToServer(currentTeam, 0);
-        }
+        SendRematchToServer(currentTeam, 0);
 
-        ResetInGamePlayerName();
         GameReset();
         ResetVictoryScreen();
         ResetInGame();

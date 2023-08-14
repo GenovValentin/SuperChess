@@ -1223,13 +1223,16 @@ public class Chessboard : MonoBehaviour
 
     public void OnRematchButton()
     {
-        SendRematchToServer (currentTeam);
         if (!localGame)
         {
+            SendRematchToServer (currentTeam);
             rematchButton.interactable = false;
+
             return;
         }
 
+        SendRematchToServer(Team.White);
+        SendRematchToServer(Team.Black);
         GameUI.Instance.ChangeCamera(CameraAngle.whiteTeam);
         AreInGameButtonsActive(true);
     }
@@ -1365,13 +1368,8 @@ public class Chessboard : MonoBehaviour
     public void OnMenuButton()
     {
         wasMenuButtonPressed = true;
-        Debug.Log("SendRematchToServer " + currentTeam);
-        if (!localGame)
-        {
-            SendRematchToServer(currentTeam, 0);
-        }
+        SendRematchToServer(currentTeam, 0);
 
-        ResetInGamePlayerName();
         GameReset();
         ResetVictoryScreen();
         ResetInGame();
@@ -1411,7 +1409,8 @@ public class Chessboard : MonoBehaviour
             return;
         }
 
-        SendDrawToServer (currentTeam);
+        SendDrawToServer(Team.White);
+        SendDrawToServer(Team.Black);
         AreInGameButtonsActive(false);
     }
 

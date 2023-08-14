@@ -1370,8 +1370,8 @@ public class Chessboard : MonoBehaviour
         {
             SendRematchToServer(currentTeam, 0);
         }
-
         ResetInGamePlayerName();
+
         GameReset();
         ResetVictoryScreen();
         ResetInGame();
