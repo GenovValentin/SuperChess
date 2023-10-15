@@ -1,0 +1,62 @@
+void Start()
+{
+    // Load preferences first
+    LoadPrefs();
+    SetGameObjects();
+    SetVolumeIconImagePath();
+}
+
+public void SetVolume(float sliderValue)
+{
+    if (audioMixer != null)
+    {
+        audioMixer.SetFloat("MasterVolume", Mathf.Log10(sliderValue) * 20);
+    }
+    SavePrefs(sliderValue);
+
+    // Update the volume icon based on sliderValue
+    if (sliderValue == 0 && mutedVolumeImage != null)
+    {
+        volumeIconImage.sprite = mutedVolumeImage.sprite;
+    }
+    else if (sliderValue > 0 && sliderValue < 0.3333f && minVolumeImage != null)
+    {
+        volumeIconImage.sprite = minVolumeImage.sprite;
+    }
+    else if (sliderValue >= 0.3333f && sliderValue < 0.6666f && midVolumeImage != null)
+    {
+        volumeIconImage.sprite = midVolumeImage.sprite;
+    }
+    else if (sliderValue >= 0.6666f && maxVolumeImage != null)
+    {
+        volumeIconImage.sprite = maxVolumeImage.sprite;
+    }
+}
+
+private void SavePrefs(float volume)
+{
+    PlayerPrefs.SetFloat("MasterVolume", volume);
+}
+
+private void LoadPrefs()
+{
+    if (PlayerPrefs.HasKey("MasterVolume") && audioMixer != null)
+    {
+        var newVolume = PlayerPrefs.GetFloat("MasterVolume");
+        audioMixer.SetFloat("MasterVolume", newVolume);
+        audioSlider.value = newVolume;
+    }
+}
+
+private void SetGameObjects()
+{
+    volumeIconImage = volumeIcon.GetComponent<Image>();
+}
+
+private void SetVolumeIconImagePath()
+{
+    maxVolumeImage = Resources.Load<Sprite>("Volume_Icons/Volume_Max");
+    midVolumeImage = Resources.Load<Sprite>("Volume_Icons/Volume_Mid");
+    minVolumeImage = Resources.Load<Sprite>("Volume_Icons/Volume_Min");
+    mutedVolumeImage = Resources.Load<Sprite>("Volume_Icons/Volume_Muted");
+}

@@ -1,0 +1,83 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.UI;
+
+public class VolumeControl : MonoBehaviour
+{
+    [SerializeField]
+    private AudioMixer audioMixer;
+
+    [SerializeField]
+    private Slider audioSlider;
+
+    [SerializeField]
+    private GameObject volumeIcon;
+
+    private Texture volumeIconImage;
+
+    private Texture maxVolumeImage;
+
+    private Texture midVolumeImage;
+
+    private Texture minVolumeImage;
+
+    private Texture mutedVolumeImage;
+
+    void Start()
+    {
+        LoadPrefs();
+        SetGameObjects();
+        SetVolumeIconImagePath();
+    }
+
+    public void SetVolume(float sliderValue)
+    {
+        audioMixer.SetFloat("MasterVolume", Mathf.Log10(sliderValue) * 20);
+        SavePrefs (sliderValue);
+        if (sliderValue == 0)
+        {
+            volumeIconImage = mutedVolumeImage;
+        }
+        else if (sliderValue > 0 && sliderValue < 0.3333)
+        {
+            volumeIconImage = minVolumeImage;
+        }
+        else if (sliderValue > 0.3333 && sliderValue < 0.6666)
+        {
+            volumeIconImage = midVolumeImage;
+        }
+        else if (sliderValue > 0.6666)
+        {
+            volumeIconImage = maxVolumeImage;
+        }
+    }
+
+    private void SavePrefs(float volume)
+    {
+        PlayerPrefs.SetFloat("MasterVolume", volume);
+    }
+
+    private void LoadPrefs()
+    {
+        var newVolume = PlayerPrefs.GetFloat("MasterVolume");
+
+        audioMixer.SetFloat("MasterVolume", newVolume);
+
+        audioSlider.value = newVolume;
+    }
+
+    private void SetGameObjects()
+    {
+        volumeIconImage = volumeIcon.GetComponent<Texture>();
+    }
+
+    private void SetVolumeIconImagePath()
+    {
+        maxVolumeImage = Resources.Load<Texture>("Volume_Icons/Volume_Max");
+        midVolumeImage = Resources.Load<Texture>("Volume_Icons/Volume_Mid");
+        minVolumeImage = Resources.Load<Texture>("Volume_Icons/Volume_Min");
+        mutedVolumeImage = Resources.Load<Texture>("Volume_Icons/Volume_Muted");
+    }
+}
