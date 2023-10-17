@@ -173,25 +173,9 @@ public class Chessboard : MonoBehaviour
 
     private Vector2Int prevPosition;
 
-    public PieceImagesController pieceImagesController;
+    public PromotionPieceImagesController promotionPieceImagesController;
 
-    Color whiteColor;
-
-    Color blackColor;
-
-    Color currentColor;
-
-    Color whiteHighlightedColor;
-
-    Color blackHighlightedColor;
-
-    Color currentHighlightedColor;
-
-    Color whitePressedColor;
-
-    Color blackPressedColor;
-
-    Color currentPressedColor;
+    public ColorBlockController colorBlockController;
 
     GameObject promotionPiecesObject;
 
@@ -278,23 +262,19 @@ public class Chessboard : MonoBehaviour
 
     private void SetColors()
     {
-        ColorUtility.TryParseHtmlString("#A19984", out whiteColor);
-        ColorUtility.TryParseHtmlString("#323232", out blackColor);
-        ColorUtility.TryParseHtmlString("#9C9191", out whiteHighlightedColor);
-        ColorUtility.TryParseHtmlString("#B09B9B", out blackHighlightedColor);
-        ColorUtility.TryParseHtmlString("#666666", out whitePressedColor);
-        ColorUtility.TryParseHtmlString("#202020", out blackPressedColor);
+        colorBlockController.SetColors();
     }
 
     private void InitControllers()
     {
-        pieceImagesController = new PieceImagesController();
+        promotionPieceImagesController = new PromotionPieceImagesController();
         soundController = new SoundController();
+        colorBlockController = new ColorBlockController();
     }
 
     private void SetPromotionPiecesImagesPaths()
     {
-        pieceImagesController.SetPromotionPiecesImagesPaths();
+        promotionPieceImagesController.SetPromotionPiecesImagesPaths();
     }
 
     private void ResetPromotion()
@@ -407,7 +387,8 @@ public class Chessboard : MonoBehaviour
     )
     {
         promotionButton.colors = colorBlock;
-        promotionPiece.GetComponent<Image>().color = currentColor;
+        promotionPiece.GetComponent<Image>().color =
+            colorBlockController.GetCurrentColor();
     }
 
     private void SetPromotionPiecesWantedColors(
@@ -415,41 +396,13 @@ public class Chessboard : MonoBehaviour
         ColorBlock colorBlock
     )
     {
-        if (team == Team.White)
-        {
-            SetPromotionPiecesCurrentColors (
-                whiteColor,
-                whiteHighlightedColor,
-                whitePressedColor
-            );
-        }
-        else if (team == Team.Black)
-        {
-            SetPromotionPiecesCurrentColors (
-                blackColor,
-                blackHighlightedColor,
-                blackPressedColor
-            );
-        }
-        colorBlock.highlightedColor = currentHighlightedColor;
-        colorBlock.pressedColor = currentPressedColor;
-    }
-
-    private void SetPromotionPiecesCurrentColors(
-        Color wantedColor,
-        Color wantedHighlightedColor,
-        Color wantedPressedColor
-    )
-    {
-        currentColor = wantedColor;
-        currentHighlightedColor = wantedHighlightedColor;
-        currentPressedColor = wantedPressedColor;
+        colorBlockController.SetPromotionPiecesWantedColors (team, colorBlock);
     }
 
     private void SetPromotionPiecesImage(Team team)
     {
         team = GetOppositeTeam(team);
-        pieceImagesController.SetPromotionPiecesImage (
+        promotionPieceImagesController.SetPromotionPiecesImage (
             team,
             promotionQueenImage,
             promotionRookImage,
@@ -468,7 +421,7 @@ public class Chessboard : MonoBehaviour
 
     private void SetPromotionPiecesWantedImages(Team team)
     {
-        pieceImagesController.SetPromotionPiecesWantedImages (team);
+        promotionPieceImagesController.SetPromotionPiecesWantedImages (team);
     }
 
     private void SetDrawObject()

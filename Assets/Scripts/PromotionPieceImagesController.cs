@@ -7,31 +7,31 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
-    public class PieceImagesController
+    public class PromotionPieceImagesController
     {
-        public Texture whiteQueenImage;
+        private Texture whiteQueenImage;
 
-        public Texture blackQueenImage;
+        private Texture blackQueenImage;
 
-        public Texture currentQueenImage;
+        private Texture currentQueenImage;
 
-        public Texture whiteRookImage;
+        private Texture whiteRookImage;
 
-        public Texture blackRookImage;
+        private Texture blackRookImage;
 
-        public Texture currentRookImage;
+        private Texture currentRookImage;
 
-        public Texture whiteBishopImage;
+        private Texture whiteBishopImage;
 
-        public Texture blackBishopImage;
+        private Texture blackBishopImage;
 
-        public Texture currentBishopImage;
+        private Texture currentBishopImage;
 
-        public Texture whiteKnightImage;
+        private Texture whiteKnightImage;
 
-        public Texture blackKnightImage;
+        private Texture blackKnightImage;
 
-        public Texture currentKnightImage;
+        private Texture currentKnightImage;
 
         public void SetPromotionPiecesImagesPaths()
         {
