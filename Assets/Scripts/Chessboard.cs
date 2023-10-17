@@ -173,27 +173,7 @@ public class Chessboard : MonoBehaviour
 
     private Vector2Int prevPosition;
 
-    public PromotionPieceImagesController promotionPieceImagesController;
-
-    public ColorBlockController colorBlockController;
-
-    GameObject promotionPiecesObject;
-
-    GameObject promotionQueen;
-
-    GameObject promotionRook;
-
-    GameObject promotionBishop;
-
-    GameObject promotionKnight;
-
-    GameObject promotionQueenImage;
-
-    GameObject promotionRookImage;
-
-    GameObject promotionBishopImage;
-
-    GameObject promotionKnightImage;
+    public PromotionPieceController promotionPieceController;
 
     // Multiplayer logic
     private int playerCount = -1;
@@ -262,19 +242,18 @@ public class Chessboard : MonoBehaviour
 
     private void SetColors()
     {
-        colorBlockController.SetColors();
+        promotionPieceController.SetColors();
     }
 
     private void InitControllers()
     {
-        promotionPieceImagesController = new PromotionPieceImagesController();
+        promotionPieceController = new PromotionPieceController();
         soundController = new SoundController();
-        colorBlockController = new ColorBlockController();
     }
 
     private void SetPromotionPiecesImagesPaths()
     {
-        promotionPieceImagesController.SetPromotionPiecesImagesPaths();
+        promotionPieceController.SetPromotionPiecesImagesPaths();
     }
 
     private void ResetPromotion()
@@ -330,98 +309,18 @@ public class Chessboard : MonoBehaviour
 
     private void SetPromotionPiecesObjects()
     {
-        promotionPiecesObject =
-            promotionPieces.transform.GetChild(0).gameObject;
-
-        SetPromotionPiecesObject(ref promotionQueen,
-        ref promotionQueenImage,
-        0);
-        SetPromotionPiecesObject(ref promotionRook, ref promotionRookImage, 1);
-        SetPromotionPiecesObject(ref promotionBishop,
-        ref promotionBishopImage,
-        2);
-        SetPromotionPiecesObject(ref promotionKnight,
-        ref promotionKnightImage,
-        3);
-    }
-
-    private void SetPromotionPiecesObject(
-        ref GameObject promotionPiece,
-        ref GameObject promotionPieceImage,
-        int x = 0
-    )
-    {
-        promotionPiece =
-            promotionPieces.transform.GetChild(0).GetChild(x).gameObject;
-        promotionPieceImage = promotionPiece.transform.GetChild(0).gameObject;
+        promotionPieceController.SetPromotionPiecesObjects (promotionPieces);
     }
 
     private void SetPromotionPiecesColor(Team team)
     {
-        Button promotionQueenButton = promotionQueen.GetComponent<Button>();
-        Button promotionRookButton = promotionRook.GetComponent<Button>();
-        Button promotionBishopButton = promotionBishop.GetComponent<Button>();
-        Button promotionKnightButton = promotionKnight.GetComponent<Button>();
-        ColorBlock colorBlock = promotionQueenButton.colors;
-
-        SetPromotionPiecesWantedColors (team, colorBlock);
-
-        SetPromotionPiecesColors(ref promotionQueenButton,
-        ref promotionQueen,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionRookButton,
-        ref promotionRook,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionBishopButton,
-        ref promotionBishop,
-        colorBlock);
-        SetPromotionPiecesColors(ref promotionKnightButton,
-        ref promotionKnight,
-        colorBlock);
-    }
-
-    private void SetPromotionPiecesColors(
-        ref Button promotionButton,
-        ref GameObject promotionPiece,
-        ColorBlock colorBlock
-    )
-    {
-        promotionButton.colors = colorBlock;
-        promotionPiece.GetComponent<Image>().color =
-            colorBlockController.GetCurrentColor();
-    }
-
-    private void SetPromotionPiecesWantedColors(
-        Team team,
-        ColorBlock colorBlock
-    )
-    {
-        colorBlockController.SetPromotionPiecesWantedColors (team, colorBlock);
+        promotionPieceController.SetPromotionPiecesColor (team);
     }
 
     private void SetPromotionPiecesImage(Team team)
     {
         team = GetOppositeTeam(team);
-        promotionPieceImagesController.SetPromotionPiecesImage (
-            team,
-            promotionQueenImage,
-            promotionRookImage,
-            promotionBishopImage,
-            promotionKnightImage
-        );
-    }
-
-    private void SetPromotionPiecesImages(
-        GameObject pieceImage,
-        Texture currentPieceImage
-    )
-    {
-        pieceImage.GetComponent<RawImage>().texture = currentPieceImage;
-    }
-
-    private void SetPromotionPiecesWantedImages(Team team)
-    {
-        promotionPieceImagesController.SetPromotionPiecesWantedImages (team);
+        promotionPieceController.SetPromotionPiecesImage (team);
     }
 
     private void SetDrawObject()
@@ -1448,8 +1347,9 @@ public class Chessboard : MonoBehaviour
         }
 
         Vector3 newPosition = new Vector3(x, 500f, 0f);
-        promotionPiecesObject.transform.position =
-            promotionPiecesObject.transform.parent.TransformPoint(newPosition);
+        promotionPieceController.SetNewPosition (newPosition);
+        // promotionPiecesObject.transform.position =
+        //     promotionPiecesObject.transform.parent.TransformPoint(newPosition);
     }
 
     private void ProcessPromotion(ChessPieceType promotionPieceType)
