@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEngine;
 
 public class Bishop : ChessPiece
@@ -80,7 +81,7 @@ public class Bishop : ChessPiece
             int
                 x = currentX + 1,
                 y = currentY - 1;
-            x < Chessboard.TILE_COUNT_X && y >= 0;
+            x < Board.TILE_COUNT_X && y >= 0;
             x++, y--
         )
         {
@@ -106,7 +107,7 @@ public class Bishop : ChessPiece
             int
                 x = currentX - 1,
                 y = currentY + 1;
-            x >= 0 && y < Chessboard.TILE_COUNT_Y;
+            x >= 0 && y < Board.TILE_COUNT_Y;
             x--, y++
         )
         {
@@ -132,7 +133,7 @@ public class Bishop : ChessPiece
             int
                 x = currentX + 1,
                 y = currentY + 1;
-            x < Chessboard.TILE_COUNT_X && y < Chessboard.TILE_COUNT_Y;
+            x < Board.TILE_COUNT_X && y < Board.TILE_COUNT_Y;
             x++, y++
         )
         {

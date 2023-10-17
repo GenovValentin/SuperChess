@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEngine;
 
 public enum ChessPieceType
@@ -48,8 +49,8 @@ public class ChessPiece : MonoBehaviour
     {
         return x >= 0 &&
         y >= 0 &&
-        x < Chessboard.TILE_COUNT_X &&
-        y < Chessboard.TILE_COUNT_Y;
+        x < Board.TILE_COUNT_X &&
+        y < Board.TILE_COUNT_Y;
     }
 
     protected void AddAvailableMove(

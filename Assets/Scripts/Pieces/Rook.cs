@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEngine;
 
 public class Rook : ChessPiece
@@ -46,7 +47,7 @@ public class Rook : ChessPiece
         List<Vector2Int> availableMoves
     )
     {
-        for (int i = currentY + 1; i < Chessboard.TILE_COUNT_Y; i++)
+        for (int i = currentY + 1; i < Board.TILE_COUNT_Y; i++)
         {
             bool shouldAddMoreMoves =
                 AddAvailableMove(ref board, currentX, i, team, availableMoves);
@@ -106,7 +107,7 @@ public class Rook : ChessPiece
         List<Vector2Int> availableMoves
     )
     {
-        for (int i = currentX + 1; i < Chessboard.TILE_COUNT_Y; i++)
+        for (int i = currentX + 1; i < Board.TILE_COUNT_Y; i++)
         {
             bool shouldAddMoreMoves =
                 AddAvailableMove(ref board, i, currentY, team, availableMoves);

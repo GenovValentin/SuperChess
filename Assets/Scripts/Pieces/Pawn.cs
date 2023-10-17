@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEngine;
 
 public enum PawnStartLine
@@ -205,7 +206,7 @@ public class Pawn : ChessPiece
     {
         int directionToTake = toTheRight ? 1 : -1;
         if (
-            (!toTheRight || currentX == Chessboard.TILE_COUNT_X - 1) &&
+            (!toTheRight || currentX == Board.TILE_COUNT_X - 1) &&
             (toTheRight || currentX == 0)
         )
         {

@@ -27,22 +27,10 @@ public class Chessboard : MonoBehaviour
     private Material tileMaterial;
 
     [SerializeField]
-    private float tileSize = 1.0f;
-
-    [SerializeField]
-    private float yOffset = 0.101f;
-
-    [SerializeField]
     private float deathSize = 0.4f;
 
     [SerializeField]
-    private float deathSpacing = 0.5f;
-
-    [SerializeField]
     private float dragOffset = 0.5f;
-
-    [SerializeField]
-    private Vector3 boardCenter = Vector3.zero;
 
     [SerializeField]
     private GameObject victoryScreen;
@@ -121,10 +109,6 @@ public class Chessboard : MonoBehaviour
     private Material[] teamMaterials;
 
     // Logic
-    public const int TILE_COUNT_X = 8;
-
-    public const int TILE_COUNT_Y = 8;
-
     private ChessPiece[,] chessPieces;
 
     private ChessPiece currentlyDragging;
@@ -139,11 +123,9 @@ public class Chessboard : MonoBehaviour
 
     private List<Vector2Int[]> moveList = new List<Vector2Int[]>();
 
-    private GameObject[,] tiles;
+    private Board board;
 
     private Vector2Int currentHover;
-
-    private Vector3 bounds;
 
     public bool isWhiteTurn;
 
@@ -221,7 +203,7 @@ public class Chessboard : MonoBehaviour
         InitControllers();
         SetIsWhiteTurn(true);
 
-        GenerateAllTiles (tileSize, TILE_COUNT_X, TILE_COUNT_Y);
+        GenerateAllTiles();
         SpawnAllPieces();
         PositionAllPieces();
 
@@ -249,6 +231,7 @@ public class Chessboard : MonoBehaviour
     {
         promotionPieceController = new PromotionPieceController();
         soundController = new SoundController();
+        board = new Board(tileMaterial);
     }
 
     private void SetPromotionPiecesImagesPaths()
@@ -390,7 +373,8 @@ public class Chessboard : MonoBehaviour
 
     private void LiftPiece(Ray ray)
     {
-        Plane horizontalPlane = new Plane(Vector3.up, Vector3.up * yOffset);
+        Plane horizontalPlane = board.GetNewHorizontalPlane();
+
         float distance = 0.0f;
         if (horizontalPlane.Raycast(ray, out distance))
         {
@@ -430,21 +414,12 @@ public class Chessboard : MonoBehaviour
 
     private bool IsMouseOverTile(Ray ray, out RaycastHit info)
     {
-        if (isReachable)
-        {
-            return Physics
-                .Raycast(ray,
-                out info,
-                100,
-                LayerMask.GetMask("Tile", "Hover", "Highlight"));
-        }
-        return Physics
-            .Raycast(ray, out info, 100, LayerMask.GetMask("invalid"));
+        return board.IsMouseOverTile(ray, out info, isReachable);
     }
 
     private bool IsMouseOverModal(Ray ray, out RaycastHit info)
     {
-        return Physics.Raycast(ray, out info, 100, LayerMask.GetMask("Modal"));
+        return board.IsMouseOverModal(ray, out info);
     }
 
     private void HandleLeftMouseButtonUp(Vector2Int hitPosition)
@@ -510,7 +485,7 @@ public class Chessboard : MonoBehaviour
 
     private Vector2Int CreatePosition(int x, int y)
     {
-        return new Vector2Int(x, y);
+        return board.CreatePosition(x, y);
     }
 
     private void SendMoveToServer(
@@ -770,12 +745,12 @@ public class Chessboard : MonoBehaviour
 
     private void SetLayer(Vector2Int position, string layerName)
     {
-        tiles[position.x, position.y].layer = GetLayer(layerName);
+        board.SetLayer (position, layerName);
     }
 
     private int GetLayer(string layerName)
     {
-        return LayerMask.NameToLayer(layerName);
+        return board.GetLayer(layerName);
     }
 
     private void SetLayerVictoryScreen(string layerName)
@@ -788,82 +763,15 @@ public class Chessboard : MonoBehaviour
         drawIndicator.layer = GetLayer(layerName);
     }
 
-    private void GenerateAllTiles(
-        float tileSize,
-        int tileCountX,
-        int tileCountY
-    )
+    private void GenerateAllTiles()
     {
-        yOffset += transform.position.y;
-        float fieldCenter = (tileCountX / 2) * tileSize;
-        bounds = new Vector3(fieldCenter, 0, fieldCenter) + boardCenter;
-        tiles = new GameObject[tileCountX, tileCountY];
-
-        for (int x = 0; x < tileCountX; x++)
-        {
-            for (int y = 0; y < tileCountY; y++)
-            {
-                tiles[x, y] = GenerateSingleTile(tileSize, x, y);
-            }
-        }
-    }
-
-    private GameObject GenerateSingleTile(float tileSize, int x, int y)
-    {
-        return CreateTileObject(CreateTileMesh(tileSize, x, y), x, y);
-    }
-
-    private GameObject CreateTileObject(Mesh mesh, int x, int y)
-    {
-        GameObject tileObject = new GameObject(string.Format($"X:{x}, Y:{y}"));
-        tileObject.transform.parent = transform;
-        tileObject.AddComponent<MeshFilter>().mesh = mesh;
-        tileObject.AddComponent<MeshRenderer>().material = tileMaterial;
-        tileObject.layer = GetLayer("Tile");
-        tileObject.AddComponent<BoxCollider>();
-
-        return tileObject;
-    }
-
-    private Mesh CreateTileMesh(float tileSize, int x, int y)
-    {
-        Mesh mesh = new Mesh();
-
-        mesh.vertices = CreateTileVertices(tileSize, x, y);
-        mesh.triangles = CreateTriangles();
-        mesh.RecalculateNormals();
-
-        return mesh;
-    }
-
-    private int[] CreateTriangles()
-    {
-        return new int[] { 0, 1, 2, 1, 3, 2 };
-    }
-
-    private Vector3[] CreateTileVertices(float tileSize, int x, int y)
-    {
-        Vector3[] vertices = new Vector3[4];
-        vertices[0] = CreateTileVertice(x * tileSize, yOffset, y * tileSize);
-        vertices[1] =
-            CreateTileVertice(x * tileSize, yOffset, (y + 1) * tileSize);
-        vertices[2] =
-            CreateTileVertice((x + 1) * tileSize, yOffset, y * tileSize);
-        vertices[3] =
-            CreateTileVertice((x + 1) * tileSize, yOffset, (y + 1) * tileSize);
-
-        return vertices;
-    }
-
-    private Vector3 CreateTileVertice(float x, float y, float z)
-    {
-        return new Vector3(x, y, z) - bounds;
+        board.GenerateAllTiles (transform);
     }
 
     // Spawning of the pieces
     private void SpawnAllPieces()
     {
-        chessPieces = new ChessPiece[TILE_COUNT_X, TILE_COUNT_Y];
+        chessPieces = new ChessPiece[Board.TILE_COUNT_X, Board.TILE_COUNT_Y];
 
         SpawnPieces(Team.White);
         SpawnPieces(Team.Black);
@@ -875,7 +783,7 @@ public class Chessboard : MonoBehaviour
     private void SpawnAllPawns(bool isWhite, ChessPiece[,] chessPieces)
     {
         Team team = isWhite ? Team.White : Team.Black;
-        for (int i = 0; i < TILE_COUNT_X; i++)
+        for (int i = 0; i < Board.TILE_COUNT_X; i++)
         {
             chessPieces[i, (int) Pawn.GetPawnStartLine(isWhite)] =
                 SpawnSinglePiece(ChessPieceType.Pawn, team);
@@ -909,9 +817,9 @@ public class Chessboard : MonoBehaviour
     // Positioning
     private void PositionAllPieces()
     {
-        for (int x = 0; x < TILE_COUNT_X; x++)
+        for (int x = 0; x < Board.TILE_COUNT_X; x++)
         {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
+            for (int y = 0; y < Board.TILE_COUNT_Y; y++)
             {
                 if (chessPieces[x, y] != null)
                 {
@@ -931,9 +839,7 @@ public class Chessboard : MonoBehaviour
 
     private Vector3 GetTileCenter(int x, int y)
     {
-        return new Vector3(x * tileSize, yOffset, y * tileSize) -
-        bounds +
-        new Vector3(tileSize / 2, 0, tileSize / 2);
+        return board.GetTileCenter(x, y);
     }
 
     private void HighlightTiles()
@@ -1090,9 +996,9 @@ public class Chessboard : MonoBehaviour
 
     private void DestroyPieces()
     {
-        for (int x = 0; x < TILE_COUNT_X; x++)
+        for (int x = 0; x < Board.TILE_COUNT_X; x++)
         {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
+            for (int y = 0; y < Board.TILE_COUNT_Y; y++)
             {
                 if (chessPieces[x, y] != null)
                 {
@@ -1348,8 +1254,6 @@ public class Chessboard : MonoBehaviour
 
         Vector3 newPosition = new Vector3(x, 500f, 0f);
         promotionPieceController.SetNewPosition (newPosition);
-        // promotionPiecesObject.transform.position =
-        //     promotionPiecesObject.transform.parent.TransformPoint(newPosition);
     }
 
     private void ProcessPromotion(ChessPieceType promotionPieceType)
@@ -1493,15 +1397,7 @@ public class Chessboard : MonoBehaviour
 
     private Vector3 GetDeadPiecePosition(Team team)
     {
-        float xCoef = team == Team.White ? -1.4f : 8.4f;
-        float zCoef = team == Team.White ? 7.75f : -0.75f;
-        Vector3 direction = team == Team.White ? Vector3.back : Vector3.forward;
-        List<ChessPiece> deads = GetDeads(team);
-
-        return new Vector3(xCoef * tileSize, yOffset, zCoef * tileSize) -
-        bounds +
-        new Vector3(tileSize / 2, 0, tileSize / 2) +
-        (direction * deathSpacing) * deads.Count;
+        return board.GetDeadPiecePosition(team, GetDeads(team));
     }
 
     private List<ChessPiece> GetDeads(Team team)
@@ -1512,9 +1408,9 @@ public class Chessboard : MonoBehaviour
     private void PreventCheck()
     {
         ChessPiece targetKing = null;
-        for (int x = 0; x < TILE_COUNT_X; x++)
+        for (int x = 0; x < Board.TILE_COUNT_X; x++)
         {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
+            for (int y = 0; y < Board.TILE_COUNT_Y; y++)
             {
                 ChessPiece piece = chessPieces[x, y];
                 if (
@@ -1626,7 +1522,8 @@ public class Chessboard : MonoBehaviour
         }
 
         // Copy the [,] and not a reference
-        ChessPiece[,] simulation = new ChessPiece[TILE_COUNT_X, TILE_COUNT_Y];
+        ChessPiece[,] simulation =
+            new ChessPiece[Board.TILE_COUNT_X, Board.TILE_COUNT_Y];
         List<ChessPiece> simAttackingPieces =
             CreateSimAttackingPieces(simulation, chessPiece.team);
 
@@ -1703,9 +1600,9 @@ public class Chessboard : MonoBehaviour
     CreateSimAttackingPieces(ChessPiece[,] simulation, Team team)
     {
         List<ChessPiece> simAttackingPieces = new List<ChessPiece>();
-        for (int x = 0; x < TILE_COUNT_X; x++)
+        for (int x = 0; x < Board.TILE_COUNT_X; x++)
         {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
+            for (int y = 0; y < Board.TILE_COUNT_Y; y++)
             {
                 ChessPiece piece = chessPieces[x, y];
                 if (piece != null)
@@ -1726,9 +1623,9 @@ public class Chessboard : MonoBehaviour
     GetAttackingPieces(ChessPiece[,] chessPieces, Team attackingTeam)
     {
         List<ChessPiece> attackingPieces = new List<ChessPiece>();
-        for (int x = 0; x < TILE_COUNT_X; x++)
+        for (int x = 0; x < Board.TILE_COUNT_X; x++)
         {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
+            for (int y = 0; y < Board.TILE_COUNT_Y; y++)
             {
                 ChessPiece piece = chessPieces[x, y];
                 if (piece != null && piece.team == attackingTeam)
@@ -1744,9 +1641,9 @@ public class Chessboard : MonoBehaviour
     private ChessPiece GetTargetKing(ChessPiece[,] chessPieces, Team targetTeam)
     {
         ChessPiece targetKing = null;
-        for (int x = 0; x < TILE_COUNT_X; x++)
+        for (int x = 0; x < Board.TILE_COUNT_X; x++)
         {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
+            for (int y = 0; y < Board.TILE_COUNT_Y; y++)
             {
                 ChessPiece piece = chessPieces[x, y];
                 if (
@@ -1800,9 +1697,9 @@ public class Chessboard : MonoBehaviour
         int bishopCount = 0;
         int otherPieceCount = 0;
 
-        for (int x = 0; x < TILE_COUNT_X; x++)
+        for (int x = 0; x < Board.TILE_COUNT_X; x++)
         {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
+            for (int y = 0; y < Board.TILE_COUNT_Y; y++)
             {
                 if (chessPieces[x, y] != null)
                 {
@@ -2000,17 +1897,7 @@ public class Chessboard : MonoBehaviour
 
     private Vector2Int LookupTileIndex(GameObject hitInfo)
     {
-        for (int x = 0; x < TILE_COUNT_X; x++)
-        {
-            for (int y = 0; y < TILE_COUNT_Y; y++)
-            {
-                if (tiles[x, y] == hitInfo)
-                {
-                    return CreatePosition(x, y);
-                }
-            }
-        }
-        return -Vector2Int.one; //Invalid
+        return board.LookupTileIndex(hitInfo);
     }
 
     private void ChangeRimsColour(bool isWhiteTurn)
