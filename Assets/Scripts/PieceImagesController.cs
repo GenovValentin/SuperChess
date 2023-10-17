@@ -47,10 +47,10 @@ namespace Assets.Scripts
 
         public void SetPromotionPiecesWantedImages(Team team)
         {
-            GameObject queenImage = whiteQueenImage;
-            GameObject rookImage = whiteRookImage;
-            GameObject bishopImage = whiteBishopImage;
-            GameObject knightImage = whiteKnightImage;
+            Texture queenImage = whiteQueenImage;
+            Texture rookImage = whiteRookImage;
+            Texture bishopImage = whiteBishopImage;
+            Texture knightImage = whiteKnightImage;
 
             if (team == Team.Black)
             {

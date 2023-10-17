@@ -157,21 +157,7 @@ public class Chessboard : MonoBehaviour
 
     private SpecialMove specialMove;
 
-    public AudioSource Board;
-
-    public AudioSource Pieces;
-
-    public AudioSource Castle;
-
-    public AudioSource Capture;
-
-    public AudioSource Promote;
-
-    public AudioSource Swoosh1;
-
-    public AudioSource Swoosh2;
-
-    public AudioSource Swoosh3;
+    public SoundController soundController;
 
     private bool isWhitePOV = true;
 
@@ -268,6 +254,7 @@ public class Chessboard : MonoBehaviour
 
     private void Start()
     {
+        InitControllers();
         SetIsWhiteTurn(true);
 
         GenerateAllTiles (tileSize, TILE_COUNT_X, TILE_COUNT_Y);
@@ -299,9 +286,14 @@ public class Chessboard : MonoBehaviour
         ColorUtility.TryParseHtmlString("#202020", out blackPressedColor);
     }
 
-    private void SetPromotionPiecesImagesPaths()
+    private void InitControllers()
     {
         pieceImagesController = new PieceImagesController();
+        soundController = new SoundController();
+    }
+
+    private void SetPromotionPiecesImagesPaths()
+    {
         pieceImagesController.SetPromotionPiecesImagesPaths();
     }
 
@@ -342,39 +334,12 @@ public class Chessboard : MonoBehaviour
 
     private void SetSounds()
     {
-        GameObject boardSound = GameObject.Find("BoardSound");
-        Board = boardSound.GetComponent<AudioSource>();
-        GameObject piecesSound = GameObject.Find("PiecesSound");
-        Pieces = piecesSound.GetComponent<AudioSource>();
-        GameObject castleSound = GameObject.Find("CastleSound");
-        Castle = castleSound.GetComponent<AudioSource>();
-        GameObject captureSound = GameObject.Find("CaptureSound");
-        Capture = captureSound.GetComponent<AudioSource>();
-        GameObject promoteSound = GameObject.Find("PromoteSound");
-        Promote = promoteSound.GetComponent<AudioSource>();
-        GameObject swooshSound1 = GameObject.Find("SwooshSound1");
-        Swoosh1 = swooshSound1.GetComponent<AudioSource>();
-        GameObject swooshSound2 = GameObject.Find("SwooshSound2");
-        Swoosh1 = swooshSound2.GetComponent<AudioSource>();
-        GameObject swooshSound3 = GameObject.Find("SwooshSound3");
-        Swoosh1 = swooshSound3.GetComponent<AudioSource>();
+        soundController.SetSounds();
     }
 
     private void PlaySwooshSound()
     {
-        int swooshSoundToBePlayed = Random.Range(1, 4);
-        switch (swooshSoundToBePlayed)
-        {
-            case 1:
-                Swoosh1.Play();
-                break;
-            case 2:
-                Swoosh2.Play();
-                break;
-            case 3:
-                Swoosh3.Play();
-                break;
-        }
+        soundController.PlaySwooshSound();
     }
 
     private void SetRematchObjects()
@@ -1246,7 +1211,7 @@ public class Chessboard : MonoBehaviour
         ActivateButtons(true, true);
         if (wasMenuButtonPressed == false)
         {
-            Board.Play();
+            soundController.PlayBoardSound();
         }
         wasMenuButtonPressed = false;
     }
@@ -2118,26 +2083,7 @@ public class Chessboard : MonoBehaviour
             }
         }
 
-        if (specialMove == SpecialMove.None)
-        {
-            Pieces.Play();
-        }
-        else if (specialMove == SpecialMove.Castling)
-        {
-            Castle.Play();
-        }
-        else if (specialMove == SpecialMove.EnPassant)
-        {
-            Capture.Play();
-        }
-        else if (specialMove == SpecialMove.Promotion)
-        {
-            Promote.Play();
-        }
-        else if (specialMove == SpecialMove.Capture)
-        {
-            Capture.Play();
-        }
+        soundController.PlaySpecialMoveSound (specialMove);
 
         chessPieces[x, y] = originalPiece;
         chessPieces[previousPosition.x, previousPosition.y] = null;
@@ -2367,7 +2313,7 @@ public class Chessboard : MonoBehaviour
         }
         Invoke("DisplayInGame", 2);
         AreInGameButtonsActive(true);
-        Board.PlayDelayed(2);
+        soundController.PlayBoardSound(2);
     }
 
     private void ChangeTeam()
@@ -2391,7 +2337,7 @@ public class Chessboard : MonoBehaviour
 
         if (mm.teamId != (int) currentTeam)
         {
-            Pieces.Play();
+            soundController.PlayPiecesSound();
             ChessPiece target = chessPieces[mm.originalX, mm.originalY];
 
             if (target == null)
