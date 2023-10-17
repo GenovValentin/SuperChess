@@ -11,6 +11,20 @@ namespace Assets.Scripts
     {
         public ColorBlockController colorBlockController;
 
+        private Dictionary<int, int>
+            promotionLines =
+                new Dictionary<int, int>()
+                {
+                    [7] = -200,
+                    [6] = -120,
+                    [5] = -30,
+                    [4] = 50,
+                    [3] = 140,
+                    [2] = 220,
+                    [1] = 310,
+                    [0] = 400
+                };
+
         private Texture whiteQueenImage;
 
         private Texture blackQueenImage;
@@ -73,15 +87,6 @@ namespace Assets.Scripts
             blackBishopImage = Resources.Load<Texture>("Bishop_B");
             whiteKnightImage = Resources.Load<Texture>("Knight");
             blackKnightImage = Resources.Load<Texture>("Knight_B");
-        }
-
-        public void SetNewPosition(Vector3 newPosition)
-        {
-            promotionPiecesObject.transform.position =
-                promotionPiecesObject
-                    .transform
-                    .parent
-                    .TransformPoint(newPosition);
         }
 
         public void SetPromotionPiecesObjects(GameObject promotionPieces)
@@ -166,6 +171,24 @@ namespace Assets.Scripts
             colorBlock);
         }
 
+        public void SetPromotionPiecesObjectPosition(
+            Team team,
+            Vector2Int lastMove
+        )
+        {
+            int x = GetPromotionPiecesObjectX(team, lastMove.x);
+
+            Vector3 newPosition = new Vector3(x, 500f, 0f);
+            SetNewPosition (newPosition);
+        }
+
+        public int GetPromotionPiecesObjectX(Team team, int moveX)
+        {
+            int line = team == Team.White ? moveX : (7 - moveX);
+
+            return promotionLines[moveX];
+        }
+
         private void SetPromotionPiecesObject(
             GameObject promotionPieces,
             ref GameObject promotionPiece,
@@ -220,6 +243,15 @@ namespace Assets.Scripts
             currentRookImage = wantedRookImage;
             currentBishopImage = wantedBishopImage;
             currentKnightImage = wantedKnightImage;
+        }
+
+        private void SetNewPosition(Vector3 newPosition)
+        {
+            promotionPiecesObject.transform.position =
+                promotionPiecesObject
+                    .transform
+                    .parent
+                    .TransformPoint(newPosition);
         }
     }
 }

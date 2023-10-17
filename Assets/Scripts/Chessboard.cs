@@ -1184,76 +1184,10 @@ public class Chessboard : MonoBehaviour
     private void SetPromotionPiecesObjectPosition(Team team)
     {
         var lastMove = GetLastMove();
-        int x = 0;
-        if (team == Team.White)
-        {
-            switch (lastMove.x)
-            {
-                case 7:
-                    x = -200;
-                    break;
-                case 6:
-                    x = -120;
-                    break;
-                case 5:
-                    x = -30;
-                    break;
-                case 4:
-                    x = 50;
-                    break;
-                case 3:
-                    x = 140;
-                    break;
-                case 2:
-                    x = 220;
-                    break;
-                case 1:
-                    x = 310;
-                    break;
-                case 0:
-                    x = 400;
-                    break;
-                default:
-                    x = 0;
-                    break;
-            }
-        }
-        else if (team == Team.Black)
-        {
-            switch (lastMove.x)
-            {
-                case 0:
-                    x = -200;
-                    break;
-                case 1:
-                    x = -120;
-                    break;
-                case 2:
-                    x = -30;
-                    break;
-                case 3:
-                    x = 50;
-                    break;
-                case 4:
-                    x = 140;
-                    break;
-                case 5:
-                    x = 220;
-                    break;
-                case 6:
-                    x = 310;
-                    break;
-                case 7:
-                    x = 400;
-                    break;
-                default:
-                    x = 0;
-                    break;
-            }
-        }
-
-        Vector3 newPosition = new Vector3(x, 500f, 0f);
-        promotionPieceController.SetNewPosition (newPosition);
+        promotionPieceController.SetPromotionPiecesObjectPosition (
+            team,
+            lastMove
+        );
     }
 
     private void ProcessPromotion(ChessPieceType promotionPieceType)
