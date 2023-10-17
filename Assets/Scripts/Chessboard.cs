@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Assets.Scripts;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -186,29 +187,7 @@ public class Chessboard : MonoBehaviour
 
     private Vector2Int prevPosition;
 
-    public Texture whiteQueenImage;
-
-    public Texture blackQueenImage;
-
-    public Texture currentQueenImage;
-
-    public Texture whiteRookImage;
-
-    public Texture blackRookImage;
-
-    public Texture currentRookImage;
-
-    public Texture whiteBishopImage;
-
-    public Texture blackBishopImage;
-
-    public Texture currentBishopImage;
-
-    public Texture whiteKnightImage;
-
-    public Texture blackKnightImage;
-
-    public Texture currentKnightImage;
+    public PieceImagesController pieceImagesController;
 
     Color whiteColor;
 
@@ -322,14 +301,8 @@ public class Chessboard : MonoBehaviour
 
     private void SetPromotionPiecesImagesPaths()
     {
-        whiteQueenImage = Resources.Load<Texture>("Queen");
-        blackQueenImage = Resources.Load<Texture>("Queen_B");
-        whiteRookImage = Resources.Load<Texture>("Rook");
-        blackRookImage = Resources.Load<Texture>("Rook_B");
-        whiteBishopImage = Resources.Load<Texture>("Bishop");
-        blackBishopImage = Resources.Load<Texture>("Bishop_B");
-        whiteKnightImage = Resources.Load<Texture>("Knight");
-        blackKnightImage = Resources.Load<Texture>("Knight_B");
+        pieceImagesController = new PieceImagesController();
+        pieceImagesController.SetPromotionPiecesImagesPaths();
     }
 
     private void ResetPromotion()
@@ -511,12 +484,13 @@ public class Chessboard : MonoBehaviour
     private void SetPromotionPiecesImage(Team team)
     {
         team = GetOppositeTeam(team);
-        SetPromotionPiecesWantedImages (team);
-
-        SetPromotionPiecesImages (promotionQueenImage, currentQueenImage);
-        SetPromotionPiecesImages (promotionRookImage, currentRookImage);
-        SetPromotionPiecesImages (promotionBishopImage, currentBishopImage);
-        SetPromotionPiecesImages (promotionKnightImage, currentKnightImage);
+        pieceImagesController.SetPromotionPiecesImage (
+            team,
+            promotionQueenImage,
+            promotionRookImage,
+            promotionBishopImage,
+            promotionKnightImage
+        );
     }
 
     private void SetPromotionPiecesImages(
@@ -529,37 +503,7 @@ public class Chessboard : MonoBehaviour
 
     private void SetPromotionPiecesWantedImages(Team team)
     {
-        if (team == Team.White)
-        {
-            SetPromotionPiecesCurrentImages (
-                whiteQueenImage,
-                whiteRookImage,
-                whiteBishopImage,
-                whiteKnightImage
-            );
-        }
-        else if (team == Team.Black)
-        {
-            SetPromotionPiecesCurrentImages (
-                blackQueenImage,
-                blackRookImage,
-                blackBishopImage,
-                blackKnightImage
-            );
-        }
-    }
-
-    private void SetPromotionPiecesCurrentImages(
-        Texture wantedQueenImage,
-        Texture wantedRookImage,
-        Texture wantedBishopImage,
-        Texture wantedKnightImage
-    )
-    {
-        currentQueenImage = wantedQueenImage;
-        currentRookImage = wantedRookImage;
-        currentBishopImage = wantedBishopImage;
-        currentKnightImage = wantedKnightImage;
+        pieceImagesController.SetPromotionPiecesWantedImages (team);
     }
 
     private void SetDrawObject()
