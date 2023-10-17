@@ -29,7 +29,7 @@ public class Server : MonoBehaviour
 
     private bool isActive;
 
-    private const float keepAliveTickRate = 10.0f;
+    private const float KEEP_ALIVE_TICK_RATE = 10.0f;
 
     private float lastKeepAlive;
 
@@ -124,11 +124,10 @@ public class Server : MonoBehaviour
 
     private void KeepAlive()
     {
-        if (Time.time - lastKeepAlive <= keepAliveTickRate)
+        if (Time.time - lastKeepAlive <= KEEP_ALIVE_TICK_RATE)
         {
             return;
         }
-
 
         lastKeepAlive = Time.time;
         Broadcast(new NetKeepAlive());

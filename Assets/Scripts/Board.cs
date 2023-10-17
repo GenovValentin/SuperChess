@@ -147,8 +147,10 @@ namespace Assets.Scripts
         private GameObject
         CreateTileObject(Mesh mesh, int x, int y, Transform transform)
         {
-            GameObject tileObject =
-                new GameObject(string.Format($"X:{x}, Y:{y}"));
+            char xChar = (char)('A' + x);
+            string tileName = $"{xChar}, {y + 1}";
+
+            GameObject tileObject = new GameObject(tileName);
             tileObject.transform.parent = transform;
             tileObject.AddComponent<MeshFilter>().mesh = mesh;
             tileObject.AddComponent<MeshRenderer>().material = tileMaterial;

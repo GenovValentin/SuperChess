@@ -35,11 +35,11 @@ public class VolumeControl : MonoBehaviour
 
     private float previousVolume;
 
-    private const float mutedVolumeValue = 0.0001f;
+    private const float MUTED_VOLUME_VALUE = 0.0001f;
 
-    private const float minVolumeValue = 0.3333f;
+    private const float MIN_VOLUME_VALUE = 0.3333f;
 
-    private const float midVolumeValue = 0.6666f;
+    private const float MID_VOLUME_VALUE = 0.6666f;
 
     private bool isVolumeMuted = false;
 
@@ -51,7 +51,7 @@ public class VolumeControl : MonoBehaviour
 
     public void SetVolume(float sliderValue)
     {
-        if (sliderValue > mutedVolumeValue)
+        if (sliderValue > MUTED_VOLUME_VALUE)
         {
             previousVolume = sliderValue;
             isVolumeMuted = false;
@@ -107,19 +107,23 @@ public class VolumeControl : MonoBehaviour
 
     private void SetVolumeIconImage(float sliderValue)
     {
-        if (sliderValue <= mutedVolumeValue)
+        if (sliderValue <= MUTED_VOLUME_VALUE)
         {
             volumeIconImage = mutedVolumeImage;
         }
-        else if (sliderValue > mutedVolumeValue && sliderValue < minVolumeValue)
+        else if (
+            sliderValue > MUTED_VOLUME_VALUE && sliderValue < MIN_VOLUME_VALUE
+        )
         {
             volumeIconImage = minVolumeImage;
         }
-        else if (sliderValue >= minVolumeValue && sliderValue < midVolumeValue)
+        else if (
+            sliderValue >= MIN_VOLUME_VALUE && sliderValue < MID_VOLUME_VALUE
+        )
         {
             volumeIconImage = midVolumeImage;
         }
-        else if (sliderValue >= midVolumeValue)
+        else if (sliderValue >= MID_VOLUME_VALUE)
         {
             volumeIconImage = maxVolumeImage;
         }
@@ -176,7 +180,7 @@ public class VolumeControl : MonoBehaviour
         }
         else
         {
-            SetVolume (mutedVolumeValue);
+            SetVolume (MUTED_VOLUME_VALUE);
         }
     }
 }

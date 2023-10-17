@@ -109,6 +109,8 @@ public class Chessboard : MonoBehaviour
     private Material[] teamMaterials;
 
     // Logic
+    private IEnumerator coroutine;
+
     private ChessPiece[,] chessPieces;
 
     private ChessPiece currentlyDragging;
@@ -213,11 +215,11 @@ public class Chessboard : MonoBehaviour
         SetDrawObject();
         SetColors();
         RegisterEvents();
-        ResetInGame();
+        ToggleObject(inGame, false);
         ResetVictoryScreen();
         ResetDrawIndicator();
         ResetTMPs();
-        ResetPromotion();
+        ToggleObject(promotionPieces, false);
         SetSounds();
         AddInputFieldListener();
     }
@@ -237,11 +239,6 @@ public class Chessboard : MonoBehaviour
     private void SetPromotionPiecesImagesPaths()
     {
         promotionPieceController.SetPromotionPiecesImagesPaths();
-    }
-
-    private void ResetPromotion()
-    {
-        promotionPieces.SetActive(false);
     }
 
     private void AddInputFieldListener()
@@ -269,9 +266,9 @@ public class Chessboard : MonoBehaviour
 
     private void ResetTMPs()
     {
-        declinedTMP.SetActive(false);
-        offeredDraw.SetActive(false);
-        offeredRematch.SetActive(false);
+        ToggleObject(declinedTMP, false);
+        ToggleObject(offeredDraw, false);
+        ToggleObject(offeredRematch, false);
     }
 
     private void SetSounds()
@@ -697,7 +694,8 @@ public class Chessboard : MonoBehaviour
         if (HasHoveredTileBefore())
         {
             currentHover = hitPosition;
-            SetHoveringLayer (hitPosition);
+
+            SetTileLayer(hitPosition, "Hover");
         }
 
         if (currentHover == hitPosition)
@@ -709,18 +707,19 @@ public class Chessboard : MonoBehaviour
         SetLayerOnMove();
 
         currentHover = hitPosition;
-        SetHoveringLayer (hitPosition);
+
+        SetTileLayer(hitPosition, "Hover");
     }
 
     private void SetLayerOnMove()
     {
         if (ContainsValidMove(ref availableMoves, currentHover))
         {
-            SetHighlightLayer (currentHover);
+            SetTileLayer(currentHover, "Highlight");
             return;
         }
 
-        SetTileLayer (currentHover);
+        SetTileLayer(currentHover, "Tile");
     }
 
     private bool HasHoveredTileBefore()
@@ -728,19 +727,14 @@ public class Chessboard : MonoBehaviour
         return currentHover == -Vector2Int.one;
     }
 
-    private void SetHoveringLayer(Vector2Int hitPosition)
+    private void SetTileLayer(Vector2Int hitPosition, string layerName)
     {
-        SetLayer(hitPosition, "Hover");
+        SetLayer (hitPosition, layerName);
     }
 
-    private void SetHighlightLayer(Vector2Int hitPosition)
+    private void SetObjectLayer(GameObject gameObject, string layerName)
     {
-        SetLayer(hitPosition, "Highlight");
-    }
-
-    private void SetTileLayer(Vector2Int hitPosition)
-    {
-        SetLayer(hitPosition, "Tile");
+        gameObject.layer = GetLayer(layerName);
     }
 
     private void SetLayer(Vector2Int position, string layerName)
@@ -751,16 +745,6 @@ public class Chessboard : MonoBehaviour
     private int GetLayer(string layerName)
     {
         return board.GetLayer(layerName);
-    }
-
-    private void SetLayerVictoryScreen(string layerName)
-    {
-        victoryScreen.layer = GetLayer(layerName);
-    }
-
-    private void SetLayerDrawIndicator(string layerName)
-    {
-        drawIndicator.layer = GetLayer(layerName);
     }
 
     private void GenerateAllTiles()
@@ -846,7 +830,7 @@ public class Chessboard : MonoBehaviour
     {
         for (int i = 0; i < availableMoves.Count; i++)
         {
-            SetHighlightLayer(availableMoves[i]);
+            SetTileLayer(availableMoves[i], "Highlight");
         }
     }
 
@@ -854,7 +838,7 @@ public class Chessboard : MonoBehaviour
     {
         for (int i = 0; i < availableMoves.Count; i++)
         {
-            SetTileLayer(availableMoves[i]);
+            SetTileLayer(availableMoves[i], "Tile");
         }
     }
 
@@ -867,7 +851,7 @@ public class Chessboard : MonoBehaviour
     private void CheckMate(Team team)
     {
         DisplayVictory (team);
-        ResetInGame();
+        ToggleObject(inGame, false);
     }
 
     private void DisplayVictory(Team winningTeam)
@@ -879,13 +863,9 @@ public class Chessboard : MonoBehaviour
             .GetChild((int) winningTeam)
             .gameObject
             .SetActive(true);
-        SetLayerVictoryScreen("Modal");
-        isReachable = false;
-    }
+        SetObjectLayer(victoryScreen, "Modal");
 
-    public void DisplayInGame()
-    {
-        inGame.SetActive(true);
+        isReachable = false;
     }
 
     public void OnRematchButton()
@@ -944,7 +924,7 @@ public class Chessboard : MonoBehaviour
 
     public void GameReset()
     {
-        HideOfferRematch();
+        ToggleGameObject(offeredRematch, false);
         ResetInGamePlayerName();
         SetLocalGameCurrentTeam(Team.White);
         if (!localGame)
@@ -1041,7 +1021,7 @@ public class Chessboard : MonoBehaviour
         ResetInGamePlayerName();
         GameReset();
         ResetVictoryScreen();
-        ResetInGame();
+        ToggleObject(inGame, false);
         GameUI.Instance.OnLeaveGameMenu();
 
         Invoke("ShutdownRelay", 0.5f);
@@ -1062,7 +1042,7 @@ public class Chessboard : MonoBehaviour
         }
 
         CheckMate(GetOppositeTeam(currentTeam));
-        ResetInGame();
+        ToggleObject(inGame, false);
         AreInGameButtonsActive(false);
     }
 
@@ -1072,9 +1052,13 @@ public class Chessboard : MonoBehaviour
         {
             SendDrawToServer (currentTeam);
             IsDrawButtonActive(false);
-            HideDeclined();
-            ShowOfferDraw();
-            Invoke("HideOfferDraw", 3.0f);
+
+            ToggleObject(declinedTMP, false);
+
+            ToggleObject(offeredDraw, true);
+
+            coroutine = WaitAndExecute(3.0f, offeredDraw, false);
+            StartCoroutine (coroutine);
             return;
         }
 
@@ -1082,24 +1066,14 @@ public class Chessboard : MonoBehaviour
         AreInGameButtonsActive(false);
     }
 
-    private void ShowOfferDraw()
+    private void ToggleGameObject(GameObject gameObject, bool isActive)
     {
-        offeredDraw.transform.gameObject.SetActive(true);
+        gameObject.transform.gameObject.SetActive (isActive);
     }
 
-    private void HideOfferDraw()
+    private void ToggleObject(GameObject gameObject, bool isActive)
     {
-        offeredDraw.transform.gameObject.SetActive(false);
-    }
-
-    private void ShowOfferRematch()
-    {
-        offeredRematch.transform.gameObject.SetActive(true);
-    }
-
-    private void HideOfferRematch()
-    {
-        offeredRematch.transform.gameObject.SetActive(false);
+        gameObject.SetActive (isActive);
     }
 
     // Special moves
@@ -1114,6 +1088,7 @@ public class Chessboard : MonoBehaviour
 
         if (specialMove == SpecialMove.Promotion)
         {
+            AreInGameButtonsActive(false);
             if (promotionPieceType == ChessPieceType.None)
             {
                 ActivatePromotion (currentTeam);
@@ -1168,7 +1143,7 @@ public class Chessboard : MonoBehaviour
 
     private void ActivatePromotion(Team team)
     {
-        promotionPieces.SetActive(true);
+        ToggleObject(promotionPieces, true);
 
         if (!localGame)
         {
@@ -1205,7 +1180,7 @@ public class Chessboard : MonoBehaviour
             PromotePawn(Team.White, targetPiece, lastMove, promotionPieceType);
             PromotePawn(Team.Black, targetPiece, lastMove, promotionPieceType);
 
-            ResetPromotion();
+            ToggleObject(promotionPieces, false);
         }
     }
 
@@ -1287,6 +1262,7 @@ public class Chessboard : MonoBehaviour
         ProcessPromotion (promotionPieceType);
         SetLayerPromotion("Default");
         ChessPiece currentPiece = GetLastPiece();
+        AreInGameButtonsActive(true);
 
         SendMoveToServer (prevPosition, currentHitPosition, promotionPieceType);
     }
@@ -1803,7 +1779,7 @@ public class Chessboard : MonoBehaviour
         }
         if (CheckForCheckOrStaleMate(false) || CheckForInsufficientMaterial())
         {
-            ResetInGame();
+            ToggleObject(inGame, false);
             DisplayVictory(Team.Draw);
         }
 
@@ -1985,7 +1961,9 @@ public class Chessboard : MonoBehaviour
         {
             IsDrawButtonActive(!IsMyTurn());
         }
-        Invoke("DisplayInGame", 2);
+
+        coroutine = WaitAndExecute(2.0f, inGame, true);
+        StartCoroutine (coroutine);
         AreInGameButtonsActive(true);
         soundController.PlayBoardSound(2);
     }
@@ -2055,8 +2033,8 @@ public class Chessboard : MonoBehaviour
     private void ResetRematchIndicator()
     {
         rematchButton.interactable = true;
-        oppWantsRematchObj.SetActive(false);
-        oppLeftObj.SetActive(false);
+        ToggleObject(oppWantsRematchObj, false);
+        ToggleObject(oppLeftObj, false);
     }
 
     private void ResetDrawIndicator()
@@ -2075,15 +2053,11 @@ public class Chessboard : MonoBehaviour
         victoryScreen.transform.GetChild(0).gameObject.SetActive(false);
         victoryScreen.transform.GetChild(1).gameObject.SetActive(false);
         victoryScreen.transform.GetChild(2).gameObject.SetActive(false);
-        SetLayerVictoryScreen("Default");
+        SetObjectLayer(victoryScreen, "Default");
+
         isReachable = true;
 
         ResetRematchIndicator();
-    }
-
-    public void ResetInGame()
-    {
-        inGame.SetActive(false);
     }
 
     private void ActivateRematchIndicatorChildren(bool oppWantsRematch)
@@ -2106,7 +2080,8 @@ public class Chessboard : MonoBehaviour
             return;
         }
 
-        SetLayerDrawIndicator("Modal");
+        SetObjectLayer(drawIndicator, "Modal");
+
         drawIndicator.transform.gameObject.SetActive(true);
 
         oppOfferedObj.SetActive(true);
@@ -2147,8 +2122,10 @@ public class Chessboard : MonoBehaviour
         }
         else
         {
-            ShowOfferRematch();
-            Invoke("HideOfferRematch", 3.0f);
+            ToggleGameObject(offeredRematch, true);
+
+            coroutine = WaitAndExecute(3.0f, offeredRematch, false);
+            StartCoroutine (coroutine);
         }
 
         // If both want to rematch
@@ -2158,7 +2135,8 @@ public class Chessboard : MonoBehaviour
         )
         {
             GameReset();
-            DisplayInGame();
+
+            ToggleObject(inGame, true);
             if (!localGame)
             {
                 myTeam = GetOppositeTeam(myTeam);
@@ -2168,8 +2146,8 @@ public class Chessboard : MonoBehaviour
         }
         if (rm.wantRematch == 0)
         {
-            oppWantsRematchObj.SetActive(false);
-            HideOfferRematch();
+            ToggleObject(oppWantsRematchObj, false);
+            ToggleGameObject(offeredRematch, false);
             ResetInGamePlayerName();
         }
     }
@@ -2183,8 +2161,9 @@ public class Chessboard : MonoBehaviour
         {
             winning = GetOppositeTeam(winning);
         }
-        HideDeclined();
-        HideOfferDraw();
+
+        ToggleObject(declinedTMP, false);
+        ToggleObject(offeredDraw, false);
         ResetDrawIndicator();
         CheckMate (winning);
         AreInGameButtonsActive(false);
@@ -2207,7 +2186,7 @@ public class Chessboard : MonoBehaviour
             (localGame && (playerDraw[0] || playerDraw[1]))
         )
         {
-            ResetInGame();
+            ToggleObject(inGame, false);
             ResetDrawIndicator();
             DisplayVictory(Team.Draw);
         }
@@ -2219,24 +2198,22 @@ public class Chessboard : MonoBehaviour
         NetDecline dc = msg as NetDecline;
         if (dc.teamNr != (int) currentTeam)
         {
-            ShowDeclined();
-            Invoke("HideDeclined", 3.0f);
+            ToggleObject(declinedTMP, true);
+
+            coroutine = WaitAndExecute(3.0f, declinedTMP, false);
+            StartCoroutine (coroutine);
         }
-        HideOfferDraw();
 
+        ToggleObject(offeredDraw, false);
         IsDrawButtonActive(!IsMyTurn());
-
         ResetPlayerDraw();
     }
 
-    private void ShowDeclined()
+    private IEnumerator
+    WaitAndExecute(float waitTime, GameObject gameObject, bool isActive)
     {
-        declinedTMP.SetActive(true);
-    }
-
-    private void HideDeclined()
-    {
-        declinedTMP.SetActive(false);
+        yield return new WaitForSeconds(waitTime);
+        ToggleGameObject (gameObject, isActive);
     }
 
     public void ShutdownRelay()

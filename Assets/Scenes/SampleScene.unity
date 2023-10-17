@@ -1607,8 +1607,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 108811864}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.575, y: 0, z: -5.5}
-  m_LocalScale: {x: 0.75, y: 1, z: 8.4}
+  m_LocalPosition: {x: 4.7, y: 0, z: -5.5}
+  m_LocalScale: {x: 1, y: 1, z: 8.4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 676784963}
@@ -11644,7 +11644,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 23fac5ae52bf34d4d81630a51dedd273, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d5fa2c19b382862f8970fdce379d07b2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13298,8 +13298,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1042243674}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.575, y: 0, z: -5.5}
-  m_LocalScale: {x: 0.75, y: 1, z: 8.4}
+  m_LocalPosition: {x: -4.7, y: 0, z: -5.5}
+  m_LocalScale: {x: 1, y: 1, z: 8.4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 676784963}
@@ -19462,12 +19462,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1512227640}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: -0.925}
-  m_LocalScale: {x: 0.75, y: 1, z: 9.9}
+  m_LocalPosition: {x: 0, y: 0, z: -0.7999983}
+  m_LocalScale: {x: 1, y: 1, z: 10.399999}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 676784963}
-  m_RootOrder: 3
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!65 &1512227642
 BoxCollider:
@@ -21902,8 +21902,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1735470485}
   m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: -10.075}
-  m_LocalScale: {x: 0.75, y: 1, z: 9.9}
+  m_LocalPosition: {x: 0, y: 0, z: -10.2}
+  m_LocalScale: {x: 1, y: 1, z: 10.4}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 676784963}
@@ -26250,12 +26250,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileMaterial: {fileID: 2100000, guid: d1e4f41091343c875a6258b5c9d311e5, type: 2}
-  tileSize: 1
-  yOffset: 0.101
   deathSize: 0.4
-  deathSpacing: 0.5
   dragOffset: 0.5
-  boardCenter: {x: 0, y: 0, z: 0}
   victoryScreen: {fileID: 476491471}
   inGame: {fileID: 118582350}
   rematchIndicator: {fileID: 1104354384}
@@ -26294,23 +26290,3 @@ MonoBehaviour:
   areTilesHighlighted: 0
   isPieceSelected: 0
   isPieceDeselected: 0
-  Board: {fileID: 696633493}
-  Pieces: {fileID: 901258437}
-  Castle: {fileID: 567460569}
-  Capture: {fileID: 507710724}
-  Promote: {fileID: 687901557}
-  Swoosh1: {fileID: 645995618}
-  Swoosh2: {fileID: 87194235}
-  Swoosh3: {fileID: 735506929}
-  whiteQueenImage: {fileID: 0}
-  blackQueenImage: {fileID: 0}
-  currentQueenImage: {fileID: 0}
-  whiteRookImage: {fileID: 0}
-  blackRookImage: {fileID: 0}
-  currentRookImage: {fileID: 0}
-  whiteBishopImage: {fileID: 0}
-  blackBishopImage: {fileID: 0}
-  currentBishopImage: {fileID: 0}
-  whiteKnightImage: {fileID: 0}
-  blackKnightImage: {fileID: 0}
-  currentKnightImage: {fileID: 0}

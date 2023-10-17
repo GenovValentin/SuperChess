@@ -186,7 +186,7 @@ namespace Assets.Scripts
         {
             int line = team == Team.White ? moveX : (7 - moveX);
 
-            return promotionLines[moveX];
+            return promotionLines[line];
         }
 
         private void SetPromotionPiecesObject(
