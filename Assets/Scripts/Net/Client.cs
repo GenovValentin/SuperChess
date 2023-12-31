@@ -37,7 +37,7 @@ public class Client : MonoBehaviour
         }
 
         driver = NetworkDriver.Create();
-        NetworkEndPoint endpoint = NetworkEndPoint.Parse(ip, port);
+        NetworkEndpoint endpoint = NetworkEndpoint.Parse(ip, port);
         connection = driver.Connect(endpoint);
 
         SetActive(true);
@@ -100,7 +100,7 @@ public class Client : MonoBehaviour
     }
 
     private bool
-    HasEvent(out NetworkEvent.Type cmd, out DataStreamReader stream)
+    HasEvent(out NetworkEvent.Type cmd, out Unity.Collections.DataStreamReader stream)
     {
         cmd = connection.PopEvent(driver, out stream);
         return cmd != NetworkEvent.Type.Empty;
@@ -108,7 +108,7 @@ public class Client : MonoBehaviour
 
     private void UpdateMessagePump()
     {
-        DataStreamReader stream;
+        Unity.Collections.DataStreamReader stream;
         NetworkEvent.Type cmd;
 
         try
@@ -143,7 +143,7 @@ public class Client : MonoBehaviour
     {
         try
         {
-            DataStreamWriter writer;
+            Unity.Collections.DataStreamWriter writer;
             driver.BeginSend(connection, out writer);
             msg.Serialize(ref writer);
             driver.EndSend (writer);

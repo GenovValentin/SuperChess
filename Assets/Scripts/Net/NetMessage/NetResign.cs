@@ -15,20 +15,20 @@ public class NetResign : NetMessage
         Code = OpCode.RESIGN;
     }
 
-    public NetResign(DataStreamReader reader)
+    public NetResign(Unity.Collections.DataStreamReader reader)
     {
         Code = OpCode.RESIGN;
         Deserialize (reader);
     }
 
-    public override void Serialize(ref DataStreamWriter writer)
+    public override void Serialize(ref Unity.Collections.DataStreamWriter writer)
     {
         writer.WriteByte((byte) Code);
         writer.WriteInt (teamID);
         writer.WriteByte (hasResigned);
     }
 
-    public override void Deserialize(DataStreamReader reader)
+    public override void Deserialize(Unity.Collections.DataStreamReader reader)
     {
         teamID = reader.ReadInt();
         hasResigned = reader.ReadByte();

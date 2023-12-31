@@ -13,19 +13,19 @@ public class NetWelcome : NetMessage
         Code = OpCode.WELCOME;
     }
 
-    public NetWelcome(DataStreamReader reader)
+    public NetWelcome(Unity.Collections.DataStreamReader reader)
     {
         Code = OpCode.WELCOME;
         Deserialize (reader);
     }
 
-    public override void Serialize(ref DataStreamWriter writer)
+    public override void Serialize(ref Unity.Collections.DataStreamWriter writer)
     {
         writer.WriteByte((byte) Code);
         writer.WriteInt (AssignedTeam);
     }
 
-    public override void Deserialize(DataStreamReader reader)
+    public override void Deserialize(Unity.Collections.DataStreamReader reader)
     {
         AssignedTeam = reader.ReadInt();
     }

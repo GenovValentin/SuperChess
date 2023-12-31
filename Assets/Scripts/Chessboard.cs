@@ -577,6 +577,9 @@ public class Chessboard : MonoBehaviour
         getOpponentName.teamNUMBER = (int) team;
         getOpponentName.opponentName = opponentsName;
         Client.Instance.SendToServer (getOpponentName);
+
+        // Without this log the client's name disappears after rematching in a certain combination
+        Debug.Log("SendGetOpponentNameToServer " + getOpponentName);
     }
 
     private void HandleLeftMouseButtonDown(Vector2Int hitPosition)
@@ -856,7 +859,20 @@ public class Chessboard : MonoBehaviour
 
     private void DisplayVictory(Team winningTeam)
     {
-        victoryScreen.SetActive(true);
+        ToggleObject(victoryScreen, true);
+
+        if (!localGame && ((int) winningTeam == 0 || (int) winningTeam == 1))
+        {
+            TMP_Text winnerTMP =
+                victoryScreen
+                    .transform
+                    .GetChild((int) winningTeam)
+                    .gameObject
+                    .GetComponent<TMP_Text>();
+            SetTextComponentOfTMP_Text(winnerTMP,
+            GetWinnerTMP((int) winningTeam),
+            " Won!");
+        }
 
         victoryScreen
             .transform
@@ -866,6 +882,21 @@ public class Chessboard : MonoBehaviour
         SetObjectLayer(victoryScreen, "Modal");
 
         isReachable = false;
+    }
+
+    private TMP_Text GetWinnerTMP(int winner)
+    {
+        if (winner == 0) return whitePlayerNameTMP;
+        return blackPlayerNameTMP;
+    }
+
+    private void SetTextComponentOfTMP_Text(
+        TMP_Text newTMP_Text,
+        TMP_Text oldTMP_Text,
+        string text
+    )
+    {
+        newTMP_Text.text = oldTMP_Text.text + text;
     }
 
     public void OnRematchButton()
@@ -924,7 +955,8 @@ public class Chessboard : MonoBehaviour
 
     public void GameReset()
     {
-        ToggleGameObject(offeredRematch, false);
+        ToggleObject(offeredRematch, false);
+
         ResetInGamePlayerName();
         SetLocalGameCurrentTeam(Team.White);
         if (!localGame)
@@ -936,6 +968,7 @@ public class Chessboard : MonoBehaviour
         else if (localGame)
         {
             SetInGamePlayerName(Team.White);
+            SetInGamePlayerName(Team.Black);
         }
 
         ResetFields();
@@ -1012,13 +1045,11 @@ public class Chessboard : MonoBehaviour
     public void OnMenuButton()
     {
         wasMenuButtonPressed = true;
-        Debug.Log("SendRematchToServer " + currentTeam);
         if (!localGame)
         {
             SendRematchToServer(currentTeam, 0);
         }
 
-        ResetInGamePlayerName();
         GameReset();
         ResetVictoryScreen();
         ToggleObject(inGame, false);
@@ -1064,11 +1095,6 @@ public class Chessboard : MonoBehaviour
 
         SendDrawToServer (currentTeam);
         AreInGameButtonsActive(false);
-    }
-
-    private void ToggleGameObject(GameObject gameObject, bool isActive)
-    {
-        gameObject.transform.gameObject.SetActive (isActive);
     }
 
     private void ToggleObject(GameObject gameObject, bool isActive)
@@ -2122,7 +2148,7 @@ public class Chessboard : MonoBehaviour
         }
         else
         {
-            ToggleGameObject(offeredRematch, true);
+            ToggleObject(offeredRematch, true);
 
             coroutine = WaitAndExecute(3.0f, offeredRematch, false);
             StartCoroutine (coroutine);
@@ -2147,7 +2173,7 @@ public class Chessboard : MonoBehaviour
         if (rm.wantRematch == 0)
         {
             ToggleObject(oppWantsRematchObj, false);
-            ToggleGameObject(offeredRematch, false);
+            ToggleObject(offeredRematch, false);
             ResetInGamePlayerName();
         }
     }
@@ -2213,7 +2239,7 @@ public class Chessboard : MonoBehaviour
     WaitAndExecute(float waitTime, GameObject gameObject, bool isActive)
     {
         yield return new WaitForSeconds(waitTime);
-        ToggleGameObject (gameObject, isActive);
+        ToggleObject (gameObject, isActive);
     }
 
     public void ShutdownRelay()

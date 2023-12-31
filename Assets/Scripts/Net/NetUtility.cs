@@ -60,7 +60,7 @@ public static class NetUtility
         EMPTY_CONNECTION = default(NetworkConnection);
 
     public static void OnData(
-        DataStreamReader stream,
+        Unity.Collections.DataStreamReader stream,
         NetworkConnection cnn,
         Server server = null
     )
@@ -87,7 +87,7 @@ public static class NetUtility
         }
     }
 
-    private static NetMessage CreateMessage(DataStreamReader stream)
+    private static NetMessage CreateMessage(Unity.Collections.DataStreamReader stream)
     {
         try
         {

@@ -1,0 +1,21 @@
+version: "3"
+services:
+  SuperChess_Mongo:
+    image: mongo:4.4
+    volumes:
+      - mongo_data:/data/db:cached
+    expose:
+      - 27017
+    ports:
+      - "27018:27017"
+  SuperChess_Mongo_1:
+    image: mongo:3
+    volumes:
+      - mongo_data_1:/data/db:cached
+    expose:
+      - 27017
+    ports:
+      - "27019:27017"
+volumes:
+  mongo_data:
+  mongo_data_1:

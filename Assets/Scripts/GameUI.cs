@@ -67,6 +67,11 @@ public class GameUI : MonoBehaviour
         menuAnimatior.SetTrigger("OnlineMenu");
     }
 
+    public void OnProfileButton()
+    {
+        menuAnimatior.SetTrigger("ProfileMenu");
+    }
+
     public void OnSettingsButton()
     {
         menuAnimatior.SetTrigger("SettingsMenu");
@@ -98,6 +103,11 @@ public class GameUI : MonoBehaviour
         server.Shutdown();
         client.Shutdown();
         menuAnimatior.SetTrigger("OnlineMenu");
+    }
+
+    public void OnProfileBackButton()
+    {
+        menuAnimatior.SetTrigger("StartMenu");
     }
 
     public void OnSettingsBackButton()

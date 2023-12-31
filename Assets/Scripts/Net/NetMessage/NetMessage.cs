@@ -8,7 +8,7 @@ public class NetMessage
 {
     public OpCode Code { set; get; }
 
-    public virtual void Serialize(ref DataStreamWriter writer)
+    public virtual void Serialize(ref Unity.Collections.DataStreamWriter writer)
     {
         try
         {
@@ -20,7 +20,7 @@ public class NetMessage
         }
     }
 
-    public virtual void Deserialize(DataStreamReader reader)
+    public virtual void Deserialize(Unity.Collections.DataStreamReader reader)
     {
     }
 

@@ -11,18 +11,18 @@ public class NetStartGame : NetMessage
         Code = OpCode.START_GAME;
     }
 
-    public NetStartGame(DataStreamReader reader)
+    public NetStartGame(Unity.Collections.DataStreamReader reader)
     {
         Code = OpCode.START_GAME;
         Deserialize (reader);
     }
 
-    public override void Serialize(ref DataStreamWriter writer)
+    public override void Serialize(ref Unity.Collections.DataStreamWriter writer)
     {
         writer.WriteByte((byte) Code);
     }
 
-    public override void Deserialize(DataStreamReader reader)
+    public override void Deserialize(Unity.Collections.DataStreamReader reader)
     {
     }
 

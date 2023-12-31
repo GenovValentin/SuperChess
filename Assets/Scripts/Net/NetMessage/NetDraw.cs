@@ -15,20 +15,20 @@ public class NetDraw : NetMessage
         Code = OpCode.DRAW;
     }
 
-    public NetDraw(DataStreamReader reader)
+    public NetDraw(Unity.Collections.DataStreamReader reader)
     {
         Code = OpCode.DRAW;
         Deserialize (reader);
     }
 
-    public override void Serialize(ref DataStreamWriter writer)
+    public override void Serialize(ref Unity.Collections.DataStreamWriter writer)
     {
         writer.WriteByte((byte) Code);
         writer.WriteInt (teamNumber);
         writer.WriteByte (wantDraw);
     }
 
-    public override void Deserialize(DataStreamReader reader)
+    public override void Deserialize(Unity.Collections.DataStreamReader reader)
     {
         teamNumber = reader.ReadInt();
         wantDraw = reader.ReadByte();

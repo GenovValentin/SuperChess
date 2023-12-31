@@ -15,20 +15,20 @@ public class NetDecline : NetMessage
         Code = OpCode.DECLINE;
     }
 
-    public NetDecline(DataStreamReader reader)
+    public NetDecline(Unity.Collections.DataStreamReader reader)
     {
         Code = OpCode.DECLINE;
         Deserialize (reader);
     }
 
-    public override void Serialize(ref DataStreamWriter writer)
+    public override void Serialize(ref Unity.Collections.DataStreamWriter writer)
     {
         writer.WriteByte((byte) Code);
         writer.WriteInt (teamNr);
         writer.WriteByte (wantDecline);
     }
 
-    public override void Deserialize(DataStreamReader reader)
+    public override void Deserialize(Unity.Collections.DataStreamReader reader)
     {
         teamNr = reader.ReadInt();
         wantDecline = reader.ReadByte();

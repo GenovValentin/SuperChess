@@ -46,7 +46,7 @@ public class Server : MonoBehaviour
             }
 
             driver = NetworkDriver.Create();
-            NetworkEndPoint endpoint = InitMainEndPoint(port);
+            NetworkEndpoint endpoint = InitMainEndPoint(port);
             if (IsEndpointBound(endpoint))
             {
                 Debug.Log("Unable to bind on port " + endpoint.Port);
@@ -103,14 +103,14 @@ public class Server : MonoBehaviour
         }
     }
 
-    private bool IsEndpointBound(NetworkEndPoint endpoint)
+    private bool IsEndpointBound(NetworkEndpoint endpoint)
     {
         return driver.Bind(endpoint) != 0;
     }
 
-    private NetworkEndPoint InitMainEndPoint(ushort port)
+    private NetworkEndpoint InitMainEndPoint(ushort port)
     {
-        NetworkEndPoint endpoint = NetworkEndPoint.AnyIpv4;
+        NetworkEndpoint endpoint = NetworkEndpoint.AnyIpv4;
         endpoint.Port = port;
 
         return endpoint;
