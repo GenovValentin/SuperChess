@@ -27,19 +27,33 @@ public class AccountHandler : MonoBehaviour
     [SerializeField]
     private GameObject signOutMenu;
 
+    [SerializeField]
+    private Toggle toggle;
+
     private string username;
 
     private string password;
+
+    private string usernameKey = "Username";
+
+    private string passwordKey = "Password";
+
+    private bool isToggleOn = false;
 
     private void Start()
     {
         AddUsernameInputFieldListener();
         AddPasswordInputFieldListener();
+        AddToggleListener();
+
         ToggleGameObject(errorMessageTMP, false);
         ToggleGameObject(signInMenu, true);
         ToggleGameObject(signOutMenu, false);
 
+        ResetToggle();
         ResetInputFields();
+
+        LoadPrefs();
     }
 
     private void SetUsernameValue(string usernameInputFieldValue)
@@ -76,7 +90,8 @@ public class AccountHandler : MonoBehaviour
 
     private void OnSignIn()
     {
-        SetMessage(welcomeMessageTMP, "Welcome, " + username);
+        SetPrefs();
+        SetMessage(welcomeMessageTMP, "Welcome, " + username + "!");
         ToggleGameObject(errorMessageTMP, false);
         ToggleGameObject(signInMenu, false);
         ToggleGameObject(signOutMenu, true);
@@ -86,6 +101,47 @@ public class AccountHandler : MonoBehaviour
     {
         usernameInputField.text = "";
         passwordInputField.text = "";
+    }
+
+    private void SavePrefs(string username, string password)
+    {
+        PlayerPrefs.SetString (usernameKey, username);
+        PlayerPrefs.SetString (passwordKey, password);
+    }
+
+    private void LoadPrefs()
+    {
+        string newUsername = PlayerPrefs.GetString(usernameKey);
+        string newPassword = PlayerPrefs.GetString(passwordKey);
+        usernameInputField.text = newUsername;
+        passwordInputField.text = newPassword;
+        SetUsernameValue (newUsername);
+        SetPasswordValue (newPassword);
+    }
+
+    private void AddToggleListener()
+    {
+        toggle.onValueChanged.AddListener (ToggleValueChanged);
+    }
+
+    private void ToggleValueChanged(bool isOn)
+    {
+        isToggleOn = isOn;
+    }
+
+    private void SetPrefs()
+    {
+        if (isToggleOn == false)
+        {
+            SavePrefs("", "");
+            return;
+        }
+        SavePrefs (username, password);
+    }
+
+    private void ResetToggle()
+    {
+        toggle.GetComponent<Toggle>().isOn = false;
     }
 
     public void OnSignUpButton()
@@ -116,5 +172,6 @@ public class AccountHandler : MonoBehaviour
         ToggleGameObject(signInMenu, true);
         ToggleGameObject(signOutMenu, false);
         ResetInputFields();
+        SavePrefs("", "");
     }
 }
