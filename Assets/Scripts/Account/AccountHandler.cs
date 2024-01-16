@@ -37,6 +37,11 @@ public class AccountHandler : MonoBehaviour
         newPassword = password;
     }
 
+    public string ReturnUsername()
+    {
+        return newUsername;
+    }
+
     private void EmitSignIn()
     {
         EventBus.SIGN_IN?.Invoke();

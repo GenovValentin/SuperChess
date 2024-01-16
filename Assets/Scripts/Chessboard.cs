@@ -182,6 +182,8 @@ public class Chessboard : MonoBehaviour
 
     GameObject oppOfferedObj;
 
+    AccountHandler accountHandler;
+
     private static ChessPieceType[]
         PIECES_ORDERED =
             new ChessPieceType[8]
@@ -202,6 +204,7 @@ public class Chessboard : MonoBehaviour
 
     private void Start()
     {
+        accountHandler = AccountHandler.GetInstance();
         InitControllers();
         SetIsWhiteTurn(true);
 
@@ -249,6 +252,18 @@ public class Chessboard : MonoBehaviour
     private void SetPlayerName(string playerNameInput)
     {
         playerName = playerNameInput;
+    }
+
+    private void HandleSignIn()
+    {
+        playerName = accountHandler.ReturnUsername();
+        playerNameInput.text = accountHandler.ReturnUsername();
+    }
+
+    private void HandleSignOut()
+    {
+        playerName = "";
+        playerNameInput.text = "";
     }
 
     private void SetInGamePlayerName(Team thisTeam)
@@ -1880,6 +1895,9 @@ public class Chessboard : MonoBehaviour
         NetUtility.C_GET_OPPONENT_NAME += OnGetOpponentNameClient;
 
         GameUI.Instance.SetLocalGame += OnSetLocalGame;
+
+        EventBus.SIGN_IN += HandleSignIn;
+        EventBus.SIGN_OUT += HandleSignOut;
     }
 
     private void UnRegisterEvents()
@@ -1902,6 +1920,9 @@ public class Chessboard : MonoBehaviour
         NetUtility.C_GET_OPPONENT_NAME -= OnGetOpponentNameClient;
 
         GameUI.Instance.SetLocalGame -= OnSetLocalGame;
+
+        EventBus.SIGN_IN -= HandleSignIn;
+        EventBus.SIGN_OUT -= HandleSignOut;
     }
 
     // Server
