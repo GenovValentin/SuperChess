@@ -199,9 +199,11 @@ public class LoginForm : MonoBehaviour
 
     public void OnSignOutButton()
     {
+        accountHandler.SignOut();
         ToggleGameObject(signInMenu, true);
         ToggleGameObject(signOutMenu, false);
         ResetInputFields();
+        ResetToggle();
         SavePrefs("", "");
     }
 }

@@ -8,6 +8,8 @@ public static class EventBus
 {
     public static Action SIGN_IN;
 
+    public static Action SIGN_OUT;
+
     public static Action UNSUCCESSFUL_SIGN_IN;
 
     public static Action UNSUCCESSFUL_SIGN_UP;

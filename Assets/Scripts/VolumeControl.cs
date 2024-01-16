@@ -39,6 +39,8 @@ public class VolumeControl : MonoBehaviour
 
     private bool isVolumeMuted = false;
 
+    private bool isUserSignedIn = false;
+
     AccountHandler accountHandler;
 
     private void Start()
@@ -63,7 +65,10 @@ public class VolumeControl : MonoBehaviour
         SetVolumeIconImage (sliderValue);
         volumeIcon.GetComponent<Image>().sprite = volumeIconImage;
 
-        accountHandler.SetVolume (sliderValue);
+        if (isUserSignedIn)
+        {
+            accountHandler.SetVolume (sliderValue);
+        }
     }
 
     private Settings GetVolume()
@@ -75,16 +80,25 @@ public class VolumeControl : MonoBehaviour
     private void RegisterEvents()
     {
         EventBus.SIGN_IN += HandleSignIn;
+        EventBus.SIGN_OUT += HandleSignOut;
     }
 
     private void UnregisterEvents()
     {
         EventBus.SIGN_IN -= HandleSignIn;
+        EventBus.SIGN_OUT -= HandleSignOut;
     }
 
     private void HandleSignIn()
     {
+        isUserSignedIn = true;
         SetVolume(GetVolume().volume);
+    }
+
+    private void HandleSignOut()
+    {
+        isUserSignedIn = false;
+        SetVolume (DEFAULT_VOLUME_VALUE);
     }
 
     private void SetVolumeIconImagePath()

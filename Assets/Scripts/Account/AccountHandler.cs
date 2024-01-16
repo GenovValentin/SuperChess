@@ -42,6 +42,11 @@ public class AccountHandler : MonoBehaviour
         EventBus.SIGN_IN?.Invoke();
     }
 
+    private void EmitSignOut()
+    {
+        EventBus.SIGN_OUT?.Invoke();
+    }
+
     private void EmitUnsuccessfulSignIn()
     {
         EventBus.UNSUCCESSFUL_SIGN_IN?.Invoke();
@@ -80,12 +85,13 @@ public class AccountHandler : MonoBehaviour
             EmitUnsuccessfulSignIn();
             return;
         }
-        mongoClient.CreateUser(newUsername, newPassword, 0.5f);
 
+        mongoClient.CreateUser(newUsername, newPassword, 0.5f);
         EmitSignIn();
     }
 
     public void SignOut()
     {
+        EmitSignOut();
     }
 }
