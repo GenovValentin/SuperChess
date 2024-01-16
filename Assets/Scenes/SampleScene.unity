@@ -1169,8 +1169,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1783016976}
-        m_TargetAssemblyTypeName: AccountHandler, Assembly-CSharp
+      - m_Target: {fileID: 1783016977}
+        m_TargetAssemblyTypeName: LoginForm, Assembly-CSharp
         m_MethodName: OnSignInButton
         m_Mode: 1
         m_Arguments:
@@ -3971,8 +3971,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1783016976}
-        m_TargetAssemblyTypeName: AccountHandler, Assembly-CSharp
+      - m_Target: {fileID: 1783016977}
+        m_TargetAssemblyTypeName: LoginForm, Assembly-CSharp
         m_MethodName: OnSignUpButton
         m_Mode: 1
         m_Arguments:
@@ -18641,8 +18641,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1783016976}
-        m_TargetAssemblyTypeName: AccountHandler, Assembly-CSharp
+      - m_Target: {fileID: 1783016977}
+        m_TargetAssemblyTypeName: LoginForm, Assembly-CSharp
         m_MethodName: OnSignOutButton
         m_Mode: 1
         m_Arguments:
@@ -25661,6 +25661,7 @@ GameObject:
   - component: {fileID: 1783016974}
   - component: {fileID: 1783016975}
   - component: {fileID: 1783016976}
+  - component: {fileID: 1783016977}
   m_Layer: 6
   m_Name: ProfileMenu
   m_TagString: Untagged
@@ -25743,14 +25744,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c0f3e51f5ec9baaaa491dd3ff104ca6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usernameInputField: {fileID: 2080701444}
-  passwordInputField: {fileID: 679815833}
-  loginButton: {fileID: 262773762}
-  errorMessageTMP: {fileID: 590336463}
-  welcomeMessageTMP: {fileID: 1621182034}
-  signInMenu: {fileID: 1341372278}
-  signOutMenu: {fileID: 1413695219}
-  toggle: {fileID: 1675403642}
+--- !u!114 &1783016977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783016972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 527eda6facc4b49bcbf2f82c83371aa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1784673482
 GameObject:
   m_ObjectHideFlags: 0

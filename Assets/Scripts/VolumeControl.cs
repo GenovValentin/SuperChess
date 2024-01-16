@@ -25,13 +25,7 @@ public class VolumeControl : MonoBehaviour
 
     private Sprite mutedVolumeImage;
 
-    private string volumeIconKey = "VolumeIconState";
-
     private string volumeKey = "MasterVolume";
-
-    private string isVolumeMutedKey = "IsVolumeMutedState";
-
-    private string previousVolumeKey = "PreviousVolume";
 
     private float previousVolume;
 
@@ -41,60 +35,56 @@ public class VolumeControl : MonoBehaviour
 
     private const float MID_VOLUME_VALUE = 0.6666f;
 
+    private const float DEFAULT_VOLUME_VALUE = 0.5f;
+
     private bool isVolumeMuted = false;
 
-    void Start()
+    AccountHandler accountHandler;
+
+    private void Start()
     {
+        accountHandler = AccountHandler.GetInstance();
+        RegisterEvents();
+
         SetVolumeIconImagePath();
-        LoadPrefs();
+        SetVolume (DEFAULT_VOLUME_VALUE);
     }
 
     public void SetVolume(float sliderValue)
     {
-        if (sliderValue > MUTED_VOLUME_VALUE)
+        isVolumeMuted = sliderValue <= MUTED_VOLUME_VALUE;
+
+        if (!isVolumeMuted)
         {
             previousVolume = sliderValue;
-            isVolumeMuted = false;
-        }
-        else
-        {
-            isVolumeMuted = true;
         }
         audioSlider.value = sliderValue;
         audioMixer.SetFloat(volumeKey, Mathf.Log10(sliderValue) * 20);
         SetVolumeIconImage (sliderValue);
-        SavePrefs (sliderValue);
-    }
-
-    private void SavePrefs(float volume)
-    {
-        PlayerPrefs.SetFloat (volumeKey, volume);
-        if (previousVolume != 0)
-        {
-            PlayerPrefs.SetFloat (previousVolumeKey, previousVolume);
-        }
-
-        int isVolumeMutedState = GetIsVolumeMutedState();
-        PlayerPrefs.SetInt (isVolumeMutedKey, isVolumeMutedState);
-
-        int volumeIconState = GetVolumeIconState();
-        PlayerPrefs.SetInt (volumeIconKey, volumeIconState);
         volumeIcon.GetComponent<Image>().sprite = volumeIconImage;
+
+        accountHandler.SetVolume (sliderValue);
     }
 
-    private void LoadPrefs()
+    private Settings GetVolume()
     {
-        var newVolume = PlayerPrefs.GetFloat(volumeKey);
-        audioMixer.SetFloat (volumeKey, newVolume);
-        audioSlider.value = newVolume;
+        Settings userSettings = accountHandler.GetUserSettings();
+        return userSettings;
+    }
 
-        previousVolume = PlayerPrefs.GetFloat(previousVolumeKey);
+    private void RegisterEvents()
+    {
+        EventBus.SIGN_IN += HandleSignIn;
+    }
 
-        int isVolumeMutedState = PlayerPrefs.GetInt(isVolumeMutedKey, 0);
-        SetIsVolumeMutedState (isVolumeMutedState);
+    private void UnregisterEvents()
+    {
+        EventBus.SIGN_IN -= HandleSignIn;
+    }
 
-        int volumeIconState = PlayerPrefs.GetInt(volumeIconKey, 0);
-        SetVolumeIconByState (volumeIconState);
+    private void HandleSignIn()
+    {
+        SetVolume(GetVolume().volume);
     }
 
     private void SetVolumeIconImagePath()
@@ -127,49 +117,6 @@ public class VolumeControl : MonoBehaviour
         {
             volumeIconImage = maxVolumeImage;
         }
-    }
-
-    private void SetIsVolumeMutedState(int state)
-    {
-        if (state == 0)
-        {
-            isVolumeMuted = true;
-            return;
-        }
-        isVolumeMuted = false;
-    }
-
-    private void SetVolumeIconByState(int state)
-    {
-        switch (state)
-        {
-            case 1:
-                volumeIconImage = minVolumeImage;
-                break;
-            case 2:
-                volumeIconImage = midVolumeImage;
-                break;
-            case 3:
-                volumeIconImage = maxVolumeImage;
-                break;
-            case 0:
-                volumeIconImage = mutedVolumeImage;
-                break;
-        }
-    }
-
-    private int GetIsVolumeMutedState()
-    {
-        if (isVolumeMuted) return 0;
-        return 1;
-    }
-
-    private int GetVolumeIconState()
-    {
-        if (volumeIconImage == minVolumeImage) return 1;
-        if (volumeIconImage == midVolumeImage) return 2;
-        if (volumeIconImage == maxVolumeImage) return 3;
-        return 0; // Default for mutedVolumeImage
     }
 
     public void OnVolumeIconButton()
