@@ -7,7 +7,7 @@ using Unity.Networking.Transport;
 
 public class NetGetOpponentName : NetMessage
 {
-    public int teamNUMBER;
+    public int teamNumber;
 
     public string opponentName;
 
@@ -25,7 +25,7 @@ public class NetGetOpponentName : NetMessage
     public override void Serialize(ref DataStreamWriter writer)
     {
         writer.WriteByte((byte) Code);
-        writer.WriteInt (teamNUMBER);
+        writer.WriteInt (teamNumber);
         byte[] nameBytes = System.Text.Encoding.ASCII.GetBytes(opponentName);
         writer.WriteInt(nameBytes.Length);
         writer.WriteBytes(new NativeArray<byte>(nameBytes, Allocator.Temp));
@@ -33,7 +33,7 @@ public class NetGetOpponentName : NetMessage
 
     public override void Deserialize(DataStreamReader reader)
     {
-        teamNUMBER = reader.ReadInt();
+        teamNumber = reader.ReadInt();
         int nameLength = reader.ReadInt();
         byte[] nameBytes = new byte[nameLength];
         for (int i = 0; i < nameLength; i++)

@@ -66,6 +66,12 @@ public class Chessboard : MonoBehaviour
     public TMP_Text blackPlayerNameTMP;
 
     [SerializeField]
+    public TMP_Text whitePlayerRatingTMP;
+
+    [SerializeField]
+    public TMP_Text blackPlayerRatingTMP;
+
+    [SerializeField]
     private Button rematchButton;
 
     [SerializeField]
@@ -164,6 +170,8 @@ public class Chessboard : MonoBehaviour
 
     private string playerName = "NN";
 
+    private int playerRating = 1000;
+
     private Team currentTeam = Team.None;
 
     private Team myTeam = Team.None;
@@ -258,12 +266,19 @@ public class Chessboard : MonoBehaviour
     {
         playerName = accountHandler.ReturnUsername();
         playerNameInput.text = accountHandler.ReturnUsername();
+        SetUserRating(accountHandler.GetUserRating());
     }
 
     private void HandleSignOut()
     {
         playerName = "";
         playerNameInput.text = "";
+        SetUserRating(1000);
+    }
+
+    private void SetUserRating(int rating)
+    {
+        playerRating = rating;
     }
 
     private void SetInGamePlayerName(Team thisTeam)
@@ -277,6 +292,19 @@ public class Chessboard : MonoBehaviour
             blackPlayerNameTMP.text = playerName;
         }
         SendGetOpponentNameToServer (currentTeam, playerName);
+    }
+
+    private void SetInGamePlayerRating(Team thisTeam)
+    {
+        if (thisTeam == Team.White)
+        {
+            whitePlayerRatingTMP.text = playerRating.ToString();
+        }
+        else if (thisTeam == Team.Black)
+        {
+            blackPlayerRatingTMP.text = playerRating.ToString();
+        }
+        SendGetOpponentRatingToServer (currentTeam, playerRating);
     }
 
     private void ResetTMPs()
@@ -511,7 +539,7 @@ public class Chessboard : MonoBehaviour
         move.originalY = previousPosition.y;
         move.destinationX = hitPosition.x;
         move.destinationY = hitPosition.y;
-        move.teamId = (int) currentTeam;
+        move.teamNumber = (int) currentTeam;
         if (promotionPiece != ChessPieceType.None)
         {
             move.promotionPieceType = GetSocketChessPieceType(promotionPiece);
@@ -557,7 +585,7 @@ public class Chessboard : MonoBehaviour
     private void SendRematchToServer(Team team, byte wantRematch = 1)
     {
         NetRematch rematch = new NetRematch();
-        rematch.teamId = (int) team;
+        rematch.teamNumber = (int) team;
         rematch.wantRematch = wantRematch;
         Client.Instance.SendToServer (rematch);
     }
@@ -565,7 +593,7 @@ public class Chessboard : MonoBehaviour
     private void SendResignToServer(Team team, byte hasResigned = 1)
     {
         NetResign resign = new NetResign();
-        resign.teamID = (int) team;
+        resign.teamNumber = (int) team;
         resign.hasResigned = hasResigned;
         Client.Instance.SendToServer (resign);
     }
@@ -581,7 +609,7 @@ public class Chessboard : MonoBehaviour
     private void SendDeclineToServer(Team team, byte wantDecline = 1)
     {
         NetDecline decline = new NetDecline();
-        decline.teamNr = (int) team;
+        decline.teamNumber = (int) team;
         decline.wantDecline = wantDecline;
         Client.Instance.SendToServer (decline);
     }
@@ -589,12 +617,27 @@ public class Chessboard : MonoBehaviour
     private void SendGetOpponentNameToServer(Team team, string opponentsName)
     {
         NetGetOpponentName getOpponentName = new NetGetOpponentName();
-        getOpponentName.teamNUMBER = (int) team;
+        getOpponentName.teamNumber = (int) team;
         getOpponentName.opponentName = opponentsName;
+
         Client.Instance.SendToServer (getOpponentName);
 
         // Without this log the client's name disappears after rematching in a certain combination
-        Debug.Log("SendGetOpponentNameToServer " + getOpponentName);
+        Debug
+            .Log("SendGetOpponentNameToServer " + getOpponentName.opponentName);
+    }
+
+    private void SendGetOpponentRatingToServer(Team team, int opponentsRating)
+    {
+        NetGetOpponentRating getOpponentRating = new NetGetOpponentRating();
+        getOpponentRating.teamNumber = (int) team;
+        getOpponentRating.opponentRating = opponentsRating;
+        Client.Instance.SendToServer (getOpponentRating);
+
+        // Without this log the client's name disappears after rematching in a certain combination
+        Debug
+            .Log("SendGetOpponentRatingToServer " +
+            getOpponentRating.opponentRating);
     }
 
     private void HandleLeftMouseButtonDown(Vector2Int hitPosition)
@@ -874,6 +917,7 @@ public class Chessboard : MonoBehaviour
 
     private void DisplayVictory(Team winningTeam)
     {
+        EmitGameEnded (winningTeam);
         ToggleObject(victoryScreen, true);
 
         if (!localGame && ((int) winningTeam == 0 || (int) winningTeam == 1))
@@ -897,6 +941,8 @@ public class Chessboard : MonoBehaviour
         SetObjectLayer(victoryScreen, "Modal");
 
         isReachable = false;
+
+        SetUserRating(accountHandler.GetUserRating());
     }
 
     private TMP_Text GetWinnerTMP(int winner)
@@ -973,18 +1019,27 @@ public class Chessboard : MonoBehaviour
         ToggleObject(offeredRematch, false);
 
         ResetInGamePlayerName();
+        ResetInGamePlayerRating();
         SetLocalGameCurrentTeam(Team.White);
-        if (!localGame)
+        if (wasMenuButtonPressed == false)
         {
-            IsDrawButtonActive(!IsMyTurn());
-            ChangeTeam();
-            SetInGamePlayerName(GetOppositeTeam(myTeam));
+            if (!localGame)
+            {
+                IsDrawButtonActive(!IsMyTurn());
+                ChangeTeam();
+                SetInGamePlayerName(GetOppositeTeam(myTeam));
+                IEnumerator coroutineRating =
+                    DelaySetRating(2.0f, GetOppositeTeam(myTeam));
+                StartCoroutine (coroutineRating);
+            }
+            else if (localGame)
+            {
+                SetInGamePlayerName (currentTeam);
+                SetInGamePlayerRating (currentTeam);
+            }
+            soundController.PlayBoardSound();
         }
-        else if (localGame)
-        {
-            SetInGamePlayerName(Team.White);
-            SetInGamePlayerName(Team.Black);
-        }
+        wasMenuButtonPressed = false;
 
         ResetFields();
         DestroyPieces();
@@ -995,17 +1050,18 @@ public class Chessboard : MonoBehaviour
         ResetVictoryScreen();
         ResetPlayerDraw();
         ActivateButtons(true, true);
-        if (wasMenuButtonPressed == false)
-        {
-            soundController.PlayBoardSound();
-        }
-        wasMenuButtonPressed = false;
     }
 
     private void ResetInGamePlayerName()
     {
         whitePlayerNameTMP.text = "";
         blackPlayerNameTMP.text = "";
+    }
+
+    private void ResetInGamePlayerRating()
+    {
+        whitePlayerRatingTMP.text = "";
+        blackPlayerRatingTMP.text = "";
     }
 
     private void ResetPlayerDraw()
@@ -1820,8 +1876,8 @@ public class Chessboard : MonoBehaviour
         }
         if (CheckForCheckOrStaleMate(false) || CheckForInsufficientMaterial())
         {
-            ToggleObject(inGame, false);
             DisplayVictory(Team.Draw);
+            ToggleObject(inGame, false);
         }
 
         if (!localGame)
@@ -1884,6 +1940,7 @@ public class Chessboard : MonoBehaviour
         NetUtility.S_DRAW += OnDrawServer;
         NetUtility.S_DECLINE += OnDeclineServer;
         NetUtility.S_GET_OPPONENT_NAME += OnGetOpponentNameServer;
+        NetUtility.S_GET_OPPONENT_RATING += OnGetOpponentRatingServer;
 
         NetUtility.C_WELCOME += OnWelcomeClient;
         NetUtility.C_START_GAME += OnStartGameClient;
@@ -1893,6 +1950,7 @@ public class Chessboard : MonoBehaviour
         NetUtility.C_DRAW += OnDrawClient;
         NetUtility.C_DECLINE += OnDeclineClient;
         NetUtility.C_GET_OPPONENT_NAME += OnGetOpponentNameClient;
+        NetUtility.C_GET_OPPONENT_RATING += OnGetOpponentRatingClient;
 
         GameUI.Instance.SetLocalGame += OnSetLocalGame;
 
@@ -1909,6 +1967,7 @@ public class Chessboard : MonoBehaviour
         NetUtility.S_DRAW -= OnDrawServer;
         NetUtility.S_DECLINE -= OnDeclineServer;
         NetUtility.S_GET_OPPONENT_NAME -= OnGetOpponentNameServer;
+        NetUtility.S_GET_OPPONENT_RATING -= OnGetOpponentRatingServer;
 
         NetUtility.C_WELCOME -= OnWelcomeClient;
         NetUtility.C_START_GAME -= OnStartGameClient;
@@ -1918,6 +1977,7 @@ public class Chessboard : MonoBehaviour
         NetUtility.C_DRAW -= OnDrawClient;
         NetUtility.C_DECLINE -= OnDeclineClient;
         NetUtility.C_GET_OPPONENT_NAME -= OnGetOpponentNameClient;
+        NetUtility.C_GET_OPPONENT_RATING -= OnGetOpponentRatingClient;
 
         GameUI.Instance.SetLocalGame -= OnSetLocalGame;
 
@@ -1983,6 +2043,15 @@ public class Chessboard : MonoBehaviour
         Server.Instance.Broadcast (gon);
     }
 
+    private void OnGetOpponentRatingServer(
+        NetMessage msg,
+        NetworkConnection cnn
+    )
+    {
+        NetGetOpponentRating gor = msg as NetGetOpponentRating;
+        Server.Instance.Broadcast (gor);
+    }
+
     // Client
     private void OnWelcomeClient(NetMessage msg)
     {
@@ -2002,6 +2071,8 @@ public class Chessboard : MonoBehaviour
     private void OnStartGameClient(NetMessage msg)
     {
         SetInGamePlayerName (myTeam);
+        IEnumerator coroutineRating = DelaySetRating(2.0f, myTeam);
+        StartCoroutine (coroutineRating);
         ChangeCameraAngles (currentTeam);
         ResetVictoryScreen();
         if (!localGame)
@@ -2009,10 +2080,17 @@ public class Chessboard : MonoBehaviour
             IsDrawButtonActive(!IsMyTurn());
         }
 
-        coroutine = WaitAndExecute(2.0f, inGame, true);
+        coroutine = WaitAndExecute(1.0f, inGame, true);
         StartCoroutine (coroutine);
         AreInGameButtonsActive(true);
         soundController.PlayBoardSound(2);
+    }
+
+    private IEnumerator DelaySetRating(float waitTime, Team thisTeam)
+    {
+        yield return new WaitForSeconds(waitTime);
+        SetInGamePlayerRating (thisTeam);
+        EmitStartGame();
     }
 
     private void ChangeTeam()
@@ -2034,7 +2112,7 @@ public class Chessboard : MonoBehaviour
     {
         NetMakeMove mm = msg as NetMakeMove;
 
-        if (mm.teamId != (int) currentTeam)
+        if (mm.teamNumber != (int) currentTeam)
         {
             soundController.PlayPiecesSound();
             ChessPiece target = chessPieces[mm.originalX, mm.originalY];
@@ -2064,17 +2142,45 @@ public class Chessboard : MonoBehaviour
     private void OnGetOpponentNameClient(NetMessage msg)
     {
         NetGetOpponentName gon = msg as NetGetOpponentName;
-        if (gon.teamNUMBER != (int) currentTeam)
+
+        if (gon.teamNumber != (int) currentTeam)
         {
-            if (gon.teamNUMBER == 0)
+            if (gon.teamNumber == 0)
             {
                 whitePlayerNameTMP.text = gon.opponentName;
             }
-            else if (gon.teamNUMBER == 1)
+            else if (gon.teamNumber == 1)
             {
                 blackPlayerNameTMP.text = gon.opponentName;
             }
         }
+    }
+
+    private void OnGetOpponentRatingClient(NetMessage msg)
+    {
+        NetGetOpponentRating gor = msg as NetGetOpponentRating;
+
+        if (gor.teamNumber != (int) currentTeam)
+        {
+            if (gor.teamNumber == 0)
+            {
+                whitePlayerRatingTMP.text = gor.opponentRating.ToString();
+            }
+            else if (gor.teamNumber == 1)
+            {
+                blackPlayerRatingTMP.text = gor.opponentRating.ToString();
+            }
+        }
+    }
+
+    private void EmitStartGame()
+    {
+        EventBus.START_GAME?.Invoke();
+    }
+
+    private void EmitGameEnded(Team result)
+    {
+        EventBus.GAME_ENDED?.Invoke(result);
     }
 
     private void ResetRematchIndicator()
@@ -2160,10 +2266,10 @@ public class Chessboard : MonoBehaviour
         bool oppWantsRematch = rm.wantRematch == 1;
 
         // Set the boolean for rematch
-        playerRematch[rm.teamId] = oppWantsRematch;
+        playerRematch[rm.teamNumber] = oppWantsRematch;
 
         // Activate the piece of UI
-        if (rm.teamId != (int) currentTeam)
+        if (rm.teamNumber != (int) currentTeam)
         {
             ActivateRematchIndicatorChildren (oppWantsRematch);
         }
@@ -2196,6 +2302,7 @@ public class Chessboard : MonoBehaviour
             ToggleObject(oppWantsRematchObj, false);
             ToggleObject(offeredRematch, false);
             ResetInGamePlayerName();
+            ResetInGamePlayerRating();
         }
     }
 
@@ -2204,7 +2311,7 @@ public class Chessboard : MonoBehaviour
         NetResign rs = msg as NetResign;
 
         Team winning = currentTeam;
-        if (rs.teamID == (int) winning)
+        if (rs.teamNumber == (int) winning)
         {
             winning = GetOppositeTeam(winning);
         }
@@ -2243,7 +2350,7 @@ public class Chessboard : MonoBehaviour
     private void OnDeclineClient(NetMessage msg)
     {
         NetDecline dc = msg as NetDecline;
-        if (dc.teamNr != (int) currentTeam)
+        if (dc.teamNumber != (int) currentTeam)
         {
             ToggleObject(declinedTMP, true);
 

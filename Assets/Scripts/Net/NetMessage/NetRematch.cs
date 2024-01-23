@@ -6,7 +6,7 @@ using Unity.Networking.Transport;
 
 public class NetRematch : NetMessage
 {
-    public int teamId;
+    public int teamNumber;
 
     public byte wantRematch;
 
@@ -21,16 +21,18 @@ public class NetRematch : NetMessage
         Deserialize (reader);
     }
 
-    public override void Serialize(ref Unity.Collections.DataStreamWriter writer)
+    public override void Serialize(
+        ref Unity.Collections.DataStreamWriter writer
+    )
     {
         writer.WriteByte((byte) Code);
-        writer.WriteInt (teamId);
+        writer.WriteInt (teamNumber);
         writer.WriteByte (wantRematch);
     }
 
     public override void Deserialize(Unity.Collections.DataStreamReader reader)
     {
-        teamId = reader.ReadInt();
+        teamNumber = reader.ReadInt();
         wantRematch = reader.ReadByte();
     }
 

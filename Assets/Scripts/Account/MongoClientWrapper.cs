@@ -87,6 +87,23 @@ public class MongoClientWrapper : MonoBehaviour
 
         return user.settings;
     }
+
+    public int GetUserRating(string username)
+    {
+        UserModel user =
+            userCollection
+                .Find(user => user.name.Equals(username))
+                .SingleOrDefault();
+        return user.rating;
+    }
+
+    public void SetUserRating(string username, int rating)
+    {
+        var filter = Builders<UserModel>.Filter.Eq(u => u.name, username);
+        var update = Builders<UserModel>.Update.Set(u => u.rating, rating);
+
+        userCollection.UpdateOne (filter, update);
+    }
 }
 
 // Unity-mongo-csharp-driver-dlls:

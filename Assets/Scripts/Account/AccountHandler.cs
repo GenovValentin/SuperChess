@@ -67,6 +67,16 @@ public class AccountHandler : MonoBehaviour
         return mongoClient.GetUserSettings(newUsername);
     }
 
+    public int GetUserRating()
+    {
+        return mongoClient.GetUserRating(newUsername);
+    }
+
+    public void SetUserRating(int rating)
+    {
+        mongoClient.SetUserRating (newUsername, rating);
+    }
+
     public void SetVolume(float volume)
     {
         mongoClient.SetUserVolume (newUsername, volume);
@@ -87,7 +97,7 @@ public class AccountHandler : MonoBehaviour
     {
         if (mongoClient.IsUsernameTaken(newUsername))
         {
-            EmitUnsuccessfulSignIn();
+            EmitUnsuccessfulSignUp();
             return;
         }
 

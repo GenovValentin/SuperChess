@@ -43,7 +43,7 @@ namespace Assets.Scripts
             Vector3 direction =
                 team == Team.White ? Vector3.back : Vector3.forward;
 
-            // List<ChessPiece> deads = GetDeads(team);
+            
             return new Vector3(xCoef * tileSize, yOffset, zCoef * tileSize) -
             bounds +
             new Vector3(tileSize / 2, 0, tileSize / 2) +

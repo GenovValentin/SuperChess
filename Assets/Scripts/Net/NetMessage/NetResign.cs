@@ -6,7 +6,7 @@ using Unity.Networking.Transport;
 
 public class NetResign : NetMessage
 {
-    public int teamID;
+    public int teamNumber;
 
     public byte hasResigned;
 
@@ -21,16 +21,18 @@ public class NetResign : NetMessage
         Deserialize (reader);
     }
 
-    public override void Serialize(ref Unity.Collections.DataStreamWriter writer)
+    public override void Serialize(
+        ref Unity.Collections.DataStreamWriter writer
+    )
     {
         writer.WriteByte((byte) Code);
-        writer.WriteInt (teamID);
+        writer.WriteInt (teamNumber);
         writer.WriteByte (hasResigned);
     }
 
     public override void Deserialize(Unity.Collections.DataStreamReader reader)
     {
-        teamID = reader.ReadInt();
+        teamNumber = reader.ReadInt();
         hasResigned = reader.ReadByte();
     }
 

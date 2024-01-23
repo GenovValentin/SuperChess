@@ -13,6 +13,8 @@ public class UserModel
 
     public string shaPassword;
 
+    public int rating = 1000;
+
     public Settings settings;
 }
 

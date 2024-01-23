@@ -13,4 +13,8 @@ public static class EventBus
     public static Action UNSUCCESSFUL_SIGN_IN;
 
     public static Action UNSUCCESSFUL_SIGN_UP;
+
+    public static Action START_GAME;
+
+    public static Action<Team> GAME_ENDED;
 }

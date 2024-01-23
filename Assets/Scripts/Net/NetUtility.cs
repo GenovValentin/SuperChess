@@ -14,7 +14,8 @@ public enum OpCode
     RESIGN = 6,
     DRAW = 7,
     DECLINE = 8,
-    GET_OPPONENT_NAME = 9
+    GET_OPPONENT_NAME = 9,
+    GET_OPPONENT_RATING = 11
 }
 
 public static class NetUtility
@@ -38,6 +39,8 @@ public static class NetUtility
 
     public static Action<NetMessage> C_GET_OPPONENT_NAME;
 
+    public static Action<NetMessage> C_GET_OPPONENT_RATING;
+
     public static Action<NetMessage, NetworkConnection> S_KEEP_ALIVE;
 
     public static Action<NetMessage, NetworkConnection> S_WELCOME;
@@ -55,6 +58,8 @@ public static class NetUtility
     public static Action<NetMessage, NetworkConnection> S_DECLINE;
 
     public static Action<NetMessage, NetworkConnection> S_GET_OPPONENT_NAME;
+
+    public static Action<NetMessage, NetworkConnection> S_GET_OPPONENT_RATING;
 
     public static NetworkConnection
         EMPTY_CONNECTION = default(NetworkConnection);
@@ -87,7 +92,8 @@ public static class NetUtility
         }
     }
 
-    private static NetMessage CreateMessage(Unity.Collections.DataStreamReader stream)
+    private static NetMessage
+    CreateMessage(Unity.Collections.DataStreamReader stream)
     {
         try
         {
@@ -112,6 +118,8 @@ public static class NetUtility
                     return new NetDecline(stream);
                 case OpCode.GET_OPPONENT_NAME:
                     return new NetGetOpponentName(stream);
+                case OpCode.GET_OPPONENT_RATING:
+                    return new NetGetOpponentRating(stream);
                 default:
                     NetMessage msg = null;
                     Debug.LogError("Message received had no OpCode");

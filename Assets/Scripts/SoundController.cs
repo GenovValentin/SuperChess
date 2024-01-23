@@ -28,25 +28,23 @@ namespace Assets.Scripts
 
         public void PlaySpecialMoveSound(SpecialMove specialMove)
         {
-            if (specialMove == SpecialMove.None)
+            switch (specialMove)
             {
-                Pieces.Play();
-            }
-            else if (specialMove == SpecialMove.Castling)
-            {
-                Castle.Play();
-            }
-            else if (specialMove == SpecialMove.EnPassant)
-            {
-                Capture.Play();
-            }
-            else if (specialMove == SpecialMove.Promotion)
-            {
-                Promote.Play();
-            }
-            else if (specialMove == SpecialMove.Capture)
-            {
-                Capture.Play();
+                case SpecialMove.None:
+                    Pieces.Play();
+                    break;
+                case SpecialMove.Castling:
+                    Castle.Play();
+                    break;
+                case SpecialMove.EnPassant:
+                    Capture.Play();
+                    break;
+                case SpecialMove.Promotion:
+                    Promote.Play();
+                    break;
+                case SpecialMove.Capture:
+                    Capture.Play();
+                    break;
             }
         }
 

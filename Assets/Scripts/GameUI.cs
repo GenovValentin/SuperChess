@@ -23,7 +23,6 @@ public class GameUI : MonoBehaviour
 
     public Client client;
 
-    // private Chessboard chessboardInstance;
     [SerializeField]
     private Animator menuAnimatior;
 

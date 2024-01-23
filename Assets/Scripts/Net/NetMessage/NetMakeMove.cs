@@ -14,7 +14,7 @@ public class NetMakeMove : NetMessage
 
     public int destinationY;
 
-    public int teamId;
+    public int teamNumber;
 
     public int promotionPieceType;
 
@@ -29,14 +29,16 @@ public class NetMakeMove : NetMessage
         Deserialize (reader);
     }
 
-    public override void Serialize(ref Unity.Collections.DataStreamWriter writer)
+    public override void Serialize(
+        ref Unity.Collections.DataStreamWriter writer
+    )
     {
         writer.WriteByte((byte) Code);
         writer.WriteInt (originalX);
         writer.WriteInt (originalY);
         writer.WriteInt (destinationX);
         writer.WriteInt (destinationY);
-        writer.WriteInt (teamId);
+        writer.WriteInt (teamNumber);
         writer.WriteInt (promotionPieceType);
     }
 
@@ -46,7 +48,7 @@ public class NetMakeMove : NetMessage
         originalY = reader.ReadInt();
         destinationX = reader.ReadInt();
         destinationY = reader.ReadInt();
-        teamId = reader.ReadInt();
+        teamNumber = reader.ReadInt();
         promotionPieceType = reader.ReadInt();
     }
 

@@ -1,23 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using Unity.Networking.Transport;
 
-public class NetGetOpponentName : NetMessage
+public class NetGetOpponentRating : NetMessage
 {
     public int teamNumber;
 
-    public byte wantDraw;
+    public int opponentRating;
 
-    public NetGetOpponentName()
+    public NetGetOpponentRating()
     {
-        Code = OpCode.DRAW;
+        Code = OpCode.GET_OPPONENT_RATING;
     }
 
-    public NetGetOpponentName(DataStreamReader reader)
+    public NetGetOpponentRating(DataStreamReader reader)
     {
-        Code = OpCode.DRAW;
+        Code = OpCode.GET_OPPONENT_RATING;
         Deserialize (reader);
     }
 
@@ -25,22 +26,22 @@ public class NetGetOpponentName : NetMessage
     {
         writer.WriteByte((byte) Code);
         writer.WriteInt (teamNumber);
-        writer.WriteByte (wantDraw);
+        writer.WriteInt (opponentRating);
     }
 
     public override void Deserialize(DataStreamReader reader)
     {
         teamNumber = reader.ReadInt();
-        wantDraw = reader.ReadByte();
+        opponentRating = reader.ReadInt();
     }
 
     public override void ReceivedOnClient()
     {
-        NetUtility.C_DRAW?.Invoke(this);
+        NetUtility.C_GET_OPPONENT_RATING?.Invoke(this);
     }
 
     public override void ReceivedOnServer(NetworkConnection cnn)
     {
-        NetUtility.S_DRAW?.Invoke(this, cnn);
+        NetUtility.S_GET_OPPONENT_RATING?.Invoke(this, cnn);
     }
 }

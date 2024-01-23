@@ -58,7 +58,8 @@ public class Client : MonoBehaviour
         }
 
         UnRegisterToEvent();
-        connection = default(NetworkConnection);
+
+        connection.Disconnect (driver);
         driver.Dispose();
         SetActive(false);
     }
@@ -100,7 +101,10 @@ public class Client : MonoBehaviour
     }
 
     private bool
-    HasEvent(out NetworkEvent.Type cmd, out Unity.Collections.DataStreamReader stream)
+    HasEvent(
+        out NetworkEvent.Type cmd,
+        out Unity.Collections.DataStreamReader stream
+    )
     {
         cmd = connection.PopEvent(driver, out stream);
         return cmd != NetworkEvent.Type.Empty;
@@ -126,7 +130,8 @@ public class Client : MonoBehaviour
                         break;
                     case NetworkEvent.Type.Disconnect:
                         Debug.Log("Client got disconnected from server");
-                        connection = default(NetworkConnection);
+
+                        connection.Disconnect (driver);
                         connectionDropped?.Invoke();
                         Shutdown();
                         break;

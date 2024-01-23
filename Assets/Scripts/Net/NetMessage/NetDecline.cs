@@ -6,7 +6,7 @@ using Unity.Networking.Transport;
 
 public class NetDecline : NetMessage
 {
-    public int teamNr;
+    public int teamNumber;
 
     public byte wantDecline;
 
@@ -21,16 +21,18 @@ public class NetDecline : NetMessage
         Deserialize (reader);
     }
 
-    public override void Serialize(ref Unity.Collections.DataStreamWriter writer)
+    public override void Serialize(
+        ref Unity.Collections.DataStreamWriter writer
+    )
     {
         writer.WriteByte((byte) Code);
-        writer.WriteInt (teamNr);
+        writer.WriteInt (teamNumber);
         writer.WriteByte (wantDecline);
     }
 
     public override void Deserialize(Unity.Collections.DataStreamReader reader)
     {
-        teamNr = reader.ReadInt();
+        teamNumber = reader.ReadInt();
         wantDecline = reader.ReadByte();
     }
 

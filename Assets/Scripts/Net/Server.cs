@@ -208,7 +208,8 @@ public class Server : MonoBehaviour
                     if (cmd == NetworkEvent.Type.Disconnect)
                     {
                         Debug.Log("Client disconnected from server");
-                        connections[i] = default(NetworkConnection);
+
+                        connections[i].Disconnect(driver);
                         connectionDropped?.Invoke();
                         Shutdown(); // This doesn't happen usually, it's because we're in a two person game
                     }
