@@ -917,11 +917,11 @@ public class Chessboard : MonoBehaviour
 
     private void DisplayVictory(Team winningTeam)
     {
-        EmitGameEnded (winningTeam);
         ToggleObject(victoryScreen, true);
 
         if (!localGame && ((int) winningTeam == 0 || (int) winningTeam == 1))
         {
+            EmitGameEnded (winningTeam);
             TMP_Text winnerTMP =
                 victoryScreen
                     .transform
