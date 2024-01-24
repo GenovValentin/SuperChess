@@ -18,6 +18,8 @@ public class LoginForm : MonoBehaviour
 
     private GameObject signOutMenu;
 
+    private GameObject deleteMenu;
+
     private Toggle toggle;
 
     private string username;
@@ -44,6 +46,7 @@ public class LoginForm : MonoBehaviour
         ToggleGameObject(errorMessageTMP, false);
         ToggleGameObject(signInMenu, true);
         ToggleGameObject(signOutMenu, false);
+        ToggleGameObject(deleteMenu, false);
 
         ResetToggle();
         ResetInputFields();
@@ -66,6 +69,7 @@ public class LoginForm : MonoBehaviour
         signInMenu = GameObject.Find("Sign In Menu");
         signOutMenu = GameObject.Find("Sign Out Menu");
         toggle = GameObject.Find("Check Box")?.GetComponent<Toggle>();
+        deleteMenu = GameObject.Find("Delete Menu");
     }
 
     private void SetUsernameAndPassword()
@@ -185,6 +189,16 @@ public class LoginForm : MonoBehaviour
         ToggleGameObject(signOutMenu, true);
     }
 
+    public void SignOut()
+    {
+        accountHandler.SignOut();
+        ToggleGameObject(signInMenu, true);
+        ToggleGameObject(signOutMenu, false);
+        ResetInputFields();
+        ResetToggle();
+        SavePrefs("", "");
+    }
+
     public void OnSignInButton()
     {
         SetUsernameAndPassword();
@@ -199,11 +213,24 @@ public class LoginForm : MonoBehaviour
 
     public void OnSignOutButton()
     {
-        accountHandler.SignOut();
-        ToggleGameObject(signInMenu, true);
-        ToggleGameObject(signOutMenu, false);
-        ResetInputFields();
-        ResetToggle();
-        SavePrefs("", "");
+        SignOut();
+    }
+
+    public void OnDeleteAccountButton()
+    {
+        ToggleGameObject(deleteMenu, true);
+    }
+
+    public void OnDeleteButton()
+    {
+        ToggleGameObject(deleteMenu, false);
+
+        accountHandler.DeleteUser();
+        SignOut();
+    }
+
+    public void OnKeepButton()
+    {
+        ToggleGameObject(deleteMenu, false);
     }
 }

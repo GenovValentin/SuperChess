@@ -82,6 +82,11 @@ public class AccountHandler : MonoBehaviour
         mongoClient.SetUserVolume (newUsername, volume);
     }
 
+    public void DeleteUser()
+    {
+        mongoClient.DeleteUser (newUsername);
+    }
+
     public void SignIn()
     {
         if (mongoClient.DoesUserExist(newUsername, newPassword) == false)

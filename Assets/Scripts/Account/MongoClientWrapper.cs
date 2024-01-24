@@ -104,12 +104,19 @@ public class MongoClientWrapper : MonoBehaviour
 
         userCollection.UpdateOne (filter, update);
     }
+
+    public void DeleteUser(string username)
+    {
+        var filter = Builders<UserModel>.Filter.Eq(u => u.name, username);
+        userCollection.DeleteOne (filter);
+    }
 }
 
 // Unity-mongo-csharp-driver-dlls:
 // using MongoDB.Bson;
 // using MongoDB.Bson.Serialization.Attributes;
 // using MongoDB.Driver;
+
 // private const string MONGO_URI = "mongodb://username:password@127.0.0.1:27017";
 // private const string DATABASE_NAME = "testDatabase";
 // private MongoClient client;

@@ -457,11 +457,6 @@ public class Chessboard : MonoBehaviour
         return board.IsMouseOverTile(ray, out info, isReachable);
     }
 
-    private bool IsMouseOverModal(Ray ray, out RaycastHit info)
-    {
-        return board.IsMouseOverModal(ray, out info);
-    }
-
     private void HandleLeftMouseButtonUp(Vector2Int hitPosition)
     {
         if (selectedPiece == null)
@@ -931,6 +926,7 @@ public class Chessboard : MonoBehaviour
             SetTextComponentOfTMP_Text(winnerTMP,
             GetWinnerTMP((int) winningTeam),
             " Won!");
+            SetUserRating(accountHandler.GetUserRating());
         }
 
         victoryScreen
@@ -941,8 +937,6 @@ public class Chessboard : MonoBehaviour
         SetObjectLayer(victoryScreen, "Modal");
 
         isReachable = false;
-
-        SetUserRating(accountHandler.GetUserRating());
     }
 
     private TMP_Text GetWinnerTMP(int winner)
