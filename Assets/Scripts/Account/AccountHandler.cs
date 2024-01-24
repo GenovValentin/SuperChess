@@ -8,7 +8,7 @@ public class AccountHandler : MonoBehaviour
 {
     MongoClientWrapper mongoClient;
 
-    private string newUsername;
+    private string accountUsername;
 
     private string newPassword;
 
@@ -33,13 +33,13 @@ public class AccountHandler : MonoBehaviour
 
     public void SetUsernameAndPassword(string username, string password)
     {
-        newUsername = username;
+        accountUsername = username;
         newPassword = password;
     }
 
     public string ReturnUsername()
     {
-        return newUsername;
+        return accountUsername;
     }
 
     private void EmitSignIn()
@@ -64,32 +64,37 @@ public class AccountHandler : MonoBehaviour
 
     public Settings GetUserSettings()
     {
-        return mongoClient.GetUserSettings(newUsername);
+        return mongoClient.GetUserSettings(accountUsername);
     }
 
     public int GetUserRating()
     {
-        return mongoClient.GetUserRating(newUsername);
+        return mongoClient.GetUserRating(accountUsername);
     }
 
     public void SetUserRating(int rating)
     {
-        mongoClient.SetUserRating (newUsername, rating);
+        mongoClient.SetUserRating (accountUsername, rating);
     }
 
     public void SetVolume(float volume)
     {
-        mongoClient.SetUserVolume (newUsername, volume);
+        mongoClient.SetUserVolume (accountUsername, volume);
+    }
+
+    public void ChangeUsername(string newUsername)
+    {
+        mongoClient.ChangeUsername (accountUsername, newUsername);
     }
 
     public void DeleteUser()
     {
-        mongoClient.DeleteUser (newUsername);
+        mongoClient.DeleteUser (accountUsername);
     }
 
     public void SignIn()
     {
-        if (mongoClient.DoesUserExist(newUsername, newPassword) == false)
+        if (mongoClient.DoesUserExist(accountUsername, newPassword) == false)
         {
             EmitUnsuccessfulSignIn();
             return;
@@ -100,13 +105,13 @@ public class AccountHandler : MonoBehaviour
 
     public void SignUp()
     {
-        if (mongoClient.IsUsernameTaken(newUsername))
+        if (mongoClient.IsUsernameTaken(accountUsername))
         {
             EmitUnsuccessfulSignUp();
             return;
         }
 
-        mongoClient.CreateUser(newUsername, newPassword, 0.5f);
+        mongoClient.CreateUser(accountUsername, newPassword, 0.5f);
         EmitSignIn();
     }
 

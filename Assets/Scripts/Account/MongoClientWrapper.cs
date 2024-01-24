@@ -105,6 +105,14 @@ public class MongoClientWrapper : MonoBehaviour
         userCollection.UpdateOne (filter, update);
     }
 
+    public void ChangeUsername(string username, string newUsername)
+    {
+        var filter = Builders<UserModel>.Filter.Eq(u => u.name, username);
+        var update = Builders<UserModel>.Update.Set(u => u.name, newUsername);
+
+        userCollection.UpdateOne (filter, update);
+    }
+
     public void DeleteUser(string username)
     {
         var filter = Builders<UserModel>.Filter.Eq(u => u.name, username);

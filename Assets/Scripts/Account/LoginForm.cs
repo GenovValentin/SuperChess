@@ -10,9 +10,15 @@ public class LoginForm : MonoBehaviour
 
     private TMP_InputField passwordInputField;
 
+    private TMP_InputField newUsernameInputField;
+
+    private TMP_InputField repeatUsernameInputField;
+
     private GameObject errorMessageTMP;
 
     private GameObject welcomeMessageTMP;
+
+    private GameObject errorChangeMessageTMP;
 
     private GameObject signInMenu;
 
@@ -20,11 +26,17 @@ public class LoginForm : MonoBehaviour
 
     private GameObject deleteMenu;
 
+    private GameObject changeUsernameMenu;
+
     private Toggle toggle;
 
     private string username;
 
     private string password;
+
+    private string newUsername;
+
+    private string repeatUsername;
 
     private string usernameKey = "Username";
 
@@ -38,15 +50,21 @@ public class LoginForm : MonoBehaviour
     {
         accountHandler = AccountHandler.GetInstance();
         SetObjects();
+
         AddUsernameInputFieldListener();
         AddPasswordInputFieldListener();
+        AddNewUsernameInputFieldListener();
+        AddRepeatUsernameInputFieldListener();
         AddToggleListener();
+
         RegisterEvents();
 
         ToggleGameObject(errorMessageTMP, false);
+        ToggleGameObject(errorChangeMessageTMP, false);
         ToggleGameObject(signInMenu, true);
         ToggleGameObject(signOutMenu, false);
         ToggleGameObject(deleteMenu, false);
+        ToggleGameObject(changeUsernameMenu, false);
 
         ResetToggle();
         ResetInputFields();
@@ -56,20 +74,40 @@ public class LoginForm : MonoBehaviour
 
     private void SetObjects()
     {
-        usernameInputField =
-            GameObject
-                .Find("Username_InputField")?
-                .GetComponent<TMP_InputField>();
-        passwordInputField =
-            GameObject
-                .Find("Password_InputField")?
-                .GetComponent<TMP_InputField>();
+        usernameInputField = GetTMP_InputField("Username_InputField");
+        passwordInputField = GetTMP_InputField("Password_InputField");
+        newUsernameInputField = GetTMP_InputField("New Username_InputField");
+        repeatUsernameInputField =
+            GetTMP_InputField("Repeat Username_InputField");
+
         errorMessageTMP = GameObject.Find("Error");
         welcomeMessageTMP = GameObject.Find("Welcome");
+        errorChangeMessageTMP = GameObject.Find("Error Change");
         signInMenu = GameObject.Find("Sign In Menu");
         signOutMenu = GameObject.Find("Sign Out Menu");
-        toggle = GameObject.Find("Check Box")?.GetComponent<Toggle>();
         deleteMenu = GameObject.Find("Delete Menu");
+        changeUsernameMenu = GameObject.Find("Change Username Menu");
+        toggle = GetToggle("Check Box");
+    }
+
+    private TMP_InputField GetTMP_InputField(string inputFIeldName)
+    {
+        return GetComponent<TMP_InputField>(inputFIeldName);
+    }
+
+    private Toggle GetToggle(string toggle)
+    {
+        return GetComponent<Toggle>(toggle);
+    }
+
+    private T GetComponent<T>(string inputFIeldName)
+    {
+        GameObject gameObject = GameObject.Find(inputFIeldName);
+        if (gameObject == null)
+        {
+            throw new Exception();
+        }
+        return gameObject.GetComponent<T>();
     }
 
     private void SetUsernameAndPassword()
@@ -94,6 +132,16 @@ public class LoginForm : MonoBehaviour
         password = passwordInputFieldValue;
     }
 
+    private void SetNewUsernameValue(string newUsernameInputFieldValue)
+    {
+        newUsername = newUsernameInputFieldValue;
+    }
+
+    private void SetRepeatUsernameValue(string repeatUsernameInputField)
+    {
+        repeatUsername = repeatUsernameInputField;
+    }
+
     private void AddUsernameInputFieldListener()
     {
         usernameInputField.onEndEdit.AddListener (SetUsernameValue);
@@ -109,14 +157,33 @@ public class LoginForm : MonoBehaviour
         toggle.onValueChanged.AddListener (ToggleValueChanged);
     }
 
+    private void AddNewUsernameInputFieldListener()
+    {
+        newUsernameInputField.onEndEdit.AddListener (SetNewUsernameValue);
+    }
+
+    private void AddRepeatUsernameInputFieldListener()
+    {
+        repeatUsernameInputField.onEndEdit.AddListener (SetRepeatUsernameValue);
+    }
+
     private void ToggleGameObject(GameObject gameObject, bool isActive)
     {
+        if (gameObject == null)
+        {
+            return;
+        }
         gameObject.SetActive (isActive);
     }
 
     private void ToggleValueChanged(bool isOn)
     {
         isToggleOn = isOn;
+    }
+
+    private void ChangeUsername(string newUsername)
+    {
+        accountHandler.ChangeUsername (newUsername);
     }
 
     private void SavePrefs(string username, string password)
@@ -154,6 +221,12 @@ public class LoginForm : MonoBehaviour
     {
         usernameInputField.text = "";
         passwordInputField.text = "";
+    }
+
+    private void ResetChangeInputFields()
+    {
+        newUsernameInputField.text = "";
+        repeatUsernameInputField.text = "";
     }
 
     private void RegisterEvents()
@@ -232,5 +305,33 @@ public class LoginForm : MonoBehaviour
     public void OnKeepButton()
     {
         ToggleGameObject(deleteMenu, false);
+    }
+
+    public void OnChangeButton()
+    {
+        if (newUsername != repeatUsername)
+        {
+            SetMessage(errorChangeMessageTMP, "Usernames do not match!");
+            return;
+        }
+        username = newUsername;
+        ChangeUsername (newUsername);
+        ToggleGameObject(changeUsernameMenu, false);
+        ToggleGameObject(signOutMenu, true);
+        SetMessage(welcomeMessageTMP, "Welcome, " + username + "!");
+        ResetChangeInputFields();
+    }
+
+    public void OnChangeUsernameButton()
+    {
+        ToggleGameObject(signOutMenu, false);
+        ToggleGameObject(changeUsernameMenu, true);
+    }
+
+    public void OnCancelButton()
+    {
+        ToggleGameObject(changeUsernameMenu, false);
+        ToggleGameObject(signOutMenu, true);
+        ResetChangeInputFields();
     }
 }
