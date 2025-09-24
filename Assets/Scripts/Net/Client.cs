@@ -33,6 +33,7 @@ public class Client : MonoBehaviour
     {
         if (driver.IsCreated)
         {
+            driver.ScheduleUpdate().Complete();
             driver.Dispose();
         }
 

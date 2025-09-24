@@ -1844,7 +1844,7 @@ public class Chessboard : MonoBehaviour
         SetIsWhiteTurn(!isWhiteTurn);
         if (localGame)
         {
-            currentTeam = (GetOppositeTeam(currentTeam));
+            currentTeam = GetOppositeTeam(currentTeam);
         }
         moveList
             .Add(new Vector2Int[] { previousPosition, CreatePosition(x, y) });

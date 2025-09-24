@@ -100,13 +100,9 @@ public class LoginForm : MonoBehaviour
         return GetComponent<Toggle>(toggle);
     }
 
-    private T GetComponent<T>(string inputFIeldName)
+    private T GetComponent<T>(string componentName)
     {
-        GameObject gameObject = GameObject.Find(inputFIeldName);
-        if (gameObject == null)
-        {
-            throw new Exception();
-        }
+        GameObject gameObject = GameObject.Find(componentName) ?? throw new Exception();
         return gameObject.GetComponent<T>();
     }
 

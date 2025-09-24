@@ -65,6 +65,18 @@ public class Server : MonoBehaviour
         }
     }
 
+    // public void Shutdown()
+    // {
+    //     if (!isActive)
+    //     {
+    //         return;
+    //     }
+
+    //     connections.Dispose();
+    //     driver.Dispose();
+    //     isActive = false;
+    // }
+
     public void Shutdown()
     {
         if (!isActive)
@@ -72,10 +84,20 @@ public class Server : MonoBehaviour
             return;
         }
 
-        connections.Dispose();
-        driver.Dispose();
+        if (driver.IsCreated)
+        {
+            driver.ScheduleUpdate().Complete();
+        }
+
+        if (connections.IsCreated)
+            connections.Dispose();
+
+        if (driver.IsCreated)
+            driver.Dispose();
+
         isActive = false;
     }
+
 
     public void OnDestroy()
     {
