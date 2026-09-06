@@ -75,3 +75,19 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 .history
 
+
+# Editor history / IDE
+.history/
+.vscode/
+
+# Build
+  output
+*_Data/
+*_BurstDebugInformation_DoNotShip/
+*.x86_64
+*.so
+*.debug
+
+  *.blob
+UIElementsSchema/
+Windows/
