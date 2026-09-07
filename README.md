@@ -16,7 +16,7 @@ networking layer, user accounts and an ELO rating system.
 - Complete move generation per piece type, including castling, en passant
   and pawn promotion with a piece-selection dialog
 - Checkmate, **stalemate** and **draw by insufficient material**
-- **Draw offers follow the official procedure** — only the player who is not
+- **Draw offers follow the official procedure** - only the player who is not
   to move may offer a draw, mirroring the FIDE rule that a draw is offered
   after making your own move and before the opponent replies
 - Captured pieces are scaled down and lined up along the board edge
@@ -27,7 +27,7 @@ networking layer, user accounts and an ELO rating system.
   ten typed message classes (move, draw, decline, resign, rematch,
   keep-alive, welcome, start, opponent name, opponent rating)
 - Resign, draw and rematch handling synchronised across both clients
-- **Colours alternate on rematch** — players swap sides, and the name and
+- **Colours alternate on rematch** - players swap sides, and the name and
   rating displays follow them
 
 **Accounts and ratings**
@@ -36,13 +36,13 @@ networking layer, user accounts and an ELO rating system.
 - **ELO ratings** recalculated after every game using the standard formula:
   the expected score is derived from the rating difference, with a K-factor
   of 40
-- **Per-user settings** — volume preferences are stored with the account.
+- **Per-user settings** - volume preferences are stored with the account.
   Before signing in the app uses a default; on sign-in the saved preference
   is loaded and applied immediately
 
 **Interaction**
 
-- **Two ways to move** — click a piece and then its target square, which
+- **Two ways to move** - click a piece and then its target square, which
   plays a movement animation, or drag the piece directly. Castling and
   captures animate the same way
 - A move is cancelled by right-clicking, by clicking an illegal square, or by
@@ -60,14 +60,14 @@ networking layer, user accounts and an ELO rating system.
 |---|---|
 | ![Draw offer](docs/drawoffer.png) | ![Rematch](docs/rematch.png) |
 
-*Left: a draw offer as both clients see it — the offering player's own button
+*Left: a draw offer as both clients see it - the offering player's own button
 is disabled. Right: the result screen with a rematch offer.*
 
 | Before | After the rematch |
 |---|---|
 | ![Before](docs/rematch-before.png) | ![After](docs/rematch-after.png) |
 
-*Ratings are recalculated after every game — Valentin 2003 → 1999,
+*Ratings are recalculated after every game - Valentin 2003 → 1999,
 Petar 2424 → 2427. On a rematch the players swap colours, and the name and
 rating displays move with them.*
 
@@ -86,7 +86,7 @@ https://github.com/user-attachments/assets/35164e0f-0ea3-4e47-a2b2-fb6a0ac0543d
 ```
 Assets/Scripts/
 ├── Pieces/           ChessPiece base class + Bishop, King, Knight, Pawn,
-│                     Queen, Rook — each overriding GetSpecialMoves()
+│                     Queen, Rook - each overriding GetSpecialMoves()
 ├── Net/              Client, Server, NetUtility
 │   └── NetMessage/   Ten typed message classes
 ├── Account/          AccountHandler, LoginForm, MongoClientWrapper,
@@ -96,7 +96,7 @@ Assets/Scripts/
 ```
 
 Special moves are modelled through a `SpecialMove` enum and resolved
-polymorphically — each piece decides for itself which special moves are
+polymorphically - each piece decides for itself which special moves are
 available in a given board state.
 
 Sign-in and sign-out are published through a small `EventBus`, so components
@@ -120,7 +120,7 @@ docker compose up -d      # starts MongoDB on port 27018
 ```
 
 Then open the project in Unity and load `Assets/Scenes/SampleScene.unity`.
-The database is only needed for accounts and ratings — without it, signing in
+The database is only needed for accounts and ratings - without it, signing in
 will time out.
 
 For an online game, run two instances: one hosts, the other connects to
@@ -143,7 +143,7 @@ alternative click-to-play input mode, and a full account layer on top of
 MongoDB with authentication and ELO ratings.
 
 I also started breaking up the tutorial's monolithic `Chessboard` class into
-separate components — a refactoring I did not finish. See below.
+separate components - a refactoring I did not finish. See below.
 
 ---
 
@@ -166,7 +166,7 @@ separate components — a refactoring I did not finish. See below.
   manipulate their own rating. This belongs behind an API.
 
 - **Passwords are stored in plain text.** The field is called `shaPassword`,
-  but no hashing ever happens — the value goes straight from the input field
+  but no hashing ever happens - the value goes straight from the input field
   into the database, and `PlayerPrefs` keeps a plaintext copy on disk. This
   needs bcrypt or argon2, with verification moved to the server.
 
@@ -175,7 +175,7 @@ separate components — a refactoring I did not finish. See below.
   second for them to appear, rather than reading from the data model. It
   works, but it is a layering violation with a timing assumption baked in.
 
-- **The connection URI is hardcoded** in `MongoClientWrapper` — it should come
+- **The connection URI is hardcoded** in `MongoClientWrapper` - it should come
   from configuration.
 
 Taken together, these come down to one thing: the client was trusted. Move
