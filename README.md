@@ -71,6 +71,14 @@ is disabled. Right: the result screen with a rematch offer.*
 Petar 2424 → 2427. On a rematch the players swap colours, and the name and
 rating displays move with them.*
 
+*The camera rotates onto the board when a game starts, and flips between white's and black's perspective as if the player changed seats*
+
+
+
+https://github.com/user-attachments/assets/35164e0f-0ea3-4e47-a2b2-fb6a0ac0543d
+
+
+
 ---
 
 ## Architecture
