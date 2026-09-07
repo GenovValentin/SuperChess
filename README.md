@@ -5,7 +5,7 @@ networking layer, user accounts and an ELO rating system.
 
 ![SuperChess](docs/hero.png)
 
-*Two players, each seeing the board from their own side.*
+*Online game, white's turn, highlighted are all possible moves with the queen.*
 
 ---
 
@@ -71,7 +71,7 @@ is disabled. Right: the result screen with a rematch offer.*
 Petar 2424 → 2427. On a rematch the players swap colours, and the name and
 rating displays move with them.*
 
-*The camera rotates onto the board when a game starts, and flips between white's and black's perspective as if the player changed seats*
+*The camera rotates onto the board when a game starts, and flips between white's and black's perspective as if the player changed seats.*
 
 
 
