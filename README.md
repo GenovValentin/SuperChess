@@ -78,7 +78,7 @@ rating displays move with them.*
 |---|---|
 | ![Profile](docs/profile.png) | ![Signed In](docs/profile_signed_in.png) |
 
-*Left: the profile screen with options to sign in, sign up and save input for the next start of the game. Right: the account screen ones signed in with options to change username, sign out and delete account.*
+*Left: the profile screen with options to sign in, sign up and save input for the next start of the game. Right: the account screen once signed in with options to change username, sign out and delete account.*
 
 *The camera rotates onto the board when a game starts, and flips between white's and black's perspective as if the player changed seats.*
 
