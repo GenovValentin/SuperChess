@@ -71,6 +71,12 @@ is disabled. Right: the result screen with a rematch offer.*
 Petar 2424 → 2427. On a rematch the players swap colours, and the name and
 rating displays move with them.*
 
+| Profile | Signed In |
+|---|---|
+| ![Profile](docs/profile.png) | ![Signed In](docs/profile_signed_in.png) |
+
+*Left: the profile screen with options to sign in, sign up and save input for the next start of the game. Right: the account screen ones signed in with options to change username, sign out and delete account.*
+
 *The camera rotates onto the board when a game starts, and flips between white's and black's perspective as if the player changed seats.*
 
 
