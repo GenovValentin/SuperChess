@@ -20,6 +20,9 @@ networking layer, user accounts and an ELO rating system.
   to move may offer a draw, mirroring the FIDE rule that a draw is offered
   after making your own move and before the opponent replies
 - Captured pieces are scaled down and lined up along the board edge
+- **The whole interface signals whose turn it is** - the thin rim around the
+    playing surface turns cream for white and dark for black, and the button
+    colour scheme shifts with it
 
 **Online play**
 
